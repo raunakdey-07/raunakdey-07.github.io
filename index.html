@@ -3,10 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <meta name="description" content="Raunak Dey's professional portfolio showcasing data science and quantitative research skills.">
+    <meta name="keywords" content="Data Science, Quantitative Research, Portfolio, Raunak Dey">
+    <meta name="author" content="Raunak Dey">
+    <meta property="og:title" content="Raunak Dey - Data Scientist">
+    <meta property="og:description" content="Explore my portfolio to see my projects and skills in data science and quantitative research.">
+    <meta property="og:image" content="assets/portfolio.jpg">
+    <meta property="og:url" content="https://raunakdey-07.github.io">
+    <title>Raunak Dey's Portfolio</title>
+    <!-- Favicon Links -->
+    <link rel="icon" href="assets/favicon.ico" sizes="any">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <!-- End Favicon Links -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"> <!-- Added Fira Code, adjusted weights -->
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-    <h1>Welcome to My Portfolio</h1>
-    <p>Contact me at: <!--email_off-->22f3002175@ds.study.iitm.ac.in<!--/email_off--></p>
+    <div id="top"></div> <!-- For "Back to Top" functionality -->
+    <header class="header">
+        <nav class="navbar container">
+            <a href="#top" class="logo"><span class="k-left">R</span><span class="k-right">D</span></a>
+            <ul class="nav-links">
+                <li><a href="#hero"><i class="fas fa-home"></i> Home</a></li> 
+                <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
+                <li><a href="#projects"><i class="fas fa-briefcase"></i> Projects</a></li>
+                <li><a href="#achievements"><i class="fas fa-trophy"></i> Achievements</a></li>
+                <li><a href="#skills"><i class="fas fa-cogs"></i> Skills</a></li>
+                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" class="nav-link-resume"><i class="fas fa-file-alt"></i> Resume</a></li> 
+            </ul>
+            <button class="mobile-menu-btn" aria-label="Open menu">Menu</button>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="hero" class="jumbotron text-center hero-section">
+          <canvas id="network-bg"></canvas> <!-- Canvas for particle background -->
+          <div class="container hero-content">
+            <h1 class="hero-title">
+              Hi, my name is <span class="text-accent">Raunak Dey</span>
+              <br />
+              I'm a <span id="typed-role" class="role"></span>
+            </h1>
+            <p class="hero-cta">
+              <a class="cta-btn cta-btn--hero" href="#about">Know more</a>
+            </p>
+          </div>
+        </section>
+
+        <section id="about" class="section about-section">
+          <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-wrapper">
+              <div class="about-wrapper__image">
+                <img
+                  alt="Raunak Dey Profile Image"
+                  class="img-fluid rounded-circle profile-img"
+                  src="assets/portfolio.jpg"
+                  loading="lazy"
+                />
+              </div>
+              <div class="about-wrapper__info">
+                <p class="about-wrapper__info-text">
+                  The art of deciphering complexity, the quiet satisfaction of bringing clarity from noise – that's precisely what draws me to Data Science, Machine Learning, and Quantitative Research.
+                </p>
+                <p class="about-wrapper__info-text">
+                   I am currently honing this passion as a B.S. Data Science student at IIT Madras and applying it as a Gold Level Research Consultant at WorldQuant, where I thrive on tackling challenging problems by leveraging data with a rigorously analytical and authentically driven mindset.
+                </p>
+                <p class="about-wrapper__info-text">
+                  Beyond the data, my world includes cheering for Liverpool FC, getting lost in books, and the company of dogs...
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" class="projects-section section">
+            <div class="container">
+                <h2 class="section-title">Projects</h2>
+                <!-- Swiper -->
+                <div class="swiper project-swiper">
+                    <div class="swiper-wrapper">
+                        <!-- Project Slide 1: Newsify-now -->
+                        <div class="swiper-slide">
+                            <div class="project-card">
+                                <div class="project-wrapper__image">
+                                    <a href="https://newsify-now.netlify.app/" target="_blank" rel="noopener noreferrer">
+                                        <img src="assets/projects/newsify-now.png" alt="Newsify-now App Screenshot" class="img-fluid" loading="lazy">
+                                        <!-- User will need to add newsify-now.png to assets/projects/ -->
+                                    </a>
+                                </div>
+                                <div class="project-wrapper__text">
+                                    <h3 class="project-wrapper__text-title">Newsify-now</h3>
+                                    <p class="project-description">
+                                        A React Native (Expo) demo news app that delivers news based on your mood and rewards you for reading.
+                                    </p>
+                                    <div class="project-buttons mt-3"> <!-- Added a wrapper for buttons -->
+                                        <a href="#" target="_blank" class="cta-btn text-color-main" rel="noopener noreferrer">Source Code</a> <!-- Source code link is blank as requested -->
+                                        <a href="https://newsify-now.netlify.app/" target="_blank" class="cta-btn" rel="noopener noreferrer">Live Demo</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project Slide 2: Finalysis -->
+                        <div class="swiper-slide">
+                            <div class="project-card">
+                                <div class="project-wrapper__image">
+                                    <a href="#" target="_blank" rel="noopener noreferrer"> <!-- Link to be added when live -->
+                                        <img src="assets/projects/finalysis.png" alt="Finalysis App Screenshot" class="img-fluid" loading="lazy">
+                                    </a>
+                                </div>
+                                <div class="project-wrapper__text">
+                                    <h3 class="project-wrapper__text-title">Finalysis</h3>
+                                    <p class="project-description">
+                                        A React Native app (JavaScript) providing comprehensive, beginner-friendly stock analysis reports.
+                                    </p>
+                                    <div class="project-buttons mt-3"> <!-- Added a wrapper for buttons -->
+                                        <a href="#" target="_blank" class="cta-btn text-color-main" rel="noopener noreferrer">Source Code</a> <!-- Assuming source code will be available -->
+                                        <a href="#" target="_blank" class="cta-btn" rel="noopener noreferrer">Live Demo (Soon)</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Add more project slides here if needed -->
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination project-swiper-pagination"></div>
+                    <!-- Add Navigation -->
+                    <div class="swiper-button-prev project-swiper-button-prev"></div>
+                    <div class="swiper-button-next project-swiper-button-next"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="achievements" class="achievements-section section">
+            <div class="container">
+                <h2 class="section-title">Achievements</h2>
+                <!-- Swiper -->
+                <div class="swiper achievement-swiper">
+                    <div class="swiper-wrapper">
+                        <!-- Achievement Slide 1: IQC 2024 -->
+                        <div class="swiper-slide">
+                            <div class="achievement-card">
+                                <div class="achievement-link-wrapper">
+                                    <a href="https://www.linkedin.com/feed/update/urn:li:share:7209515363951104001" target="_blank" class="achievement-post-link" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                                </div>
+                                <h3 class="achievement-title"><i class="fas fa-trophy"></i> IQC 2024</h3>
+                                <p class="achievement-issuer">WorldQuant</p>
+                                <p class="achievement-detail">Stage 1 International Rank: 165</p> <!-- Changed from date -->
+                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
+                                    <img src="assets/achievements/iqc2024-linkedin.jpg" alt="IQC 2024 LinkedIn Post Screenshot" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Achievement Slide 2: Gold Level Consultant -->
+                        <div class="swiper-slide">
+                            <div class="achievement-card">
+                                <h3 class="achievement-title"><i class="fas fa-medal"></i> WorldQuant Challenge</h3>
+                                <p class="achievement-issuer">Gold Level</p>
+                                <p class="achievement-date">April 2024</p>
+                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
+                                    <img src="assets/achievements/worldquant-gold.jpg" alt="Gold Level Certificate WorldQuant" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Achievement Slide 3: Margazhi 2025 -->
+                        <div class="swiper-slide">
+                            <div class="achievement-card">
+                                <div class="achievement-link-wrapper">
+                                    <a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:7304107105911717888" target="_blank" class="achievement-post-link" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                                </div>
+                                <h3 class="achievement-title"><i class="fas fa-award"></i> Margazhi 2025</h3>
+                                <p class="achievement-issuer">Event Head, MUN</p> <!-- Changed from Paradox -->
+                                <p class="achievement-date">January 2025</p> <!-- Added date -->
+                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
+                                    <img src="assets/achievements/margazhi2025-linkedin.png" alt="Margazhi 2025 LinkedIn Post Screenshot" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Achievement Slide 4: LeetCode Profile -->
+                        <div class="swiper-slide">
+                            <div class="achievement-card">
+                                <div class="achievement-link-wrapper">
+                                     <a href="https://leetcode.com/u/jAYkZImBhu/" target="_blank" class="achievement-post-link" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i></a>
+                                </div>
+                                <h3 class="achievement-title"><i class="fas fa-code"></i> LeetCode Profile</h3>
+                                <p class="achievement-issuer">Coding Challenges & Problem Solving</p>
+                                <a href="https://leetcode.com/u/jAYkZImBhu/" target="_blank" class="cta-btn--secondary profile-link" rel="noopener noreferrer">View Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination achievement-swiper-pagination"></div>
+                    <!-- Add Navigation -->
+                    <div class="swiper-button-prev achievement-swiper-button-prev"></div>
+                    <div class="swiper-button-next achievement-swiper-button-next"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="skills-section section">
+            <div class="container">
+                <h2 class="section-title">Skills</h2>
+                <!-- Swiper -->
+                <div class="swiper skill-swiper">
+                    <div class="swiper-wrapper">
+                        <!-- Programming Languages -->
+                        <div class="swiper-slide">
+                            <div class="skill-category-card">
+                                <h4><i class="fas fa-code"></i> Programming Languages</h4>
+                                <div class="skills-list">
+                                    <span class="skill-item"><i class="fab fa-java"></i> Java</span>
+                                    <span class="skill-item"><i class="fab fa-python"></i> Python</span>
+                                    <span class="skill-item"><i class="fas fa-database"></i> PostgreSQL</span>
+                                    <span class="skill-item"><i class="fas fa-database"></i> MySQL</span>
+                                    <span class="skill-item"><i class="fab fa-js-square"></i> JavaScript</span>
+                                    <span class="skill-item"><i class="fab fa-html5"></i> HTML</span>
+                                    <span class="skill-item"><i class="fab fa-css3-alt"></i> CSS</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Developer Tools -->
+                        <div class="swiper-slide">
+                            <div class="skill-category-card">
+                                <h4><i class="fas fa-tools"></i> Developer Tools</h4>
+                                <div class="skills-list">
+                                    <span class="skill-item"><i class="fab fa-git-alt"></i> Git</span>
+                                    <span class="skill-item"><i class="fab fa-docker"></i> Docker</span>
+                                    <span class="skill-item"><i class="fab fa-google"></i> Google Cloud Platform</span>
+                                    <span class="skill-item"><i class="fas fa-laptop-code"></i> VS Code</span>
+                                    <span class="skill-item"><i class="fas fa-code"></i> PyCharm</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Libraries and Frameworks -->
+                        <div class="swiper-slide">
+                            <div class="skill-category-card">
+                                <h4><i class="fas fa-cogs"></i> Libraries & Frameworks</h4>
+                                <div class="skills-list">
+                                    <span class="skill-item"><i class="fab fa-python"></i> Pandas</span>
+                                    <span class="skill-item"><i class="fab fa-python"></i> NumPy</span>
+                                    <span class="skill-item"><i class="fas fa-chart-bar"></i> Matplotlib</span>
+                                    <span class="skill-item"><i class="fab fa-python"></i> Scikit-learn</span>
+                                    <span class="skill-item"><i class="fab fa-node-js"></i> Node.js</span>
+                                    <span class="skill-item"><i class="fab fa-react"></i> React Native</span>
+                                    <span class="skill-item"><i class="fas fa-cube"></i> Expo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Data Skills and Tools -->
+                        <div class="swiper-slide">
+                            <div class="skill-category-card">
+                                <h4><i class="fas fa-database"></i> Data Skills & Tools</h4>
+                                <div class="skills-list">
+                                    <span class="skill-item"><i class="fas fa-search-dollar"></i> Data Analysis</span>
+                                    <span class="skill-item"><i class="fas fa-broom"></i> Data Cleaning</span>
+                                    <span class="skill-item"><i class="fas fa-chart-area"></i> Data Visualization</span>
+                                    <span class="skill-item"><i class="fas fa-file-excel"></i> MS Excel</span>
+                                    <span class="skill-item"><i class="fas fa-chart-bar"></i> Power BI</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Soft Skills -->
+                        <div class="swiper-slide">
+                            <div class="skill-category-card">
+                                <h4><i class="fas fa-user-friends"></i> Soft Skills</h4>
+                                <div class="skills-list">
+                                    <span class="skill-item"><i class="fas fa-eye"></i> Attention to Detail</span>
+                                    <span class="skill-item"><i class="fas fa-users"></i> Team Collaboration</span>
+                                    <span class="skill-item"><i class="fas fa-file-alt"></i> Documentation</span>
+                                    <span class="skill-item"><i class="fas fa-comments"></i> Strategic Communication</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination skill-swiper-pagination"></div>
+                    <!-- Add Navigation -->
+                    <div class="swiper-button-prev skill-swiper-button-prev"></div>
+                    <div class="swiper-button-next skill-swiper-button-next"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact-section section">
+            <div class="container">
+                <h2 class="section-title">Contact Me</h2>
+                <div class="contact-wrapper">
+                    <p class="contact-wrapper__text">
+                        I'm always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
+                    </p>
+                    <a href="mailto:raunakdey.07@gmail.com" class="cta-btn cta-btn--resume">Get in Touch</a> 
+                    <!-- Replace with actual email -->
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/raunak-dey-3b413a256/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/raunakdey-07" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://x.com/the_stoic_coder" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com/the.mild.mayhem" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://api.whatsapp.com/send?phone=916291570503" target="_blank" rel="noopener noreferrer" aria-label="Whatsapp"><i class="fab fa-whatsapp"></i></a>
+
+                    <!-- Medium link removed -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="#top" class="back-to-top" aria-label="Back to top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+            <p class="footer__text">
+                &copy; <span id="current-year"></span> Raunak Dey. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <canvas id="network-bg"></canvas>
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script> <!-- Added ScrollReveal -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script> <!-- Added Typed.js -->
+    <!-- Swiper.js JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <!-- <script src="js/projectSlider.js"></script> This might be removed or repurposed -->
+    <script src="js/networkAnimation.js"></script>
 </body>
 </html>
