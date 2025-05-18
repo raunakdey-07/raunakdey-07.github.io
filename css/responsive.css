@@ -1,6 +1,3 @@
-/* Responsive CSS */
-
-/* General adjustments for smaller screens */
 @media (max-width: 992px) {
     .section-title {
         font-size: 2.5rem;
@@ -13,8 +10,8 @@
     }
 
     .nav {
-        padding: 1rem 20px; /* Add padding to nav itself */
-        justify-content: space-between; /* Ensure brand and toggle are spaced */
+        padding: 1rem 20px;
+        justify-content: space-between;
     }
     
     .nav-brand {
@@ -22,19 +19,19 @@
     }
 
     .nav-links {
-        display: none; /* Hidden by default, shown by JS toggle */
+        display: none;
         flex-direction: column;
         width: 100%;
         position: absolute;
-        top: 65px; /* Adjust based on nav height */
+        top: 65px;
         left: 0;
-        background-color: #111; /* Slightly darker than body for contrast */
-        border-top: 1px solid var(--primary-color); /* Use theme color */
-        z-index: 1000; /* Ensure it's above other content */
+        background-color: #111;
+        border-top: 1px solid var(--primary-color);
+        z-index: 1000;
         padding-bottom: 1rem;
     }
 
-    .nav-links.active { /* Class to show mobile menu */
+    .nav-links.active {
         display: flex;
     }
 
@@ -48,15 +45,15 @@
         padding: 0.8rem 1rem;
         display: block;
         width: 100%;
-        border-bottom: 1px solid #222; /* Subtle separator */
+        border-bottom: 1px solid #222;
         font-size: 1rem;
         color: var(--text-color-light);
     }
-    .nav-links li:last-child a { /* Remove border from last item */
+    .nav-links li:last-child a {
         border-bottom: none;
     }
     
-    .nav-links li a.btn--resume { /* Style resume button in mobile menu */
+    .nav-links li a.btn--resume {
         margin: 0.5rem auto;
         display: inline-block;
         width: auto;
@@ -76,34 +73,129 @@
         color: var(--primary-color);
     }
     
-    .mobile-menu-toggle {
-        display: block; /* Show hamburger icon */
+    .mobile-menu-btn {
+        display: none;
         color: var(--text-color-light);
         font-size: 1.8rem;
         background: none;
         border: none;
         cursor: pointer;
-        z-index: 1001; /* Above nav-links if it overlaps */
+        z-index: 1001; 
     }
-    .mobile-menu-toggle .fa-times { /* Style for close icon */
+
+    .navbar .nav-links {
+        display: flex;
+    }
+    .navbar .mobile-menu-btn {
         display: none;
     }
-    .mobile-menu-toggle.active .fa-bars {
+}
+
+@media (max-width: 992px) {
+    .navbar .nav-links {
         display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        background-color: #111; 
+        border-top: 1px solid var(--primary-color); 
+        z-index: 1000; 
+        padding-bottom: 1rem;
     }
-    .mobile-menu-toggle.active .fa-times {
+
+    .navbar .nav-links.active {
+        display: flex;
+    }
+    
+    .navbar .mobile-menu-btn {
         display: block;
+    }
+
+    .mobile-menu-btn .fa-times { 
+        display: none;
+    }
+    .mobile-menu-btn.active .fa-bars {
+        display: none;
+    }
+    .mobile-menu-btn.active .fa-times {
+        display: block;
+    }
+
+    .hero-content .hero-title .role { 
+        display: block; 
+        line-height: 1.2; 
+        margin-left: 0; 
+        margin-top: 0.25em;
+    }
+
+    .hero-content .typed-cursor { 
+        display: inline-block; 
+        vertical-align: baseline; 
+    }
+
+    .hero-content h1,
+    .hero-content .hero-title .role,
+    .hero-content .typed-cursor {
+        font-size: 2.2rem;
+        line-height: 1.5;
+    }
+
+    .about-wrapper {
+        display: flex;
+        flex-direction: column; 
+        align-items: center; 
+    }
+
+    .about-wrapper__image {
+        order: -1;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        max-width: 250px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .about-wrapper__image img {
+        width: 100%;
+        height: auto;
+    }
+    .about-wrapper__image img.profile-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .about-wrapper__info {
+        text-align: center;
+    }
+    .about-wrapper__info-text {
+        text-align: justify;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 500px;
     }
 
 
     .hero-content h1 {
-        font-size: 2.5rem; /* Slightly reduced */
+        font-size: 2.5rem;
     }
 
     .hero-content .role {
-        font-size: 1.3rem; /* Slightly reduced */
+        font-size: 2.5rem;
+        display: block; 
+        margin-top: 0.25em; 
     }
     
+    .hero-content .typed-cursor {
+        font-size: 2.5rem;
+        display: inline-block;
+        vertical-align: baseline;
+    }
+
     .hero-content .cta-btn {
         font-size: 1rem;
         padding: 0.8rem 1.8rem;
@@ -111,23 +203,23 @@
 
     .profile-pic-container {
         margin-bottom: 2rem;
-        text-align: center; /* Center the image if it's smaller */
+        text-align: center;
     }
     .profile-pic-container img {
-        max-width: 200px; /* Control size on mobile */
+        max-width: 200px;
     }
 
 
     .about-content {
         flex-direction: column;
-        align-items: center; /* Center items when stacked */
+        align-items: center;
     }
 
     .about-text,
     .about-image {
         flex-basis: 100%;
-        text-align: center; /* Center text for stacked layout */
-        max-width: 500px; /* Limit width for readability */
+        text-align: center;
+        max-width: 500px;
     }
     .about-text p {
         text-align: justify;
@@ -135,16 +227,14 @@
 
     .about-image img {
         max-width: 250px;
-        margin-top: 2rem; /* Add space when stacked */
+        margin-top: 2rem;
     }
 
-    /* Swiper adjustments */
     .swiper-button-prev, .swiper-button-next {
-        /* display: none; Hide on smaller screens if too cluttered, or make smaller */
         transform: scale(0.8);
     }
     .swiper-pagination {
-        bottom: 5px !important; /* Adjust if needed */
+        bottom: 5px !important;
     }
 }
 
@@ -163,9 +253,9 @@
     .project-card,
     .achievement-card,
     .skill-category-card {
-        margin-left: auto; /* Center cards if swiper has 1 slide per view */
+        margin-left: auto;
         margin-right: auto;
-        max-width: 90%; /* Ensure cards are not too wide */
+        max-width: 90%;
     }
     
     .project-image {
@@ -211,7 +301,6 @@
         font-size: 1.3rem;
     }
 
-    /* Contact Form */
     .contact-form input[type="text"],
     .contact-form input[type="email"],
     .contact-form textarea {
@@ -231,7 +320,7 @@
         font-size: 1.5rem;
     }
     .nav-links {
-        top: 60px; /* Adjust if nav height changes */
+        top: 60px;
     }
 
     .hero-section {
@@ -281,13 +370,25 @@
         gap: 0.3rem;
     }
 
-    /* Ensure swiper navigation buttons are usable */
     .swiper-button-prev, .swiper-button-next {
-        /* display: none; */ /* Consider hiding if space is very limited */
-         --swiper-navigation-size: 24px; /* Make buttons smaller */
+         --swiper-navigation-size: 24px;
     }
     .swiper-pagination-bullet {
         width: 6px;
         height: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content .hero-title,
+    .hero-content .hero-title .name,
+    .hero-content .hero-title .role,
+    .hero-content .hero-title .typed-cursor {
+        font-size: 2.0rem;
+    }
+
+    .about-wrapper__image img.profile-img {
+        width: 150px;
+        height: 150px;
     }
 }

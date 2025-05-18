@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('typed-role')) {
         new Typed('#typed-role', {
             strings: [
-                "Quantitative Researcher",
+                "Quant Researcher", // Changed from "Quantitative Researcher"
                 "Data Analyst",
                 "Data Science Student"
             ],
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Active Nav Link Highlighting
     const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links li a');
+    const navLinksForHighlight = document.querySelectorAll('.nav-links li a'); // Renamed for clarity
 
     function setActiveLink() {
         let scrollY = window.scrollY;
@@ -39,18 +39,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        navLinks.forEach(link => {
+        navLinksForHighlight.forEach(link => { // Use renamed variable
             const linkHref = link.getAttribute('href');
             // Check if it's an internal section link
             if (linkHref && linkHref.startsWith('#')) {
                 if (linkHref === `#${currentSectionId}`) {
-                    link.classList.add('active-link'); // Ensure class is active-link
+                    link.classList.add('active-link');
                 } else {
-                    link.classList.remove('active-link'); // Ensure class is active-link
+                    link.classList.remove('active-link');
                 }
             } else {
                 // For non-section links (like Resume), ensure they are not active
-                link.classList.remove('active-link'); // Ensure class is active-link
+                link.classList.remove('active-link');
             }
         });
     }
@@ -159,6 +159,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 30
                 }
             }
+        });
+    }
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNavLinks = document.querySelector('.nav-links'); // Renamed to avoid conflict
+    const menuIcon = mobileMenuBtn.querySelector('.fa-bars');
+    const closeIcon = mobileMenuBtn.querySelector('.fa-times');
+
+    if (mobileMenuBtn && mobileNavLinks) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNavLinks.classList.toggle('active');
+            const isOpen = mobileNavLinks.classList.contains('active');
+            mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+            if (isOpen) {
+                mobileMenuBtn.setAttribute('aria-label', 'Close menu');
+                if(menuIcon) menuIcon.style.display = 'none';
+                if(closeIcon) closeIcon.style.display = 'block';
+            } else {
+                mobileMenuBtn.setAttribute('aria-label', 'Open menu');
+                if(menuIcon) menuIcon.style.display = 'block';
+                if(closeIcon) closeIcon.style.display = 'none';
+            }
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileNavLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileNavLinks.classList.contains('active')) {
+                    mobileNavLinks.classList.remove('active');
+                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    mobileMenuBtn.setAttribute('aria-label', 'Open menu');
+                    if(menuIcon) menuIcon.style.display = 'block';
+                    if(closeIcon) closeIcon.style.display = 'none';
+                }
+            });
         });
     }
 });

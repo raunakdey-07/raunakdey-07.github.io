@@ -1,24 +1,22 @@
-/* css/main.css */
-
+/* filepath: c:\Users\rauna\raunakdey-07.github.io\css\main.css */
 :root {
-    --primary-bg-color: #121212; /* Dark background */
-    --secondary-bg-color: #1E1E1E; /* Slightly lighter dark for cards/sections */
-    --primary-text-color: #E0E0E0; /* Light grey for text */
-    --secondary-text-color: #B0B0B0; /* Medium grey for less important text */
-    --accent-color: #FF0000; /* Bright Red */
-    --accent-color-hover: #CC0000; /* Darker Red for hover */
-    --border-color: #333333; /* Dark border for elements */
+    --primary-bg-color: #121212;
+    --secondary-bg-color: #1E1E1E;
+    --primary-text-color: #E0E0E0;
+    --secondary-text-color: #B0B0B0;
+    --accent-color: #FF0000;
+    --accent-color-hover: #CC0000;
+    --border-color: #333333;
 
-    --font-primary: 'Poppins', sans-serif; /* Modern and clean */
-    --font-secondary: 'Inter', sans-serif; /* Great for UI elements */
-    --font-code: 'Fira Code', monospace; /* For a techy feel, if used */
+    --font-primary: 'Poppins', sans-serif;
+    --font-secondary: 'Inter', sans-serif;
+    --font-code: 'Fira Code', monospace;
 
-    --section-padding: 5rem 0; /* Adjusted padding */
+    --section-padding: 5rem 0;
     --container-width: 1140px;
     --border-radius: 8px;
 }
 
-/* Base Styles */
 *,
 *::before,
 *::after {
@@ -28,7 +26,7 @@
 }
 
 html {
-    font-size: 100%; /* 16px */
+    font-size: 100%;
     scroll-behavior: smooth;
 }
 
@@ -37,18 +35,18 @@ body {
     background-color: var(--primary-bg-color);
     color: var(--primary-text-color);
     line-height: 1.6;
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    position: relative; /* For canvas background */
+    overflow-x: hidden;
+    position: relative;
 }
 
 #network-bg {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Use viewport width */
-    height: 100vh; /* Use viewport height */
-    z-index: -1; /* Behind all content */
-    opacity: 0.15; /* Adjusted for subtlety */
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.15;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,9 +55,9 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1rem;
 }
 
-h1 { font-size: 2.5rem; } /* 40px */
-h2 { font-size: 2rem; }   /* 32px */
-h3 { font-size: 1.5rem; } /* 24px */
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
 
 p {
     margin-bottom: 1rem;
@@ -86,7 +84,6 @@ ul {
     list-style: none;
 }
 
-/* Utility Classes */
 .container {
     width: 90%;
     max-width: var(--container-width);
@@ -125,32 +122,31 @@ ul {
 }
 
 .mt-3 {
-    margin-top: 1.5rem; /* Adjust as needed */
+    margin-top: 1.5rem;
 }
 
-/* Header & Navigation */
 .header {
-    background-color: rgba(18, 18, 18, 0.8); /* Slightly transparent dark */
+    background-color: rgba(18, 18, 18, 0.8);
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     left: 0;
     z-index: 1000;
-    backdrop-filter: blur(10px); /* Frosted glass effect */
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
 }
 
 .navbar {
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0; /* Reduced padding for a sleeker bar */
+    padding: 0.5rem 0;
 }
 
 .logo {
-    font-family: var(--font-primary); /* Ensure logo uses primary font */
-    font-size: 2rem; /* Slightly larger logo */
+    font-family: var(--font-primary);
+    font-size: 2rem;
     font-weight: 700;
     color: var(--primary-text-color);
 }
@@ -160,31 +156,31 @@ ul {
 
 .nav-links {
     display: flex;
-    align-items: center; 
-    gap: 1.2rem; /* Adjusted gap */
-    margin-left: auto; 
+    align-items: center;
+    gap: 1.2rem;
+    margin-left: auto;
 }
 
 .nav-links li {
-    display: flex; 
+    display: flex;
     align-items: center;
 }
 
 .nav-links li a {
     color: var(--primary-text-color);
-    font-family: var(--font-secondary); /* Using Inter for nav links */
-    font-weight: 500; 
-    padding: 0.5rem 0.25rem; 
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    padding: 0.5rem 0.25rem;
     position: relative;
-    transition: color 0.3s ease, background-color 0.3s ease; /* Added background-color transition */
-    font-size: 0.95rem; 
-    border-radius: 4px; /* Subtle rounding for hover effect */
+    transition: color 0.3s ease, background-color 0.3s ease;
+    font-size: 0.95rem;
+    border-radius: 4px;
 }
 
 .nav-links li a i {
-    margin-right: 0.5rem; /* Increased space between icon and text slightly */
-    font-size: 1.1em; 
-    vertical-align: middle; /* Better icon alignment */
+    margin-right: 0.5rem;
+    font-size: 1.1em;
+    vertical-align: middle;
 }
 
 .nav-links li a::after {
@@ -199,38 +195,34 @@ ul {
 }
 
 .nav-links li a:hover,
-.nav-links li a.active-link { 
+.nav-links li a.active-link {
     color: var(--accent-color);
-    /* background-color: rgba(255, 0, 0, 0.05); Optional: subtle background on hover/active */
 }
 
 .nav-links li a:hover::after,
-.nav-links li a.active-link::after { /* Changed class to active-link */
+.nav-links li a.active-link::after {
     width: 100%;
 }
 
-/* Styling for the Resume link to match other nav links but with accent color */
 .nav-link-resume {
-    color: var(--accent-color) !important; /* Important to override general link color */
-    font-weight: 600 !important; /* Make it stand out a bit */
+    color: var(--accent-color) !important;
+    font-weight: 600 !important;
     padding: 0.5rem 0.25rem !important;
-    border: 1px solid transparent; /* Keep spacing consistent */
+    border: 1px solid transparent;
     border-radius: var(--border-radius);
 }
 
 .nav-link-resume:hover {
     color: var(--accent-color-hover) !important;
-    background-color: rgba(255, 0, 0, 0.1); /* Subtle hover for resume link */
+    background-color: rgba(255, 0, 0, 0.1);
 }
 
 .nav-link-resume i {
     margin-right: 0.4rem;
 }
 
-/* Removed old .cta-btn--nav-resume rule */
-
 .mobile-menu-btn {
-    display: none; /* Hidden on desktop */
+    display: none;
     background: none;
     border: none;
     color: var(--primary-text-color);
@@ -238,15 +230,14 @@ ul {
     cursor: pointer;
 }
 
-/* Hero Section */
 .hero-section {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-top: 80px; /* Account for fixed header */
-    position: relative; /* For canvas */
+    padding-top: 80px;
+    position: relative;
 }
 
 .hero-content {
@@ -254,7 +245,7 @@ ul {
 }
 
 .hero-title {
-    font-size: 3rem; /* Larger for hero */
+    font-size: 3rem;
     margin-bottom: 1rem;
     line-height: 1.3;
 }
@@ -264,16 +255,20 @@ ul {
     font-weight: 700;
 }
 
+.hero-title .typed-cursor {
+    display: inline;
+    font-size: inherit;
+}
+
 .hero-cta {
     margin-top: 2rem;
 }
 
-/* CTA Buttons */
 .cta-btn {
     display: inline-block;
     padding: 0.8rem 2rem;
     background-color: var(--accent-color);
-    color: #fff; /* White text on red button */
+    color: #fff;
     border: 2px solid var(--accent-color);
     border-radius: var(--border-radius);
     font-weight: 600;
@@ -296,11 +291,7 @@ ul {
     padding: 1rem 2.5rem;
 }
 
-/* Removed .cta-btn--nav-resume rule as it's replaced by .nav-link-resume */
-
-/* Removed .cta-btn--resume rule as it's likely unused */
-
-.cta-btn.text-color-main { /* For project source code link */
+.cta-btn.text-color-main {
     background-color: transparent;
     color: var(--accent-color);
     border: 2px solid var(--accent-color);
@@ -308,13 +299,11 @@ ul {
 }
 
 .cta-btn.text-color-main:hover {
-    background-color: rgba(255, 0, 0, 0.1); /* Light red tint on hover */
+    background-color: rgba(255, 0, 0, 0.1);
     color: var(--accent-color-hover);
     transform: translateY(-3px);
 }
 
-
-/* About Section */
 .about-section {
     background-color: var(--secondary-bg-color);
 }
@@ -323,20 +312,20 @@ ul {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 3rem;
-    align-items: center; /* Default alignment */
+    align-items: center;
 }
 
 .about-wrapper__image {
     text-align: center;
-    align-self: start; /* Align image to the top of its grid cell */
-    margin-top: -2rem; /* Adjust this value to move the image up */
+    align-self: start;
+    margin-top: -2rem;
 }
 
 .profile-img {
-    width: 300px; /* Adjust as needed */
+    width: 300px;
     height: 300px;
     object-fit: cover;
-    border-radius: 50%; /* Circular image */
+    border-radius: 50%;
     border: 5px solid var(--accent-color);
     box-shadow: 0 0 25px rgba(255, 0, 0, 0.3);
 }
@@ -347,10 +336,7 @@ ul {
     color: var(--primary-text-color);
 }
 
-/* Projects Section */
-.projects-section {
-    /* background-color: var(--primary-bg-color); Default */
-}
+/* Projects Section - Intentionally empty, styles are handled by Swiper/cards */
 
 .project-grid {
     display: grid;
@@ -369,12 +355,12 @@ ul {
 
 .project-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2); /* Red glow on hover */
+    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2);
 }
 
 .project-wrapper__image img {
     width: 100%;
-    height: 250px; /* Fixed height for consistency */
+    height: 250px;
     object-fit: cover;
     border-bottom: 1px solid var(--border-color);
 }
@@ -398,30 +384,26 @@ ul {
 .project-wrapper__text .cta-btn {
     margin-right: 0.5rem;
     margin-top: 0.5rem;
-    padding: 0.6rem 1.2rem; /* Smaller buttons for cards */
+    padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
 }
 
-/* Styles for project buttons container */
 .project-buttons {
     display: flex;
-    justify-content: flex-start; /* Align buttons to the start */
-    gap: 0.5rem; /* Space between buttons */
-    margin-top: 1rem; /* Space above the buttons container */
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 .project-buttons .cta-btn {
-    margin-top: 0; /* Remove individual top margin if .project-buttons handles it */
-    margin-right: 0; /* Remove individual right margin if gap is used */
+    margin-top: 0;
+    margin-right: 0;
 }
 
-
-/* Achievements Section */
 .achievements-section {
     background-color: var(--secondary-bg-color);
 }
 
-/* Styling for Achievement Card (can be similar to certification or project card) */
 .achievement-card {
     background-color: var(--primary-bg-color);
     padding: 1.5rem;
@@ -429,11 +411,11 @@ ul {
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%; /* Ensure cards in carousel have same height */
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative; /* Added for positioning child elements */
+    position: relative;
 }
 
 .achievement-card:hover {
@@ -463,19 +445,18 @@ ul {
     color: var(--accent-color);
     border: 1px solid var(--accent-color);
     border-radius: var(--border-radius);
-    align-self: flex-start; /* Align button to the start of the card if needed */
+    align-self: flex-start;
 }
 .achievement-card .cta-btn--secondary:hover {
     background-color: rgba(255, 0, 0, 0.1);
     color: var(--accent-color-hover);
 }
 
-/* Styles for the top-right achievement post link icon */
 .achievement-post-link {
     position: absolute;
-    top: 1rem; /* Adjust as needed */
-    right: 1rem; /* Adjust as needed */
-    font-size: 1.2rem; /* Adjust icon size */
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.2rem;
     color: var(--secondary-text-color);
     transition: color 0.3s ease;
 }
@@ -484,229 +465,265 @@ ul {
     color: var(--accent-color);
 }
 
-
-/* ====================
-   Skills Section
-==================== */
 .skills-section {
     padding-top: 80px;
     padding-bottom: 80px;
 }
 
-/* Skill card styling within Swiper */
-.skill-swiper .skill-category-card {
-    background-color: var(--secondary-bg-color); /* Match other cards */
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid var(--border-color);
-    height: 100%; /* Ensure cards in carousel have same height */
-    display: flex; 
-    flex-direction: column; 
-}
-
-.skill-swiper .skill-category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.2); /* Red glow on hover */
-}
-
-.skill-swiper .skill-category-card h4 {
-    font-size: 1.2rem; /* Adjusted for better fit */
-    color: var(--accent-color);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-.skill-swiper .skill-category-card h4 i {
-    margin-right: 0.6rem; /* Slightly reduced margin */
-    font-size: 1rem; 
-    width: 20px; 
-    text-align: center;
-}
-
-.skill-swiper .skills-list {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 0.5rem; 
-    flex-grow: 1; 
-}
-
-.skill-swiper .skills-list li {
-    font-family: var(--font-secondary);
-    font-size: 0.9rem; /* Adjusted for better fit */
-    color: var(--primary-text-color);
-    margin-bottom: 0.5rem; /* Reduced margin */
-    display: flex;
-    align-items: center;
-}
-
-.skill-swiper .skills-list li .skill-icon {
-    margin-right: 0.6rem; /* Slightly reduced margin */
-    color: var(--accent-color); 
-    font-size: 1em; /* Adjusted icon size */
-    width: 18px; /* Fixed width for alignment */
-    text-align: center;
-}
-
-
-/* ====================
-   Contact Section
-==================== */
-.contact-section {
+.skill-category-card {
     background-color: var(--secondary-bg-color);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    height: 100%; /* For consistent height in swiper */
+    display: flex;
+    flex-direction: column;
+}
+
+.skill-category-card h4 {
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.skill-category-card h4 i {
+    margin-right: 0.75rem;
+    font-size: 1.5em; /* Make icon larger relative to text */
+}
+
+.skills-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allow list to take available space */
+}
+
+.skills-list li {
+    font-size: 1rem;
+    color: var(--primary-text-color);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.skills-list li:hover {
+    color: var(--accent-color);
+}
+
+.skills-list li .skill-icon {
+    margin-right: 0.75rem;
+    color: var(--accent-color); /* Icon color */
+    font-size: 1.2em; /* Icon size */
+    width: 20px; /* Ensure consistent icon alignment */
     text-align: center;
+}
+
+/* Swiper Styles - General */
+.swiper {
+    width: 100%;
+    padding-top: 20px; /* Space for title */
+    padding-bottom: 50px; /* Space for pagination */
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: transparent; /* Slides themselves are transparent */
+
+    /* Center slide content vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto; /* Let content define height, or set fixed if needed */
+}
+
+.swiper-slide .project-card,
+.swiper-slide .achievement-card,
+.swiper-slide .skill-category-card {
+    width: 100%; /* Make cards take full width of the slide */
+    max-width: 400px; /* Optional: max width for cards in swiper */
+    margin: 0 auto; /* Center card in slide if max-width is used */
+}
+
+
+/* Swiper Navigation Buttons */
+.swiper-button-prev,
+.swiper-button-next {
+    color: var(--accent-color); /* Red color for arrows */
+    background-color: rgba(30, 30, 30, 0.7); /* Semi-transparent dark background */
+    border-radius: 50%; /* Circular background */
+    width: 44px; /* Fixed width */
+    height: 44px; /* Fixed height */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    background-color: var(--accent-color); /* Red background on hover */
+    color: #fff; /* White arrow on hover */
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 1.2rem; /* Size of the arrow icon */
+    font-weight: bold;
+}
+
+/* Swiper Pagination */
+.swiper-pagination-bullet {
+    background-color: var(--secondary-text-color); /* Default bullet color */
+    opacity: 0.7;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: var(--accent-color); /* Active bullet color (red) */
+    opacity: 1;
+}
+
+/* Specific Swiper Instances - Adjust if needed */
+.project-swiper .swiper-pagination,
+.achievement-swiper .swiper-pagination,
+.skill-swiper .swiper-pagination {
+    bottom: 10px !important; /* Ensure pagination is visible */
+}
+
+.project-swiper .swiper-button-prev, .project-swiper .swiper-button-next,
+.achievement-swiper .swiper-button-prev, .achievement-swiper .swiper-button-next,
+.skill-swiper .swiper-button-prev, .skill-swiper .swiper-button-next {
+    top: 50%; /* Vertically center navigation buttons */
+    transform: translateY(-50%);
+}
+
+
+/* Contact Section */
+.contact-section {
+    background-color: var(--primary-bg-color); /* Or var(--secondary-bg-color) for contrast */
+    text-align: center;
+}
+
+.contact-wrapper {
+    max-width: 700px;
+    margin: 0 auto 2rem auto;
 }
 
 .contact-wrapper__text {
     font-size: 1.2rem;
     margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
     color: var(--primary-text-color);
 }
 
-.contact-section .cta-btn {
-    margin-bottom: 2.5rem;
+.contact-wrapper .cta-btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2.5rem;
 }
 
 .social-links {
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
 
 .social-links a {
-    color: var(--primary-text-color);
-    font-size: 1.8rem; /* Larger icons */
-    margin: 0 0.75rem;
+    color: var(--secondary-text-color);
+    font-size: 2rem; /* Larger icons */
+    margin: 0 1rem;
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .social-links a:hover {
     color: var(--accent-color);
-    transform: scale(1.2);
+    transform: scale(1.2); /* Slight zoom effect on hover */
 }
 
 /* Footer */
 .footer {
-    background-color: var(--primary-bg-color); /* Darkest background */
+    background-color: var(--secondary-bg-color);
     color: var(--secondary-text-color);
-    text-align: center;
     padding: 2rem 0;
+    text-align: center;
     border-top: 1px solid var(--border-color);
-}
-
-.back-to-top {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: #fff;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-    transition: background-color 0.3s ease;
-}
-
-.back-to-top:hover {
-    background-color: var(--accent-color-hover);
-    color: #fff;
-}
-
-.back-to-top i {
-    font-size: 1.2rem;
+    position: relative;
 }
 
 .footer__text {
     font-size: 0.9rem;
-    margin-bottom: 0;
+    margin: 0;
 }
 
-/* Canvas background for network animation - Ensure this is the only definition */
-/* The #network-bg rule is already defined and updated earlier in the file. 
-   If there was a duplicate here, it's implicitly removed by not re-stating it. */
-
-/* Swiper Customizations */
-.swiper-container {
-    width: 100%;
-    padding-top: 20px; /* Space for pagination */
-    padding-bottom: 50px; /* Space for pagination/navigation */
+.footer__text a {
+    color: var(--accent-color);
 }
 
-.swiper-slide {
+.footer__text a:hover {
+    text-decoration: underline;
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--accent-color);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: stretch; /* Make slides stretch to fill height */
-    background-color: transparent; /* Or your desired slide background */
+    font-size: 1.2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999;
 }
 
-/* Ensure cards within slides take full height if needed */
-.project-card, .achievement-card, .skill-category-card {
-    width: 100%; /* Make cards take full width of the slide */
-    /* height: 100%; /* This was added to individual card styles, ensure it works well */
-}
-
-.swiper-pagination {
-    bottom: 10px !important; /* Adjust position if needed */
-}
-
-.swiper-pagination-bullet {
-    background-color: var(--secondary-text-color);
-    opacity: 0.7;
-}
-
-.swiper-pagination-bullet-active {
-    background-color: var(--accent-color);
+.back-to-top.visible {
     opacity: 1;
+    visibility: visible;
 }
 
-.swiper-button-next, .swiper-button-prev {
-    color: var(--accent-color);
-    transition: color 0.3s ease;
-    width: calc(var(--swiper-navigation-size) / 44 * 30); /* Adjust size if needed */
-    height: calc(var(--swiper-navigation-size) / 44 * 30);
-    margin-top: -15px; /* Adjust vertical centering */
+.back-to-top:hover {
+    background-color: var(--accent-color-hover);
 }
 
-.swiper-button-next:hover, .swiper-button-prev:hover {
-    color: var(--accent-color-hover);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
 }
 
-.swiper-button-next::after, .swiper-button-prev::after {
-    font-size: 1.5rem; /* Adjust arrow size */
+::-webkit-scrollbar-track {
+    background: var(--primary-bg-color);
 }
 
-/* Specific Swiper Pagination/Navigation Color Overrides if needed */
-.project-swiper-pagination .swiper-pagination-bullet-active,
-.achievement-swiper-pagination .swiper-pagination-bullet-active,
-.skill-swiper-pagination .swiper-pagination-bullet-active {
-    background-color: var(--accent-color);
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 5px;
 }
 
-.project-swiper-button-prev, .project-swiper-button-next,
-.achievement-swiper-button-prev, .achievement-swiper-button-next,
-.skill-swiper-button-prev, .skill-swiper-button-next {
-    color: var(--accent-color);
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color-hover);
 }
 
-/* Ensure project cards maintain their structure in a slide */
-.project-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Helps if content varies in height */
-    height: 100%; /* Ensure cards in carousel have same height */
+/* Typed.js Cursor - Ensure it matches text color and size */
+.typed-cursor {
+    color: var(--accent-color); /* Or inherit if you want it to match the text it's next to */
+    opacity: 1;
+    animation: typedjsBlink 0.7s infinite;
+    font-weight: bold; /* Make cursor more prominent */
 }
 
-.project-wrapper__text {
-    flex-grow: 1; /* Allows text area to grow and push buttons down */
-    display: flex;
-    flex-direction: column;
+@keyframes typedjsBlink {
+    50% { opacity: 0.0; }
 }
 
-.project-wrapper__text .cta-btn,
-.project-wrapper__text .text-color-main {
-    margin-top: auto; /* Pushes buttons to the bottom of the text wrapper */
+/* Ensure hero section role and cursor are inline on desktop */
+.hero-title .role,
+.hero-title .typed-cursor {
+    display: inline; /* Default for desktop */
 }
