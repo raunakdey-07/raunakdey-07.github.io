@@ -113,6 +113,10 @@
         display: block;
     }
 
+    .skills-section {
+        background-color: transparent;
+    }
+
     .mobile-menu-btn .fa-times { 
         display: none;
     }
