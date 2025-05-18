@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://raunakdey-07.github.io/sitemap.xml

@@ -77,21 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Placeholder for future ScrollReveal initialization
-    // if (typeof ScrollReveal !== 'undefined') {
-    //     ScrollReveal().reveal('.section-title', { delay: 200, origin: 'bottom', distance: '50px' });
-    //     // ... more reveals
-    // }
-
-    // Placeholder for mobile menu toggle
-    // const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    // const nav = document.querySelector('.nav-links');
-    // if (mobileMenuBtn && nav) {
-    //     mobileMenuBtn.addEventListener('click', () => {
-    //         nav.classList.toggle('active'); // Assuming 'active' class shows/hides menu
-    //     });
-    // }
-    
     // Current Year for Footer
     if (document.getElementById('current-year')) {
         document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -170,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 30
                 },
                 1024: {
-                    slidesPerView: 4, // Show more skills per slide if desired
+                    slidesPerView: 4,
                     spaceBetween: 30
                 }
             }
