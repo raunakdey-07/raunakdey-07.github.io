@@ -469,7 +469,7 @@ ul {
 .skills-section {
     padding-top: 80px;
     padding-bottom: 80px;
-    background-color: var(--primary-bg-color); /* Ensure contrast if cards are secondary */
+    background-color: transparent; /* Ensure contrast if cards are secondary */
 }
 
 .skill-category-card {
