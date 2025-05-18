@@ -465,61 +465,75 @@ ul {
     color: var(--accent-color);
 }
 
+/* Skills Section */
 .skills-section {
     padding-top: 80px;
     padding-bottom: 80px;
+    background-color: var(--primary-bg-color); /* Ensure contrast if cards are secondary */
 }
 
 .skill-category-card {
     background-color: var(--secondary-bg-color);
-    padding: 2rem;
+    padding: 1.8rem; /* Increased padding */
     border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    height: 100%; /* For consistent height in swiper */
+    box-shadow: var(--card-shadow);
+    text-align: left;
+    height: 100%; /* Ensure cards in a row have the same height */
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
+    border-top: 4px solid transparent; /* For hover effect */
+}
+
+.skill-category-card:hover {
+    transform: translateY(-5px); /* Lift card on hover */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    border-top-color: var(--accent-color); /* Accent border on hover */
 }
 
 .skill-category-card h4 {
-    font-size: 1.4rem;
-    color: var(--accent-color);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
+    font-size: 1.1rem; /* Adjusted font size for compactness */
+    color: var(--text-color-main);
+    margin-bottom: 1rem; /* Spacing below title */
+    display: flex; /* Align icon and text */
+    align-items: center; /* Vertically center icon and text */
 }
 
 .skill-category-card h4 i {
-    margin-right: 0.75rem;
-    font-size: 1.5em; /* Make icon larger relative to text */
+    margin-right: 0.6rem; /* Space between icon and title text */
+    color: var(--accent-color); /* Icon color */
+    font-size: 1.1rem; /* Adjusted icon size to match text */
 }
 
 .skills-list {
     list-style: none;
-    padding: 0;
-    margin: 0;
+    padding-left: 0;
+    margin-top: 0.5rem; /* Space above the list */
     flex-grow: 1; /* Allow list to take available space */
 }
 
 .skills-list li {
-    font-size: 1rem;
-    color: var(--primary-text-color);
-    margin-bottom: 0.8rem;
-    display: flex;
-    align-items: center;
-    transition: color 0.3s ease;
+    font-size: 0.85rem; /* Adjusted font size for compactness */
+    color: var(--text-color-secondary);
+    margin-bottom: 0.6rem; /* Spacing between list items */
+    display: flex; /* Align icon and text */
+    align-items: center; /* Vertically center icon and text */
+    transition: color 0.3s ease; /* Smooth transition for hover */
 }
 
 .skills-list li:hover {
-    color: var(--accent-color);
+    color: var(--accent-color); /* Change text color on hover */
 }
 
 .skills-list li .skill-icon {
-    margin-right: 0.75rem;
-    color: var(--accent-color); /* Icon color */
-    font-size: 1.2em; /* Icon size */
-    width: 20px; /* Ensure consistent icon alignment */
-    text-align: center;
+    margin-right: 0.7rem; /* Space between icon and skill text */
+    color: var(--icon-color); /* Default icon color, can be overridden by specific classes */
+    font-size: 0.9rem; /* Adjusted icon size */
+    transition: color 0.3s ease; /* Smooth transition for icon color */
+}
+
+.skills-list li:hover .skill-icon {
+    color: var(--accent-color); /* Change icon color on hover to match text */
 }
 
 /* Swiper Styles - General */
