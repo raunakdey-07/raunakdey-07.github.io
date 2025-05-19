@@ -128,10 +128,7 @@
     }
 
     .hero-content .hero-title .role { 
-        display: block; 
-        line-height: 1.2; 
-        margin-left: 0; 
-        margin-top: 0.25em;
+        display: inline;
     }
 
     .hero-content .typed-cursor { 
@@ -142,7 +139,7 @@
     .hero-content h1,
     .hero-content .hero-title .role,
     .hero-content .typed-cursor {
-        font-size: 2.2rem;
+        font-size: 2.25rem;
         line-height: 1.5;
     }
 

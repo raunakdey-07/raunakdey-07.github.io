@@ -726,7 +726,11 @@ ul {
 
 /* Typed.js Cursor - Ensure it matches text color and size */
 .typed-cursor {
-    color: var(--accent-color); /* Or inherit if you want it to match the text it's next to */
+    color: var(--primary-text-color-color); /* Match text color */
+    font-size: 1.2rem; /* Match text size */
+    display: inline-block; /* Ensure it behaves like text */
+    margin-left: 0.1rem; /* Space between text and cursor */
+    vertical-align: middle; /* Align with text */
     opacity: 1;
     animation: typedjsBlink 0.7s infinite;
     font-weight: bold; /* Make cursor more prominent */
