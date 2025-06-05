@@ -39,6 +39,15 @@ body {
     position: relative;
 }
 
+.main-content {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.main-content.loaded {
+    opacity: 1;
+}
+
 #network-bg {
     position: fixed;
     top: 0;
@@ -46,7 +55,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    opacity: 0.15;
+    opacity: 0.25;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -97,20 +106,72 @@ ul {
 
 .section-title {
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 4rem;
     color: var(--primary-text-color);
     position: relative;
+    font-family: var(--font-primary);
+    letter-spacing: -0.025em;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    padding: 2rem 0;    overflow: visible;    background: linear-gradient(135deg, 
+        transparent 0%,
+        rgba(255, 0, 0, 0.03) 50%,
+        transparent 100%);
+    border-radius: 20px;
+    animation: sectionTitleReveal 0.2s ease-out;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 0, 0, 0.2) 20%,
+        rgba(255, 0, 0, 0.6) 50%,
+        rgba(255, 0, 0, 0.2) 80%,
+        transparent 100%);
+    z-index: -1;
+    border-radius: 2px;
+    animation: sectionTitleLineGlow 3s ease-in-out infinite alternate;
 }
 
 .section-title::after {
     content: '';
     display: block;
-    width: 60px;
-    height: 4px;
-    background-color: var(--accent-color);
-    margin: 0.5rem auto 0;
-    border-radius: var(--border-radius);
+    width: 100px;
+    height: 6px;
+    background: linear-gradient(135deg, 
+        var(--accent-color) 0%, 
+        #ff4444 25%,
+        #ff6666 50%,
+        #ff4444 75%,
+        var(--accent-color) 100%);
+    margin: 1.5rem auto 0;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 
+        0 2px 10px rgba(255, 0, 0, 0.4),
+        0 0 20px rgba(255, 0, 0, 0.2);
+    animation: sectionTitleUnderlineGlow 2.5s ease-in-out infinite alternate;
+}
+
+.section-title:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.section-title:hover::after {
+    width: 120px;
+    box-shadow: 
+        0 4px 15px rgba(255, 0, 0, 0.6),
+        0 0 30px rgba(255, 0, 0, 0.4);
+    transition: all 0.3s ease;
 }
 
 .text-accent {
@@ -252,7 +313,15 @@ ul {
 
 .hero-title .role {
     color: var(--accent-color);
-    font-weight: 700;
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.02rem;
+}
+
+.hero-title .text-accent {
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.02rem;
 }
 
 .hero-title .typed-cursor {
@@ -372,7 +441,7 @@ ul {
 .project-wrapper__text-title {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--primary-text-color);
+    color: var(--accent-color);
 }
 
 .project-description {
@@ -390,7 +459,7 @@ ul {
 
 .project-buttons {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 0.5rem;
     margin-top: 1rem;
 }
@@ -445,7 +514,7 @@ ul {
     color: var(--accent-color);
     border: 1px solid var(--accent-color);
     border-radius: var(--border-radius);
-    align-self: flex-start;
+    align-self: center;
 }
 .achievement-card .cta-btn--secondary:hover {
     background-color: rgba(255, 0, 0, 0.1);
@@ -508,14 +577,14 @@ ul {
 .skills-list {
     list-style: none;
     padding-left: 0;
-    margin-top: 0.5rem; /* Space above the list */
+    margin-top: 0.8rem; /* Increased space above the list */
     flex-grow: 1; /* Allow list to take available space */
 }
 
 .skills-list li {
     font-size: 0.85rem; /* Adjusted font size for compactness */
     color: var(--text-color-secondary);
-    margin-bottom: 0.6rem; /* Spacing between list items */
+    margin-bottom: 0.8rem; /* Increased spacing between list items */
     display: flex; /* Align icon and text */
     align-items: center; /* Vertically center icon and text */
     transition: color 0.3s ease; /* Smooth transition for hover */
@@ -526,7 +595,7 @@ ul {
 }
 
 .skills-list li .skill-icon {
-    margin-right: 0.7rem; /* Space between icon and skill text */
+    margin-right: 1rem; /* Increased space between icon and skill text */
     color: var(--icon-color); /* Default icon color, can be overridden by specific classes */
     font-size: 0.9rem; /* Adjusted icon size */
     transition: color 0.3s ease; /* Smooth transition for icon color */
@@ -756,4 +825,44 @@ ul {
 .scroll-reveal-section.active {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Improved Glassmorphism effect for main sections - centered and red tint */
+.glassmorphism {
+  background: linear-gradient(120deg, rgba(40,20,30,0.55) 60%, rgba(255,0,60,0.13) 100%);
+  box-shadow: 0 8px 32px 0 rgba(255, 0, 60, 0.18);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-radius: 22px;
+  border: 1.5px solid rgba(255, 0, 60, 0.18);
+  border-top: 1.5px solid rgba(255, 0, 60, 0.28);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.10);
+  transition: background 0.3s, box-shadow 0.3s;
+  margin: 2.5rem auto;
+  padding: 2.5rem 2rem;
+  max-width: 900px;
+  display: block;
+}
+
+.glassmorphism:hover {
+  background: linear-gradient(120deg, rgba(50,30,40,0.65) 60%, rgba(255,0,60,0.18) 100%);
+  box-shadow: 0 12px 40px 0 rgba(255, 0, 60, 0.22);
+}
+
+.about-section .glassmorphism,
+.achievements-section .glassmorphism,
+.contact-section .glassmorphism {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 600px) {
+  .glassmorphism {
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border-radius: 14px;
+    padding: 1.2rem 0.7rem;
+    margin: 1.2rem auto;
+    max-width: 98vw;
+  }
 }

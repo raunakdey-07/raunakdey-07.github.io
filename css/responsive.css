@@ -1,7 +1,13 @@
 @media (max-width: 992px) {
     .section-title {
-        font-size: 2.5rem;
-        margin-bottom: 2rem;
+        font-size: 2.6rem;
+        margin-bottom: 3rem;
+        padding: 1.5rem 0;
+    }
+    
+    .section-title::after {
+        width: 90px;
+        height: 5px;
     }
 
     .container {
@@ -337,10 +343,15 @@
         width: 80%;
         max-width: 250px;
     }
-
-
     .section-title {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
+        margin-bottom: 2.5rem;
+        padding: 1rem 0;
+    }
+    
+    .section-title::after {
+        width: 80px;
+        height: 4px;
     }
 
     .project-title,

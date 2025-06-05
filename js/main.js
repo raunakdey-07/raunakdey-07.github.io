@@ -1,13 +1,209 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const headerOffset = 70; // Adjusted based on potentially sleeker navbar
+    const headerOffset = 70; // Adjusted based on potentially sleeker navbar    // Loading Screen Animation
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.getElementById('main-content');
+    
+    // Initialize loading network background
+    initLoadingNetworkBackground();
+    
+    function hideLoadingScreen() {
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            mainContent.classList.add('loaded');
+        }, 4500); // Extended to 4.5 seconds for the new animation sequence
+    }
+    
+    hideLoadingScreen();
+      // Loading Network Background Animation
+    function initLoadingNetworkBackground() {
+        const canvas = document.getElementById('loading-network-bg');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 100 }; // Smaller radius for loading screen
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+        const particleColors = ['#ff003c', '#ff4d6d', '#ff809b'];
+        const lineColor = 'rgba(255, 0, 60, 0.2)';
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        class LoadingParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.density = Math.random() * 20 + 1;
+            }
+            
+            update() {
+                // Mouse interaction
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const forceDirectionX = dx / distance;
+                    const forceDirectionY = dy / distance;
+                    const maxDistance = mouse.radius;
+                    const force = (maxDistance - distance) / maxDistance;
+                    const directionX = forceDirectionX * force * this.density * 0.5; // Gentler for loading
+                    const directionY = forceDirectionY * force * this.density * 0.5;
 
-    // Typed.js initialization
+                    if (distance < mouse.radius) {
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    } else {
+                        // Return to base position
+                        if (this.x !== this.baseX) {
+                            const dx = this.x - this.baseX;
+                            this.x -= dx / 15;
+                        }
+                        if (this.y !== this.baseY) {
+                            const dy = this.y - this.baseY;
+                            this.y -= dy / 15;
+                        }
+                    }
+                }
+                
+                this.baseX += this.speedX;
+                this.baseY += this.speedY;
+                
+                if (this.baseX < 0 || this.baseX > canvas.width) this.speedX *= -1;
+                if (this.baseY < 0 || this.baseY > canvas.height) this.speedY *= -1;
+                
+                this.opacity += (Math.random() - 0.5) * 0.02;
+                this.opacity = Math.max(0.1, Math.min(0.7, this.opacity));
+            }
+            
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = particleColors[Math.floor(Math.random() * particleColors.length)];
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        function connectLoadingParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        let opacity = 1 - (distance / 100);
+                        
+                        // Enhance lines near mouse
+                        if (mouse.x !== null && mouse.y !== null) {
+                            const midX = (particles[i].x + particles[j].x) / 2;
+                            const midY = (particles[i].y + particles[j].y) / 2;
+                            const mouseDistance = Math.sqrt((mouse.x - midX) ** 2 + (mouse.y - midY) ** 2);
+                            
+                            if (mouseDistance < mouse.radius) {
+                                opacity *= 1.3;
+                            }
+                        }
+                        
+                        ctx.strokeStyle = lineColor.replace('0.2', (opacity * 0.3).toFixed(2));
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // Mouse connections for loading screen
+            if (mouse.x !== null && mouse.y !== null) {
+                particles.forEach(particle => {
+                    const dx = mouse.x - particle.x;
+                    const dy = mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        const opacity = 1 - (distance / mouse.radius);
+                        ctx.strokeStyle = `rgba(255, 0, 60, ${opacity * 0.3})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(mouse.x, mouse.y);
+                        ctx.lineTo(particle.x, particle.y);
+                        ctx.stroke();
+                    }
+                });
+            }
+        }
+        
+        function initLoadingParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                particles.push(new LoadingParticle(x, y));
+            }
+        }
+        
+        function animateLoadingBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            connectLoadingParticles();
+            
+            if (!loadingScreen.classList.contains('hidden')) {
+                requestAnimationFrame(animateLoadingBackground);
+            }
+        }
+        
+        // Mouse events for loading screen
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = event.clientX - rect.left;
+            mouse.y = event.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        canvas.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = event.touches[0];
+            mouse.x = touch.clientX - rect.left;
+            mouse.y = touch.clientY - rect.top;
+        });
+
+        canvas.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+        
+        initLoadingParticles();
+        animateLoadingBackground();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initLoadingParticles();
+        });
+    }// Typed.js initialization
     if (document.getElementById('typed-role')) {
         new Typed('#typed-role', {
             strings: [
-                "Quant Researcher", // Changed from "Quantitative Researcher"
-                "Data Analyst",
-                "Data Science Student"
+                "Web Developer.",
+                "Quant Researcher.",
+                "Data Science Student."
             ],
             typeSpeed: 70, // Speed of typing in milliseconds
             backSpeed: 50, // Speed of deleting in milliseconds
@@ -80,22 +276,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Current Year for Footer
     if (document.getElementById('current-year')) {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-    }
-
-    // Swiper Initializations
+    }    // Swiper Initializations
     if (typeof Swiper !== 'undefined') {
         const projectSwiper = new Swiper('.project-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
             grabCursor: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+            },
             pagination: {
                 el: '.project-swiper-pagination',
                 clickable: true,
-            },
-            navigation: {
-                nextEl: '.project-swiper-button-next',
-                prevEl: '.project-swiper-button-prev',
             },
             breakpoints: {
                 // when window width is >= 768px
@@ -109,20 +304,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 40
                 }
             }
-        });
-
-        const achievementSwiper = new Swiper('.achievement-swiper', {
+        });        const achievementSwiper = new Swiper('.achievement-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
             grabCursor: true,
+            autoplay: {
+                delay: 4500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+            },
             pagination: {
                 el: '.achievement-swiper-pagination',
                 clickable: true,
-            },
-            navigation: {
-                nextEl: '.achievement-swiper-button-next',
-                prevEl: '.achievement-swiper-button-prev',
             },
             breakpoints: {
                 768: {
@@ -134,20 +328,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 40
                 }
             }
-        });
-
-        const skillSwiper = new Swiper('.skill-swiper', {
+        });        const skillSwiper = new Swiper('.skill-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
             grabCursor: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true
+            },
             pagination: {
                 el: '.skill-swiper-pagination',
                 clickable: true,
-            },
-            navigation: {
-                nextEl: '.skill-swiper-button-next',
-                prevEl: '.skill-swiper-button-prev',
             },
             breakpoints: {
                 768: {
@@ -199,7 +392,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Scroll Reveal Animations
-    const sr = ScrollReveal();
+    const sr = ScrollReveal();    // Enhanced Section Title Animations
+    const sectionTitles = document.querySelectorAll('.section-title');
+    sectionTitles.forEach((title) => {
+        sr.reveal(title, {
+            delay: 0,
+            distance: '40px',
+            duration: 125,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            origin: 'bottom',
+            reset: true,
+            scale: 0.95,
+            viewFactor: 0.1,
+            viewOffset: { top: 100, right: 0, bottom: 0, left: 0 },            beforeReveal: (el) => {
+                el.style.animation = 'none'; // Reset the CSS animation
+                el.style.transform = 'translateY(40px) scale(0.95)';
+                el.style.opacity = '0';
+                el.style.filter = 'blur(6px)';
+            },
+            afterReveal: (el) => {
+                el.style.animation = 'sectionTitleReveal 0.2s ease-out forwards';
+                el.style.transform = '';
+                el.style.opacity = '';
+                el.style.filter = '';
+            }
+        });
+    });
 
     const revealSections = document.querySelectorAll('.section');
     revealSections.forEach((section) => {
