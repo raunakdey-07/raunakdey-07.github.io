@@ -197,4 +197,26 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Scroll Reveal Animations
+    const sr = ScrollReveal();
+
+    const revealSections = document.querySelectorAll('.section');
+    revealSections.forEach((section) => {
+        section.classList.add('scroll-reveal-section'); // Add class for CSS targeting
+        sr.reveal(section, {
+            delay: 200,
+            distance: '50px',
+            duration: 800,
+            easing: 'ease-in-out',
+            origin: 'bottom',
+            reset: true, // Add this line to make animations re-trigger
+            afterReveal: (el) => {
+                el.classList.add('active'); // Add active class for CSS transition
+            },
+            beforeReset: (el) => { // Optional: Remove active class before reset if needed
+                el.classList.remove('active');
+            }
+        });
+    });
 });
