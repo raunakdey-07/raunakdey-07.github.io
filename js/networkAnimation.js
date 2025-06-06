@@ -55,7 +55,7 @@ class Particle {
     }
 
     update() {
-        animationTime += 0.01;
+        animationTime += 0.003; // Slowed down from 0.01 for less distracting movement
         
         // Update mouse velocity for fluid interactions
         if (mouse.x !== null && mouse.y !== null) {
@@ -88,7 +88,7 @@ class Particle {
                 // Orbital motion for close particles
                 if (distance < maxDistance * 0.3) {
                     this.isOrbiting = true;
-                    const orbitalAngle = Math.atan2(dy, dx) + this.angleSpeed * 5;
+                    const orbitalAngle = Math.atan2(dy, dx) + this.angleSpeed * 1.5; // Slower orbit
                     this.x = mouse.x + Math.cos(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
                     this.y = mouse.y + Math.sin(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
                 } else {
@@ -100,16 +100,13 @@ class Particle {
                     const force = (maxDistance - distance) / maxDistance;
                     
                     // Wave-like distortion
-                    const wave = Math.sin(animationTime + distance * 0.01) * 0.5;
+                    const wave = Math.sin(animationTime + distance * 0.01) * 0.18; // Reduced wave amplitude
                     const perpX = -forceDirectionY * wave * force;
                     const perpY = forceDirectionX * wave * force;
-                    
-                    this.magneticForce.x = forceDirectionX * force * this.density * interactionStrength + perpX;
-                    this.magneticForce.y = forceDirectionY * force * this.density * interactionStrength + perpY;
-                    
-                    // Apply magnetic force with smooth interpolation
-                    this.x += this.magneticForce.x * 0.3;
-                    this.y += this.magneticForce.y * 0.3;
+                    this.magneticForce.x = forceDirectionX * force * this.density * interactionStrength * 0.5 + perpX; // Reduce force
+                    this.magneticForce.y = forceDirectionY * force * this.density * interactionStrength * 0.5 + perpY;
+                    this.x += this.magneticForce.x * 0.15; // Slower interpolation
+                    this.y += this.magneticForce.y * 0.15;
                 }
                 
                 // Dynamic size and opacity based on proximity
@@ -125,9 +122,8 @@ class Particle {
                 this.magneticForce.y *= 0.95;
                 
                 // Smooth return to base position with sine wave motion
-                const returnForceX = (this.baseX - this.x) * 0.02;
-                const returnForceY = (this.baseY - this.y) * 0.02;
-                
+                const returnForceX = (this.baseX - this.x) * 0.012;
+                const returnForceY = (this.baseY - this.y) * 0.012;
                 this.x += returnForceX;
                 this.y += returnForceY;
                 
@@ -143,15 +139,15 @@ class Particle {
             this.magneticForce.y *= 0.9;
             
             // Organic sine wave movement
-            const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.5;
-            const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.5;
+            const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22;
+            const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22;
             
-            this.baseX += this.speedX + sineX;
-            this.baseY += this.speedY + sineY;
+            this.baseX += (this.speedX + sineX) * 0.25; // Slower base drift
+            this.baseY += (this.speedY + sineY) * 0.25;
             
             // Smooth return to base position
-            this.x += (this.baseX - this.x) * 0.02;
-            this.y += (this.baseY - this.y) * 0.02;
+            this.x += (this.baseX - this.x) * 0.01; // Slower return
+            this.y += (this.baseY - this.y) * 0.01;
             
             this.size += (this.baseSize - this.size) * 0.05;
             this.opacity += (this.baseOpacity - this.opacity) * 0.05;
@@ -169,7 +165,7 @@ class Particle {
         }
 
         // Pulsing effect
-        this.pulsePhase += 0.02;
+        this.pulsePhase += 0.008; // Slower pulse
         const pulse = Math.sin(this.pulsePhase) * 0.2 + 1;
         this.angle += this.angleSpeed;
     }
@@ -411,14 +407,14 @@ canvas.addEventListener('mousemove', (event) => {
     if (mouse.trail.length > 10) {
         mouse.trail.pop();
     }
-});
+}, { passive: true }); // Use passive event listener for better scroll performance
 
 canvas.addEventListener('mouseleave', () => {
     mouse.x = null;
     mouse.y = null;
     mouse.velocity = { x: 0, y: 0 };
     mouse.trail = [];
-});
+}, { passive: true });
 
 // Enhanced touch event listeners for mobile
 canvas.addEventListener('touchmove', (event) => {
@@ -440,14 +436,14 @@ canvas.addEventListener('touchmove', (event) => {
     if (mouse.trail.length > 10) {
         mouse.trail.pop();
     }
-});
+}, { passive: false }); // preventDefault requires passive: false
 
 canvas.addEventListener('touchend', () => {
     mouse.x = null;
     mouse.y = null;
     mouse.velocity = { x: 0, y: 0 };
     mouse.trail = [];
-});
+}, { passive: true });
 
 function animate() {
     // Clear canvas with subtle fade effect for trails
@@ -464,7 +460,7 @@ function animate() {
     connectParticles();
     
     // Increment animation time
-    animationTime += 0.016; // ~60fps timing
+    animationTime += 0.006; // Slower global animation time
     
     requestAnimationFrame(animate);
 }
