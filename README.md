@@ -5,6 +5,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 ## Live Demo
 
 **[View Portfolio →](https://raunakdey-07.github.io/)**
+**[Vercel Deployment →](https://raunak-dey.vercel.app/)**
 
 ## Features
 
@@ -166,7 +167,6 @@ This project is open source and available under the [MIT License](LICENSE).
 - **LinkedIn**: [Raunak Dey](https://www.linkedin.com/in/raunak-dey-3b413a256/)
 - **GitHub**: [raunakdey-07](https://github.com/raunakdey-07)
 - **Twitter**: [@the_stoic_coder](https://x.com/the_stoic_coder)
-- **Email**: Via [portfolio contact form](https://raunakdey-07.github.io/#contact)
 
 ---
 
