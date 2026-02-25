@@ -250,10 +250,14 @@
         font-size: 2rem;
     }
     .hero-content .role {
-        font-size: 1.1rem;
+        font-size: 1.45rem;
+    }
+    .about-wrapper__info-text {
+        font-size: 1rem;
+        line-height: 1.8;
     }
     .cta-btn {
-        font-size: 0.9rem;
+        font-size: 0.98rem;
         padding: 0.7rem 1.5rem;
     }
 
@@ -272,7 +276,8 @@
         font-size: 1.2rem;
     }
     .project-description {
-        font-size: 0.85rem;
+        font-size: 0.96rem;
+        line-height: 1.7;
     }
     .project-links .btn, .achievement-link {
         padding: 0.5rem 0.8rem;
@@ -282,12 +287,17 @@
     .achievement-title {
         font-size: 1.2rem;
     }
-    .achievement-description, .achievement-issuer, .achievement-date {
-        font-size: 0.85rem;
+    .achievement-description, .achievement-issuer, .achievement-date, .achievement-detail {
+        font-size: 0.96rem;
+        line-height: 1.65;
     }
 
     .skill-category-card h4 {
-        font-size: 1.1rem;
+        font-size: 1.15rem;
+    }
+    .skills-list li {
+        font-size: 0.96rem;
+        line-height: 1.5;
     }
     .skill-item {
         font-size: 0.8rem;
@@ -334,10 +344,10 @@
         padding: 3rem 0;
     }
     .hero-content h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
     .hero-content .role {
-        font-size: 1rem;
+        font-size: 1.3rem;
     }
     .hero-content .cta-btn {
         width: 80%;
@@ -359,7 +369,8 @@
         font-size: 1.1rem;
     }
     .project-description, .achievement-description {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
+        line-height: 1.65;
     }
     .project-tags span {
         font-size: 0.7rem;
@@ -370,8 +381,11 @@
         padding: 1rem;
     }
     .skill-category-card h4 {
-        font-size: 1rem;
+        font-size: 1.05rem;
         margin-bottom: 0.5rem;
+    }
+    .skills-list li {
+        font-size: 0.9rem;
     }
     .skill-item {
         font-size: 0.75rem;
