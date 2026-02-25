@@ -3,9 +3,9 @@
     --primary-bg-color: #121212;
     --secondary-bg-color: #1E1E1E;
     --primary-text-color: #E0E0E0;
-    --secondary-text-color: #B0B0B0;
-    --accent-color: #FF0000;
-    --accent-color-hover: #CC0000;
+        --secondary-text-color: #C7C7C7;
+    --accent-color: #D60000;
+    --accent-color-hover: #B30000;
     --border-color: #333333;
 
     --font-primary: 'Poppins', sans-serif;
@@ -535,7 +535,7 @@ ul {
     top: 1rem;
     right: 1rem;
     font-size: 1.2rem;
-    color: var(--secondary-text-color);
+        color: var(--primary-text-color);
     transition: color 0.3s ease;
 }
 
@@ -569,6 +569,7 @@ ul {
     border-top-color: var(--accent-color); /* Accent border on hover */
 }
 
+.skill-category-card h3,
 .skill-category-card h4 {
     font-size: 1.1rem; /* Adjusted font size for compactness */
     color: var(--text-color-main);
@@ -577,6 +578,7 @@ ul {
     align-items: center; /* Vertically center icon and text */
 }
 
+.skill-category-card h3 i,
 .skill-category-card h4 i {
     margin-right: 0.6rem; /* Space between icon and title text */
     color: var(--accent-color); /* Icon color */

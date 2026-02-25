@@ -292,6 +292,7 @@
         line-height: 1.65;
     }
 
+    .skill-category-card h3,
     .skill-category-card h4 {
         font-size: 1.15rem;
     }
@@ -380,6 +381,7 @@
     .skill-category-card {
         padding: 1rem;
     }
+    .skill-category-card h3,
     .skill-category-card h4 {
         font-size: 1.05rem;
         margin-bottom: 0.5rem;
