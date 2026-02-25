@@ -877,3 +877,429 @@ ul {
     max-width: 98vw;
   }
 }
+
+/* BEGIN appended responsive.css */
+@media (max-width: 992px) {
+    .section-title {
+        font-size: 2.6rem;
+        margin-bottom: 3rem;
+        padding: 1.5rem 0;
+    }
+    
+    .section-title::after {
+        width: 90px;
+        height: 5px;
+    }
+
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .nav {
+        padding: 1rem 20px;
+        justify-content: space-between;
+    }
+    
+    .nav-brand {
+        font-size: 1.8rem;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        background-color: #111;
+        border-top: 1px solid var(--primary-color);
+        z-index: 1000;
+        padding-bottom: 1rem;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        text-align: center;
+        margin: 0;
+        width: 100%;
+    }
+
+    .nav-links li a {
+        padding: 0.8rem 1rem;
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid #222;
+        font-size: 1rem;
+        color: var(--text-color-light);
+    }
+    .nav-links li:last-child a {
+        border-bottom: none;
+    }
+    
+    .nav-links li a.btn--resume {
+        margin: 0.5rem auto;
+        display: inline-block;
+        width: auto;
+        padding: 0.6rem 1.2rem;
+        background-color: var(--primary-color);
+        color: #fff;
+        border-radius: 5px;
+    }
+    .nav-links li a.btn--resume:hover {
+        background-color: var(--primary-color-dark);
+    }
+
+
+    .nav-links li a:hover,
+    .nav-links li a.active-link {
+        background-color: var(--primary-color-transparent);
+        color: var(--primary-color);
+    }
+    
+    .mobile-menu-btn {
+        display: none;
+        color: var(--text-color-light);
+        font-size: 1.8rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        z-index: 1001; 
+    }
+
+    .navbar .nav-links {
+        display: flex;
+    }
+    .navbar .mobile-menu-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        background-color: #111; 
+        border-top: 1px solid var(--primary-color); 
+        z-index: 1000; 
+        padding-bottom: 1rem;
+    }
+
+    .navbar .nav-links.active {
+        display: flex;
+    }
+    
+    .navbar .mobile-menu-btn {
+        display: block;
+    }
+
+    .skills-section {
+        background-color: transparent;
+    }
+
+    .mobile-menu-btn .fa-times { 
+        display: none;
+    }
+    .mobile-menu-btn.active .fa-bars {
+        display: none;
+    }
+    .mobile-menu-btn.active .fa-times {
+        display: block;
+    }
+
+    .hero-content .hero-title .role { 
+        display: inline;
+    }
+
+    .hero-content .typed-cursor { 
+        display: inline-block; 
+        vertical-align: baseline; 
+    }
+
+    .hero-content h1,
+    .hero-content .hero-title .role,
+    .hero-content .typed-cursor {
+        font-size: 2.25rem;
+        line-height: 1.5;
+    }
+
+    .about-wrapper {
+        display: flex;
+        flex-direction: column; 
+        align-items: center; 
+    }
+
+    .about-wrapper__image {
+        order: -1;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        max-width: 250px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .about-wrapper__image img {
+        width: 100%;
+        height: auto;
+    }
+    .about-wrapper__image img.profile-img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .about-wrapper__info {
+        text-align: center;
+    }
+    .about-wrapper__info-text {
+        text-align: justify;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 500px;
+    }
+
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content .role {
+        font-size: 2.5rem;
+        display: block; 
+        margin-top: 0.25em; 
+    }
+    
+    .hero-content .typed-cursor {
+        font-size: 2.5rem;
+        display: inline-block;
+        vertical-align: baseline;
+    }
+
+    .hero-content .cta-btn {
+        font-size: 1rem;
+        padding: 0.8rem 1.8rem;
+    }
+
+    .profile-pic-container {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .profile-pic-container img {
+        max-width: 200px;
+    }
+
+
+    .about-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-text,
+    .about-image {
+        flex-basis: 100%;
+        text-align: center;
+        max-width: 500px;
+    }
+    .about-text p {
+        text-align: justify;
+    }
+
+    .about-image img {
+        max-width: 250px;
+        margin-top: 2rem;
+    }
+
+    .swiper-button-prev, .swiper-button-next {
+        transform: scale(0.8);
+    }
+    .swiper-pagination {
+        bottom: 5px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-content .role {
+        font-size: 1.45rem;
+    }
+    .about-wrapper__info-text {
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+    .cta-btn {
+        font-size: 0.98rem;
+        padding: 0.7rem 1.5rem;
+    }
+
+    .project-card,
+    .achievement-card,
+    .skill-category-card {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 90%;
+    }
+    
+    .project-image {
+        max-height: 180px;
+    }
+    .project-title {
+        font-size: 1.2rem;
+    }
+    .project-description {
+        font-size: 0.96rem;
+        line-height: 1.7;
+    }
+    .project-links .btn, .achievement-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .achievement-title {
+        font-size: 1.2rem;
+    }
+    .achievement-description, .achievement-issuer, .achievement-date, .achievement-detail {
+        font-size: 0.96rem;
+        line-height: 1.65;
+    }
+
+    .skill-category-card h3,
+    .skill-category-card h4 {
+        font-size: 1.15rem;
+    }
+    .skills-list li {
+        font-size: 0.96rem;
+        line-height: 1.5;
+    }
+    .skill-item {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .footer-content p {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-social-links a {
+        margin: 0 0.5rem;
+        font-size: 1.3rem;
+    }
+
+    .contact-form input[type="text"],
+    .contact-form input[type="email"],
+    .contact-form textarea {
+        font-size: 0.9rem;
+    }
+    .contact-form .btn {
+        width: 100%;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-brand {
+        font-size: 1.5rem;
+    }
+    .mobile-menu-toggle {
+        font-size: 1.5rem;
+    }
+    .nav-links {
+        top: 60px;
+    }
+
+    .hero-section {
+        padding: 3rem 0;
+    }
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-content .role {
+        font-size: 1.3rem;
+    }
+    .hero-content .cta-btn {
+        width: 80%;
+        max-width: 250px;
+    }
+    .section-title {
+        font-size: 2.2rem;
+        margin-bottom: 2.5rem;
+        padding: 1rem 0;
+    }
+    
+    .section-title::after {
+        width: 80px;
+        height: 4px;
+    }
+
+    .project-title,
+    .achievement-title {
+        font-size: 1.1rem;
+    }
+    .project-description, .achievement-description {
+        font-size: 0.9rem;
+        line-height: 1.65;
+    }
+    .project-tags span {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .skill-category-card {
+        padding: 1rem;
+    }
+    .skill-category-card h3,
+    .skill-category-card h4 {
+        font-size: 1.05rem;
+        margin-bottom: 0.5rem;
+    }
+    .skills-list li {
+        font-size: 0.9rem;
+    }
+    .skill-item {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        margin: 0.2rem;
+    }
+    .skills-list {
+        gap: 0.3rem;
+    }
+
+    .swiper-button-prev, .swiper-button-next {
+         --swiper-navigation-size: 24px;
+    }
+    .swiper-pagination-bullet {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content .hero-title,
+    .hero-content .hero-title .name,
+    .hero-content .hero-title .role,
+    .hero-content .hero-title .typed-cursor {
+        font-size: 2.0rem;
+    }
+
+    .about-wrapper__image img.profile-img {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+/* END appended responsive.css */

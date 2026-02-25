@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        let canvasRect = canvas.getBoundingClientRect();
         
         class LoadingParticle {
             constructor(x, y) {
@@ -185,9 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mouse events for loading screen
         canvas.addEventListener('mousemove', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            mouse.x = event.clientX - rect.left;
-            mouse.y = event.clientY - rect.top;
+            mouse.x = event.clientX - canvasRect.left;
+            mouse.y = event.clientY - canvasRect.top;
         });
 
         canvas.addEventListener('mouseleave', () => {
@@ -197,10 +197,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         canvas.addEventListener('touchmove', (event) => {
             event.preventDefault();
-            const rect = canvas.getBoundingClientRect();
             const touch = event.touches[0];
-            mouse.x = touch.clientX - rect.left;
-            mouse.y = touch.clientY - rect.top;
+            mouse.x = touch.clientX - canvasRect.left;
+            mouse.y = touch.clientY - canvasRect.top;
         });
 
         canvas.addEventListener('touchend', () => {
@@ -214,8 +213,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            canvasRect = canvas.getBoundingClientRect();
             initLoadingParticles();
         });
+
+        window.addEventListener('scroll', () => {
+            canvasRect = canvas.getBoundingClientRect();
+        }, { passive: true });
     }// Typed.js initialization
     if (document.getElementById('typed-role')) {
         if (prefersReducedMotion) {
@@ -242,17 +246,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Active Nav Link Highlighting
     const sections = document.querySelectorAll('section[id]');
     const navLinksForHighlight = document.querySelectorAll('.nav-links li a'); // Renamed for clarity
+    let sectionPositions = [];
+
+    function cacheSectionPositions() {
+        sectionPositions = Array.from(sections)
+            .map((section) => ({ id: section.id, top: section.offsetTop }))
+            .sort((a, b) => a.top - b.top);
+    }
 
     function setActiveLink() {
         let scrollY = window.scrollY;
         let currentSectionId = '';
 
-        // Determine which section is currently in view
-        // Iterate from bottom to top, the first section found whose top is above scrollY + offset is the one.
-        for (let i = sections.length - 1; i >= 0; i--) {
-            const section = sections[i];
-            const sectionTop = section.offsetTop;
-            if (scrollY + headerOffset >= sectionTop) {
+        for (let i = sectionPositions.length - 1; i >= 0; i--) {
+            const section = sectionPositions[i];
+            if (scrollY + headerOffset >= section.top) {
                 currentSectionId = section.id;
                 break; 
             }
@@ -274,6 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    cacheSectionPositions();
     setActiveLink();
     let activeLinkTicking = false;
     window.addEventListener('scroll', () => {
@@ -285,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, { passive: true });
 
+    window.addEventListener('resize', cacheSectionPositions, { passive: true });
+    window.addEventListener('load', cacheSectionPositions);
+
     // Smooth scroll for navigation links
     document.querySelectorAll('.nav-links a[href^="#"], a.cta-btn--hero[href^="#"], .back-to-top[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -292,7 +304,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetId = this.getAttribute('href');
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
-                let scrollToPosition = targetElement.offsetTop - (headerOffset - 10); // Adjust scroll position to be just below header
+                const targetTop = targetElement.getBoundingClientRect().top + window.scrollY;
+                let scrollToPosition = targetTop - (headerOffset - 10);
                 if (targetId === '#top') { // Special case for back-to-top
                     scrollToPosition = 0;
                 }

@@ -28,6 +28,7 @@ const lineColor = 'rgba(255, 0, 60, 0.4)';
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+let canvasRect = canvas.getBoundingClientRect();
 
 // Animation timing
 let animationTime = 0;
@@ -398,9 +399,8 @@ function init() {
 
 // Enhanced mouse event listeners with velocity tracking
 canvas.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const newX = event.clientX - rect.left;
-    const newY = event.clientY - rect.top;
+    const newX = event.clientX - canvasRect.left;
+    const newY = event.clientY - canvasRect.top;
     
     // Track mouse velocity for fluid interactions
     if (mouse.x !== null && mouse.y !== null) {
@@ -428,10 +428,9 @@ canvas.addEventListener('mouseleave', () => {
 // Enhanced touch event listeners for mobile
 canvas.addEventListener('touchmove', (event) => {
     event.preventDefault();
-    const rect = canvas.getBoundingClientRect();
     const touch = event.touches[0];
-    const newX = touch.clientX - rect.left;
-    const newY = touch.clientY - rect.top;
+    const newX = touch.clientX - canvasRect.left;
+    const newY = touch.clientY - canvasRect.top;
     
     if (mouse.x !== null && mouse.y !== null) {
         mouse.velocity.x = newX - mouse.x;
@@ -482,7 +481,12 @@ function animate(timestamp = 0) {
 
 window.addEventListener('resize', () => {
     init(); // Re-initialize on resize to adjust canvas and particle count
+    canvasRect = canvas.getBoundingClientRect();
 });
+
+window.addEventListener('scroll', () => {
+    canvasRect = canvas.getBoundingClientRect();
+}, { passive: true });
 
 // Ensure canvas is present before starting
 if (canvas) {
