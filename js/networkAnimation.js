@@ -1,5 +1,8 @@
 const canvas = document.getElementById('network-bg');
 const ctx = canvas.getContext('2d');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+    || (navigator.deviceMemory && navigator.deviceMemory <= 4);
 
 let particles = [];
 let mouse = { 
@@ -12,8 +15,10 @@ let mouse = {
     trail: []
 }; 
 
-// Enhanced particle count for richer visuals
-const particleCount = window.innerWidth < 768 ? 60 : 120; 
+// Adaptive particle count for balanced visuals and runtime cost
+const particleCount = isLowPowerDevice
+    ? (window.innerWidth < 768 ? 28 : 48)
+    : (window.innerWidth < 768 ? 44 : 90);
 // Expanded color palette for artistic effects
 const particleColors = [
     '#ff003c', '#ff4d6d', '#ff809b', '#ff1a47', '#ff6680',
@@ -26,6 +31,8 @@ canvas.height = window.innerHeight;
 
 // Animation timing
 let animationTime = 0;
+let lastFrameTime = 0;
+const frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20);
 
 class Particle {
     constructor(x, y) {
@@ -378,7 +385,9 @@ function init() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     particles = [];
-    const currentParticleCount = window.innerWidth < 768 ? 60 : 120;
+    const currentParticleCount = isLowPowerDevice
+        ? (window.innerWidth < 768 ? 28 : 48)
+        : (window.innerWidth < 768 ? 44 : 90);
     
     for (let i = 0; i < currentParticleCount; i++) {
         const x = Math.random() * canvas.width;
@@ -445,7 +454,13 @@ canvas.addEventListener('touchend', () => {
     mouse.trail = [];
 }, { passive: true });
 
-function animate() {
+function animate(timestamp = 0) {
+    if (timestamp - lastFrameTime < frameInterval) {
+        requestAnimationFrame(animate);
+        return;
+    }
+    lastFrameTime = timestamp;
+
     // Clear canvas with subtle fade effect for trails
     ctx.fillStyle = 'rgba(18, 18, 18, 0.1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -472,7 +487,16 @@ window.addEventListener('resize', () => {
 // Ensure canvas is present before starting
 if (canvas) {
     init();
-    animate();
+    if (prefersReducedMotion) {
+        ctx.fillStyle = 'rgba(18, 18, 18, 1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((particle) => {
+            particle.draw();
+        });
+        connectParticles();
+    } else {
+        animate();
+    }
 } else {
     console.error('Network animation canvas not found');
 }

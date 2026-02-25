@@ -2,9 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerOffset = 70; // Adjusted based on potentially sleeker navbar    // Loading Screen Animation
     const loadingScreen = document.getElementById('loading-screen');
     const mainContent = document.getElementById('main-content');
-    
-    // Initialize loading network background
-    initLoadingNetworkBackground();
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasSeenIntro = sessionStorage.getItem('rd-intro-seen') === '1';
     
     function hideLoadingScreen() {
         setTimeout(() => {
@@ -12,8 +11,24 @@ document.addEventListener('DOMContentLoaded', function() {
             mainContent.classList.add('loaded');
         }, 1200);
     }
-    
-    hideLoadingScreen();
+
+    function skipLoadingScreen() {
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+        }
+        if (mainContent) {
+            mainContent.classList.add('loaded');
+        }
+    }
+
+    if (prefersReducedMotion || hasSeenIntro) {
+        skipLoadingScreen();
+    } else {
+        initLoadingNetworkBackground();
+        hideLoadingScreen();
+        sessionStorage.setItem('rd-intro-seen', '1');
+    }
+
       // Loading Network Background Animation
     function initLoadingNetworkBackground() {
         const canvas = document.getElementById('loading-network-bg');
@@ -22,7 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = canvas.getContext('2d');
         let particles = [];
         let mouse = { x: null, y: null, radius: 100 }; // Smaller radius for loading screen
-        const particleCount = window.innerWidth < 768 ? 30 : 50;
+        const lowPowerMode = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+            || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+        const particleCount = lowPowerMode
+            ? (window.innerWidth < 768 ? 16 : 24)
+            : (window.innerWidth < 768 ? 26 : 40);
         const particleColors = ['#ff003c', '#ff4d6d', '#ff809b'];
         const lineColor = 'rgba(255, 0, 60, 0.2)';
         
@@ -199,6 +218,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }// Typed.js initialization
     if (document.getElementById('typed-role')) {
+        if (prefersReducedMotion) {
+            document.getElementById('typed-role').textContent = 'Data Science Student.';
+        } else {
         new Typed('#typed-role', {
             strings: [
                 "Web Developer.",
@@ -214,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cursorChar: '|',
             smartBackspace: true // Only backspace what doesn't match the next string
         });
+        }
     }
 
     // Active Nav Link Highlighting
@@ -400,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Scroll Reveal Animations
-    if (typeof ScrollReveal !== 'undefined') {
+    if (!prefersReducedMotion && typeof ScrollReveal !== 'undefined') {
         const sr = ScrollReveal();
         const sectionTitles = document.querySelectorAll('.section-title');
         sectionTitles.forEach((title) => {

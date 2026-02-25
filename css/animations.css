@@ -451,3 +451,25 @@
         margin-right: 0.18rem;
     }
 }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .loading-screen {
+        display: none !important;
+    }
+
+    .loading-content,
+    .loading-logo,
+    .loading-name-container,
+    .loading-subtitle,
+    .section-title,
+    .section-title::before,
+    .section-title::after {
+        animation: none !important;
+    }
+}
