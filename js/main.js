@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             mainContent.classList.add('loaded');
-        }, 4500); // Extended to 4.5 seconds for the new animation sequence
+        }, 1200);
     }
     
     hideLoadingScreen();
@@ -251,8 +251,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    setActiveLink(); // Set active link on initial load
-    window.addEventListener('scroll', setActiveLink); // Update on scroll
+    setActiveLink();
+    let activeLinkTicking = false;
+    window.addEventListener('scroll', () => {
+        if (activeLinkTicking) return;
+        activeLinkTicking = true;
+        requestAnimationFrame(() => {
+            setActiveLink();
+            activeLinkTicking = false;
+        });
+    }, { passive: true });
 
     // Smooth scroll for navigation links
     document.querySelectorAll('.nav-links a[href^="#"], a.cta-btn--hero[href^="#"], .back-to-top[href^="#"]').forEach(anchor => {
@@ -392,49 +400,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Scroll Reveal Animations
-    const sr = ScrollReveal();    // Enhanced Section Title Animations
-    const sectionTitles = document.querySelectorAll('.section-title');
-    sectionTitles.forEach((title) => {
-        sr.reveal(title, {
-            delay: 0,
-            distance: '40px',
-            duration: 125,
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            origin: 'bottom',
-            reset: true,
-            scale: 0.95,
-            viewFactor: 0.1,
-            viewOffset: { top: 100, right: 0, bottom: 0, left: 0 },            beforeReveal: (el) => {
-                el.style.animation = 'none'; // Reset the CSS animation
-                el.style.transform = 'translateY(40px) scale(0.95)';
-                el.style.opacity = '0';
-                el.style.filter = 'blur(6px)';
-            },
-            afterReveal: (el) => {
-                el.style.animation = 'sectionTitleReveal 0.2s ease-out forwards';
-                el.style.transform = '';
-                el.style.opacity = '';
-                el.style.filter = '';
-            }
+    if (typeof ScrollReveal !== 'undefined') {
+        const sr = ScrollReveal();
+        const sectionTitles = document.querySelectorAll('.section-title');
+        sectionTitles.forEach((title) => {
+            sr.reveal(title, {
+                delay: 0,
+                distance: '40px',
+                duration: 125,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                origin: 'bottom',
+                reset: false,
+                scale: 0.95,
+                viewFactor: 0.1,
+                viewOffset: { top: 100, right: 0, bottom: 0, left: 0 },
+                beforeReveal: (el) => {
+                    el.style.animation = 'none';
+                    el.style.transform = 'translateY(40px) scale(0.95)';
+                    el.style.opacity = '0';
+                    el.style.filter = 'blur(6px)';
+                },
+                afterReveal: (el) => {
+                    el.style.animation = 'sectionTitleReveal 0.2s ease-out forwards';
+                    el.style.transform = '';
+                    el.style.opacity = '';
+                    el.style.filter = '';
+                }
+            });
         });
-    });
 
-    const revealSections = document.querySelectorAll('.section');
-    revealSections.forEach((section) => {
-        section.classList.add('scroll-reveal-section'); // Add class for CSS targeting
-        sr.reveal(section, {
-            delay: 200,
-            distance: '50px',
-            duration: 800,
-            easing: 'ease-in-out',
-            origin: 'bottom',
-            reset: true, // Add this line to make animations re-trigger
-            afterReveal: (el) => {
-                el.classList.add('active'); // Add active class for CSS transition
-            },
-            beforeReset: (el) => { // Optional: Remove active class before reset if needed
-                el.classList.remove('active');
-            }
+        const revealSections = document.querySelectorAll('.section');
+        revealSections.forEach((section) => {
+            section.classList.add('scroll-reveal-section');
+            sr.reveal(section, {
+                delay: 200,
+                distance: '50px',
+                duration: 800,
+                easing: 'ease-in-out',
+                origin: 'bottom',
+                reset: false,
+                afterReveal: (el) => {
+                    el.classList.add('active');
+                }
+            });
         });
-    });
+    }
 });
