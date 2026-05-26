@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             strings: [
                 "Web Developer.",
                 "Quant Researcher.",
-                "Data Science Student."
+                "Kaggle Competitor."
             ],
             typeSpeed: 40, // Speed of typing in milliseconds
             backSpeed: 28, // Speed of deleting in milliseconds
@@ -128,9 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Current Year for Footer
     if (document.getElementById('current-year')) {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-    }    // Swiper Initializations
+    }
+
+    // Swiper Initializations
     if (typeof Swiper !== 'undefined') {
-        const projectSwiper = new Swiper('.project-swiper', {
+        new Swiper('.project-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -156,7 +158,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 40
                 }
             }
-        });        const achievementSwiper = new Swiper('.achievement-swiper', {
+        });
+
+        new Swiper('.achievement-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -180,19 +184,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 40
                 }
             }
-        });        const skillSwiper = new Swiper('.skill-swiper', {
+        });
+
+        new Swiper('.skill-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
             grabCursor: true,
             autoplay: {
-                delay: 5000,
+                delay: 4500,
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true
+                pauseOnMouseEnter: false
             },
             pagination: {
                 el: '.skill-swiper-pagination',
                 clickable: true,
+            },
+            on: {
+                init(swiper) {
+                    if (swiper.autoplay) {
+                        swiper.autoplay.start();
+                    }
+                }
             },
             breakpoints: {
                 768: {
@@ -200,18 +213,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     spaceBetween: 30
                 },
                 1024: {
-                    slidesPerView: 4,
+                    slidesPerView: 3,
                     spaceBetween: 30
                 }
             }
         });
+
     }
 
     // Mobile Menu Toggle
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const mobileNavLinks = document.querySelector('.nav-links'); // Renamed to avoid conflict
-    const menuIcon = mobileMenuBtn ? mobileMenuBtn.querySelector('.fa-bars') : null;
-    const closeIcon = mobileMenuBtn ? mobileMenuBtn.querySelector('.fa-times') : null;
+    const menuIcon = mobileMenuBtn?.querySelector('.fa-bars') ?? null;
+    const closeIcon = mobileMenuBtn?.querySelector('.fa-times') ?? null;
 
     if (mobileMenuBtn && mobileNavLinks) {
         mobileMenuBtn.addEventListener('click', () => {

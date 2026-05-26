@@ -1,4 +1,3 @@
-/* filepath: c:\Users\rauna\raunakdey-07.github.io\css\main.css */
 :root {
     --primary-bg-color: #121212;
     --secondary-bg-color: #1E1E1E;
@@ -568,13 +567,27 @@ ul {
     background-color: transparent; /* Ensure contrast if cards are secondary */
 }
 
+.skills-intro {
+    max-width: 760px;
+    margin: -1rem auto 2.5rem;
+    text-align: center;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--secondary-text-color);
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
 .skill-category-card {
     background-color: var(--secondary-bg-color);
     padding: 1.8rem; /* Increased padding */
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
     text-align: left;
-    height: 100%; /* Ensure cards in a row have the same height */
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for hover */
@@ -587,51 +600,73 @@ ul {
     border-top-color: var(--accent-color); /* Accent border on hover */
 }
 
-.skill-category-card h3,
-.skill-category-card h4 {
-    font-size: 1.1rem; /* Adjusted font size for compactness */
-    color: var(--text-color-main);
-    margin-bottom: 1rem; /* Spacing below title */
-    display: flex; /* Align icon and text */
-    align-items: center; /* Vertically center icon and text */
+.skill-category-card h3 {
+    font-size: 1.15rem;
+    color: var(--primary-text-color);
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
 }
 
-.skill-category-card h3 i,
-.skill-category-card h4 i {
-    margin-right: 0.6rem; /* Space between icon and title text */
-    color: var(--accent-color); /* Icon color */
-    font-size: 1.1rem; /* Adjusted icon size to match text */
+.skills-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
 }
 
-.skills-list {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 0.8rem; /* Increased space above the list */
-    flex-grow: 1; /* Allow list to take available space */
+.skills-table tr + tr {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.skills-list li {
-    font-size: 0.85rem; /* Adjusted font size for compactness */
-    color: var(--text-color-secondary);
-    margin-bottom: 0.8rem; /* Increased spacing between list items */
-    display: flex; /* Align icon and text */
-    align-items: center; /* Vertically center icon and text */
-    transition: color 0.3s ease; /* Smooth transition for hover */
+.skills-table th,
+.skills-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.85rem 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
 }
 
-.skills-list li:hover {
-    color: var(--accent-color); /* Change text color on hover */
+.skills-table th {
+    width: 100%;
+    color: var(--primary-text-color);
+    font-weight: 600;
+    white-space: normal;
 }
 
-.skills-list li .skill-icon {
-    margin-right: 1rem; /* Increased space between icon and skill text */
-    color: var(--icon-color); /* Default icon color, can be overridden by specific classes */
-    font-size: 0.9rem; /* Adjusted icon size */
-    transition: color 0.3s ease; /* Smooth transition for icon color */
+.skills-table td {
+    display: none;
 }
 
-.skills-list li:hover .skill-icon {
-    color: var(--accent-color); /* Change icon color on hover to match text */
+.skills-table .skill-icon {
+    margin-right: 0.55rem;
+    color: var(--accent-color);
+    width: 1rem;
+    text-align: center;
+}
+
+.skills-table .fa-java,
+.skills-table .fa-react,
+.skills-table .fa-node-js {
+    font-size: 1.08rem;
+}
+
+.skills-table img.skill-icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.skills-table .nextjs-icon {
+    filter: invert(13%) sepia(95%) saturate(6899%) hue-rotate(355deg) brightness(96%) contrast(118%);
+}
+
+.skills-table th:hover,
+.skills-table td:hover {
+    color: inherit;
+    background: transparent;
+    transform: none;
 }
 
 /* Swiper Styles - General */
@@ -706,8 +741,7 @@ ul {
 }
 
 .project-swiper .swiper-button-prev, .project-swiper .swiper-button-next,
-.achievement-swiper .swiper-button-prev, .achievement-swiper .swiper-button-next,
-.skill-swiper .swiper-button-prev, .skill-swiper .swiper-button-next {
+.achievement-swiper .swiper-button-prev, .achievement-swiper .swiper-button-next {
     top: 50%; /* Vertically center navigation buttons */
     transform: translateY(-50%);
 }
@@ -899,7 +933,6 @@ ul {
   }
 }
 
-/* BEGIN appended responsive.css */
 @media (max-width: 992px) {
     .section-title {
         font-size: 2.6rem;
@@ -1205,17 +1238,12 @@ ul {
         line-height: 1.65;
     }
 
-    .skill-category-card h3,
-    .skill-category-card h4 {
+    .skill-category-card h3 {
         font-size: 1.15rem;
     }
     .skills-list li {
         font-size: 0.96rem;
         line-height: 1.5;
-    }
-    .skill-item {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.5rem;
     }
 
 
@@ -1294,18 +1322,12 @@ ul {
     .skill-category-card {
         padding: 1rem;
     }
-    .skill-category-card h3,
-    .skill-category-card h4 {
+    .skill-category-card h3 {
         font-size: 1.05rem;
         margin-bottom: 0.5rem;
     }
     .skills-list li {
         font-size: 0.9rem;
-    }
-    .skill-item {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        margin: 0.2rem;
     }
     .skills-list {
         gap: 0.3rem;
@@ -1334,4 +1356,3 @@ ul {
     }
 }
 
-/* END appended responsive.css */

@@ -11,8 +11,7 @@ let mouse = {
     radius: 200, 
     lastX: null, 
     lastY: null,
-    velocity: { x: 0, y: 0 },
-    trail: []
+    velocity: { x: 0, y: 0 }
 }; 
 
 // Adaptive particle count for balanced visuals and runtime cost
@@ -49,7 +48,6 @@ class Particle {
         this.opacity = Math.random() * 0.8 + 0.2;
         this.baseOpacity = this.opacity;
         
-        // Artistic enhancement properties
         this.angle = Math.random() * Math.PI * 2;
         this.angleSpeed = (Math.random() - 0.5) * 0.02;
         this.pulsePhase = Math.random() * Math.PI * 2;
@@ -172,34 +170,14 @@ class Particle {
             this.baseY = Math.max(0, Math.min(canvas.height, this.baseY));
         }
 
-        // Pulsing effect
-        this.pulsePhase += 0.008; // Slower pulse
-        const pulse = Math.sin(this.pulsePhase) * 0.2 + 1;
+        this.pulsePhase += 0.008;
         this.angle += this.angleSpeed;
     }
 
     draw() {
-        // Draw particle trail
-        if (this.trail.length > 1) {
-            for (let i = 0; i < this.trail.length - 1; i++) {
-                const current = this.trail[i];
-                const next = this.trail[i + 1];
-                const trailOpacity = (1 - (i / this.trail.length)) * current.opacity * 0.3;
-                
-                ctx.strokeStyle = `rgba(255, 0, 60, ${trailOpacity})`;
-                ctx.lineWidth = (this.size * (1 - (i / this.trail.length))) * 0.5;
-                ctx.beginPath();
-                ctx.moveTo(current.x, current.y);
-                ctx.lineTo(next.x, next.y);
-                ctx.stroke();
-            }
-        }
-
-        // Enhanced particle rendering with glow
         const glowIntensity = Math.min(1, this.energy / 100);
         const pulseSize = this.size * (1 + Math.sin(this.pulsePhase) * 0.1);
-        
-        // Outer glow
+
         if (glowIntensity > 0.1) {
             const gradient = ctx.createRadialGradient(
                 this.x, this.y, 0,
@@ -214,7 +192,6 @@ class Particle {
             ctx.fill();
         }
         
-        // Main particle with dynamic color
         const energyFactor = this.energy / 100;
         const colorIndex = Math.floor(this.colorIndex + energyFactor * 2) % particleColors.length;
         
@@ -224,7 +201,6 @@ class Particle {
         ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
         ctx.fill();
         
-        // Inner highlight
         if (energyFactor > 0.3) {
             ctx.fillStyle = `rgba(255, 255, 255, ${energyFactor * 0.5})`;
             ctx.beginPath();
@@ -237,14 +213,12 @@ class Particle {
 }
 
 function connectParticles() {
-    // Enhanced connection system with artistic effects
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             const dx = particles[i].x - particles[j].x;
             const dy = particles[i].y - particles[j].y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // Dynamic connection distance based on particle energy
             const maxConnectionDistance = window.innerWidth < 768 ? 80 : 120;
             const energyFactor = (particles[i].energy + particles[j].energy) / 200;
             const connectionDistance = maxConnectionDistance * (1 + energyFactor * 0.5);
@@ -252,18 +226,14 @@ function connectParticles() {
             if (distance < connectionDistance) {
                 let opacity = 1 - (distance / connectionDistance);
                 
-                // Enhanced opacity based on particle energy
                 opacity *= (1 + energyFactor * 0.5);
-                
-                // Artistic line variations
+
                 const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.3 + 0.7;
                 opacity *= lineVariation;
-                
-                // Dynamic line width based on proximity and energy
+
                 const baseLineWidth = 0.5;
                 const energyLineWidth = baseLineWidth * (1 + energyFactor);
-                
-                // Create gradient lines for energy connections
+
                 if (energyFactor > 0.3) {
                     const gradient = ctx.createLinearGradient(
                         particles[i].x, particles[i].y,
@@ -283,7 +253,6 @@ function connectParticles() {
                 ctx.lineTo(particles[j].x, particles[j].y);
                 ctx.stroke();
                 
-                // Add secondary connection lines for high energy particles
                 if (energyFactor > 0.6) {
                     ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.3})`;
                     ctx.lineWidth = energyLineWidth * 0.3;
@@ -296,9 +265,7 @@ function connectParticles() {
         }
     }
     
-    // Enhanced mouse connections with artistic effects
     if (mouse.x !== null && mouse.y !== null) {
-        // Mouse cursor glow effect
         const mouseGlow = ctx.createRadialGradient(
             mouse.x, mouse.y, 0,
             mouse.x, mouse.y, mouse.radius
@@ -312,7 +279,6 @@ function connectParticles() {
         ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
         ctx.fill();
         
-        // Dynamic connections from mouse to particles
         particles.forEach(particle => {
             const dx = mouse.x - particle.x;
             const dy = mouse.y - particle.y;
@@ -322,7 +288,6 @@ function connectParticles() {
                 const opacity = (1 - (distance / mouse.radius)) * 0.8;
                 const energyBonus = particle.energy / 100;
                 
-                // Main connection line
                 const connectionGradient = ctx.createLinearGradient(
                     mouse.x, mouse.y,
                     particle.x, particle.y
@@ -338,7 +303,6 @@ function connectParticles() {
                 ctx.lineTo(particle.x, particle.y);
                 ctx.stroke();
                 
-                // Secondary electric-like connections for high energy
                 if (energyBonus > 0.5 && Math.random() > 0.7) {
                     const midX = (mouse.x + particle.x) / 2;
                     const midY = (mouse.y + particle.y) / 2;
@@ -353,7 +317,6 @@ function connectParticles() {
                     ctx.stroke();
                 }
                 
-                // Ripple effect around highly energized particles
                 if (energyBonus > 0.7) {
                     const rippleRadius = 20 + Math.sin(animationTime * 3) * 10;
                     ctx.strokeStyle = `rgba(255, 0, 60, ${opacity * 0.2})`;
@@ -365,7 +328,6 @@ function connectParticles() {
             }
         });
         
-        // Magnetic field visualization
         const velocityMagnitude = Math.sqrt(mouse.velocity.x ** 2 + mouse.velocity.y ** 2);
         if (velocityMagnitude > 2) {
             for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
@@ -397,12 +359,10 @@ function init() {
     }
 }
 
-// Enhanced mouse event listeners with velocity tracking
 canvas.addEventListener('mousemove', (event) => {
     const newX = event.clientX - canvasRect.left;
     const newY = event.clientY - canvasRect.top;
     
-    // Track mouse velocity for fluid interactions
     if (mouse.x !== null && mouse.y !== null) {
         mouse.velocity.x = newX - mouse.x;
         mouse.velocity.y = newY - mouse.y;
@@ -411,21 +371,14 @@ canvas.addEventListener('mousemove', (event) => {
     mouse.x = newX;
     mouse.y = newY;
     
-    // Add mouse position to trail for visual effects
-    mouse.trail.unshift({ x: mouse.x, y: mouse.y, time: Date.now() });
-    if (mouse.trail.length > 10) {
-        mouse.trail.pop();
-    }
 }, { passive: true }); // Use passive event listener for better scroll performance
 
 canvas.addEventListener('mouseleave', () => {
     mouse.x = null;
     mouse.y = null;
     mouse.velocity = { x: 0, y: 0 };
-    mouse.trail = [];
 }, { passive: true });
 
-// Enhanced touch event listeners for mobile
 canvas.addEventListener('touchmove', (event) => {
     event.preventDefault();
     const touch = event.touches[0];
@@ -440,17 +393,12 @@ canvas.addEventListener('touchmove', (event) => {
     mouse.x = newX;
     mouse.y = newY;
     
-    mouse.trail.unshift({ x: mouse.x, y: mouse.y, time: Date.now() });
-    if (mouse.trail.length > 10) {
-        mouse.trail.pop();
-    }
 }, { passive: false }); // preventDefault requires passive: false
 
 canvas.addEventListener('touchend', () => {
     mouse.x = null;
     mouse.y = null;
     mouse.velocity = { x: 0, y: 0 };
-    mouse.trail = [];
 }, { passive: true });
 
 function animate(timestamp = 0) {
@@ -460,27 +408,23 @@ function animate(timestamp = 0) {
     }
     lastFrameTime = timestamp;
 
-    // Clear canvas with subtle fade effect for trails
     ctx.fillStyle = 'rgba(18, 18, 18, 0.1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Update and draw all particles
+
     particles.forEach((particle) => {
         particle.update();
         particle.draw();
     });
-    
-    // Draw particle connections
+
     connectParticles();
-    
-    // Increment animation time
-    animationTime += 0.006; // Slower global animation time
+
+    animationTime += 0.006;
     
     requestAnimationFrame(animate);
 }
 
 window.addEventListener('resize', () => {
-    init(); // Re-initialize on resize to adjust canvas and particle count
+    init();
     canvasRect = canvas.getBoundingClientRect();
 });
 
