@@ -8,8 +8,8 @@
     --accent-color-hover: #B30000;
     --border-color: #333333;
 
-    --font-primary: 'Poppins', sans-serif;
-    --font-secondary: 'Manrope', sans-serif;
+    --font-primary: 'IBM Plex Sans', sans-serif;
+    --font-secondary: 'Fraunces', serif;
     --font-code: 'Fira Code', monospace;
 
     --section-padding: 5rem 0;
@@ -40,8 +40,8 @@ body {
 }
 
 .main-content {
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 .main-content.loaded {
@@ -59,9 +59,11 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-secondary);
     font-weight: 600;
     color: var(--primary-text-color);
     margin-bottom: 1rem;
+    letter-spacing: -0.02em;
 }
 
 h1 { font-size: 2.5rem; }
@@ -102,6 +104,7 @@ ul {
 
 .section {
     padding: var(--section-padding);
+    scroll-margin-top: 92px;
 }
 
 #about,
@@ -115,72 +118,42 @@ ul {
 
 .section-title {
     text-align: center;
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 4rem;
+    font-size: clamp(2.4rem, 4vw, 3rem);
+    font-weight: 600;
+    margin-bottom: 3rem;
     color: var(--primary-text-color);
     position: relative;
-    font-family: var(--font-primary);
-    letter-spacing: -0.025em;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    padding: 2rem 0;    overflow: visible;    background: linear-gradient(135deg, 
-        transparent 0%,
-        rgba(255, 0, 0, 0.03) 50%,
-        transparent 100%);
-    border-radius: 20px;
-    animation: sectionTitleReveal 0.2s ease-out;
+    font-family: var(--font-secondary);
+    letter-spacing: -0.03em;
+    padding: 1.25rem 0;
+    overflow: visible;
+    background: none;
+    text-shadow: none;
 }
 
 .section-title::before {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 0, 0, 0.2) 20%,
-        rgba(255, 0, 0, 0.6) 50%,
-        rgba(255, 0, 0, 0.2) 80%,
-        transparent 100%);
-    z-index: -1;
-    border-radius: 2px;
-    animation: sectionTitleLineGlow 3s ease-in-out infinite alternate;
+    display: block;
+    width: 64px;
+    height: 1px;
+    background: var(--border-color);
+    margin: 0 auto 1rem;
+    border-radius: 999px;
 }
 
 .section-title::after {
     content: '';
     display: block;
-    width: 100px;
-    height: 6px;
-    background: linear-gradient(135deg, 
-        var(--accent-color) 0%, 
-        #ff4444 25%,
-        #ff6666 50%,
-        #ff4444 75%,
-        var(--accent-color) 100%);
-    margin: 1.5rem auto 0;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 
-        0 2px 10px rgba(255, 0, 0, 0.4),
-        0 0 20px rgba(255, 0, 0, 0.2);
-    animation: sectionTitleUnderlineGlow 2.5s ease-in-out infinite alternate;
+    width: 96px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    margin: 0.75rem auto 0;
+    border-radius: 999px;
 }
 
 .section-title:hover {
-    transform: translateY(-2px);
-    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
-}
-
-.section-title:hover::after {
-    width: 120px;
-    box-shadow: 
-        0 4px 15px rgba(255, 0, 0, 0.6),
-        0 0 30px rgba(255, 0, 0, 0.4);
-    transition: all 0.3s ease;
+    transform: none;
+    text-shadow: none;
 }
 
 .text-accent {
@@ -215,9 +188,9 @@ ul {
 }
 
 .logo {
-    font-family: var(--font-primary);
+    font-family: var(--font-secondary);
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--primary-text-color);
 }
 .logo .k-left { color: var(--primary-text-color); }
@@ -238,7 +211,7 @@ ul {
 
 .nav-links li a {
     color: var(--primary-text-color);
-    font-family: var(--font-secondary);
+    font-family: var(--font-primary);
     font-weight: 500;
     padding: 0.5rem 0.25rem;
     position: relative;
@@ -306,7 +279,7 @@ ul {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-top: 80px;
+    padding-top: 96px;
     position: relative;
 }
 
@@ -315,21 +288,22 @@ ul {
 }
 
 .hero-title {
-    font-size: 3rem;
+    font-size: clamp(2.6rem, 6vw, 4rem);
     margin-bottom: 1rem;
-    line-height: 1.3;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
 }
 
 .hero-title .role {
     color: var(--accent-color);
-    font-weight: 800;
-    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-family: var(--font-secondary);
     letter-spacing: -0.02rem;
 }
 
 .hero-title .text-accent {
-    font-weight: 800;
-    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-family: var(--font-secondary);
     letter-spacing: -0.02rem;
 }
 
@@ -342,6 +316,37 @@ ul {
     margin-top: 2rem;
 }
 
+.hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.hero-btn-secondary {
+    background-color: transparent;
+    color: var(--primary-text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+.hero-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: var(--accent-color);
+    color: var(--primary-text-color);
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
 .cta-btn {
     display: inline-block;
     padding: 0.8rem 2rem;
@@ -350,23 +355,36 @@ ul {
     border: 2px solid var(--accent-color);
     border-radius: var(--border-radius);
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    text-transform: none;
+    letter-spacing: 0.3px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .cta-btn:hover {
     background-color: var(--accent-color-hover);
     border-color: var(--accent-color-hover);
     color: #fff;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
 .cta-btn--hero {
-    font-size: 1.1rem;
-    padding: 1rem 2.5rem;
+    font-size: 1.05rem;
+    padding: 0.95rem 2.2rem;
+}
+
+.hero-btn-secondary {
+    background-color: transparent;
+    color: var(--primary-text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+}
+
+.hero-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: var(--accent-color);
+    color: var(--primary-text-color);
 }
 
 .cta-btn.text-color-main {
@@ -404,8 +422,8 @@ ul {
     height: 300px;
     object-fit: cover;
     border-radius: 50%;
-    border: 5px solid var(--accent-color);
-    box-shadow: 0 0 25px rgba(255, 0, 0, 0.3);
+    border: 4px solid var(--accent-color);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
 
 .about-wrapper__info-text {
@@ -426,14 +444,14 @@ ul {
     background-color: var(--secondary-bg-color);
     border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--border-color);
 }
 
 .project-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
 }
 
 .project-wrapper__image img {
@@ -487,8 +505,8 @@ ul {
     padding: 1.5rem;
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.14);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -497,8 +515,8 @@ ul {
 }
 
 .achievement-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(255, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
 .achievement-title {
@@ -559,13 +577,13 @@ ul {
     height: 100%; /* Ensure cards in a row have the same height */
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for hover */
     border-top: 4px solid transparent; /* For hover effect */
 }
 
 .skill-category-card:hover {
-    transform: translateY(-5px); /* Lift card on hover */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Lift card on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18); /* Enhanced shadow on hover */
     border-top-color: var(--accent-color); /* Accent border on hover */
 }
 
@@ -806,7 +824,7 @@ ul {
 
 /* Typed.js Cursor - Ensure it matches text color and size */
 .typed-cursor {
-    color: var(--primary-text-color-color); /* Match text color */
+    color: var(--primary-text-color); /* Match text color */
     font-size: 1.2rem; /* Match text size */
     display: inline-block; /* Ensure it behaves like text */
     margin-left: 0.1rem; /* Space between text and cursor */
@@ -829,8 +847,8 @@ ul {
 /* Scroll Reveal Animation for Sections */
 .scroll-reveal-section {
     opacity: 0;
-    transform: translateY(50px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    transform: translateY(16px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
 
 .scroll-reveal-section.active {
@@ -840,24 +858,22 @@ ul {
 
 /* Improved Glassmorphism effect for main sections - centered and red tint */
 .glassmorphism {
-  background: linear-gradient(120deg, rgba(40,20,30,0.55) 60%, rgba(255,0,60,0.13) 100%);
-  box-shadow: 0 8px 32px 0 rgba(255, 0, 60, 0.18);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border-radius: 22px;
-  border: 1.5px solid rgba(255, 0, 60, 0.18);
-  border-top: 1.5px solid rgba(255, 0, 60, 0.28);
-  border-left: 1.5px solid rgba(255, 255, 255, 0.10);
-  transition: background 0.3s, box-shadow 0.3s;
-  margin: 2.5rem auto;
-  padding: 2.5rem 2rem;
-  max-width: 900px;
-  display: block;
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.3s, box-shadow 0.3s;
+    margin: 2.5rem auto;
+    padding: 2.25rem 2rem;
+    max-width: 900px;
+    display: block;
 }
 
 .glassmorphism:hover {
-  background: linear-gradient(120deg, rgba(50,30,40,0.65) 60%, rgba(255,0,60,0.18) 100%);
-  box-shadow: 0 12px 40px 0 rgba(255, 0, 60, 0.22);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
 }
 
 .about-section .glassmorphism,
@@ -865,6 +881,11 @@ ul {
 .contact-section .glassmorphism {
   margin-top: 2.5rem;
   margin-bottom: 2.5rem;
+}
+
+.contact-section .section-title {
+        opacity: 1;
+        transform: none;
 }
 
 @media (max-width: 600px) {
@@ -1142,6 +1163,17 @@ ul {
         padding: 0.7rem 1.5rem;
     }
 
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-actions .cta-btn {
+        width: 100%;
+        max-width: 260px;
+        text-align: center;
+    }
+
     .project-card,
     .achievement-card,
     .skill-category-card {
@@ -1223,7 +1255,7 @@ ul {
     }
 
     .hero-section {
-        padding: 3rem 0;
+        padding: 5rem 0 3rem;
     }
     .hero-content h1 {
         font-size: 2rem;
@@ -1231,9 +1263,9 @@ ul {
     .hero-content .role {
         font-size: 1.3rem;
     }
-    .hero-content .cta-btn {
-        width: 80%;
-        max-width: 250px;
+    .hero-actions .cta-btn {
+        width: 100%;
+        max-width: 240px;
     }
     .section-title {
         font-size: 2.2rem;
