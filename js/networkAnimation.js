@@ -347,137 +347,127 @@ function connectParticles() {
     }
 }
 
-function drawHiddenMotifs() {
-    const scale = Math.min(canvas.width, canvas.height);
-    const motifAlpha = isAndroidPhone ? 0.24 : 0.18;
-    const motifGlow = isAndroidPhone ? 0.35 : 0.24;
+function drawMotifNetworks() {
+    const motifs = [
+        {
+            name: 'scorpio',
+            anchorX: canvas.width * 0.82,
+            anchorY: canvas.height * 0.18,
+            scale: Math.min(canvas.width, canvas.height) * 0.12,
+            nodes: [
+                [-0.48, -0.02], [-0.30, -0.16], [-0.10, -0.08], [0.10, 0.00],
+                [0.28, 0.12], [0.46, 0.24], [0.62, 0.38], [0.74, 0.54],
+                [0.62, 0.72], [0.42, 0.84]
+            ],
+            edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [3, 6]],
+            pulseSpeed: 0.8,
+            phase: 0.7,
+            baseAlpha: 0.18,
+            accentAlpha: 0.36
+        },
+        {
+            name: 'bird',
+            anchorX: canvas.width * 0.17,
+            anchorY: canvas.height * 0.23,
+            scale: Math.min(canvas.width, canvas.height) * 0.11,
+            nodes: [
+                [-0.55, 0.16], [-0.40, -0.02], [-0.16, -0.18], [0.08, -0.12],
+                [0.28, -0.02], [0.45, 0.10], [0.18, 0.18], [-0.02, 0.28],
+                [-0.20, 0.36], [-0.34, 0.24], [0.56, 0.16]
+            ],
+            edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [3, 6], [6, 7], [7, 8], [8, 9], [5, 10]],
+            pulseSpeed: 0.72,
+            phase: 2.4,
+            baseAlpha: 0.15,
+            accentAlpha: 0.32
+        },
+        {
+            name: 'paw',
+            anchorX: canvas.width * 0.82,
+            anchorY: canvas.height * 0.82,
+            scale: Math.min(canvas.width, canvas.height) * 0.095,
+            nodes: [
+                [-0.34, -0.16], [-0.16, -0.28], [0.04, -0.26], [0.22, -0.18],
+                [0.34, -0.02], [0.16, 0.14], [-0.04, 0.18], [-0.22, 0.12],
+                [-0.08, 0.00], [0.02, -0.08], [0.10, 0.02]
+            ],
+            edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [8, 9], [9, 10], [6, 8]],
+            pulseSpeed: 0.9,
+            phase: 4.1,
+            baseAlpha: 0.15,
+            accentAlpha: 0.34
+        }
+    ];
 
     ctx.save();
-    ctx.globalCompositeOperation = 'screen';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-    drawScorpioMotif(scale, motifAlpha, motifGlow);
-    drawBirdMotif(scale, motifAlpha, motifGlow);
-    drawPawMotif(scale, motifAlpha, motifGlow);
+    motifs.forEach((motif) => drawMotifNetwork(motif));
 
     ctx.restore();
 }
 
-function drawScorpioMotif(scale, motifAlpha, motifGlow) {
-    const centerX = canvas.width * 0.83;
-    const centerY = canvas.height * 0.18;
-    const points = [
-        [centerX - scale * 0.07, centerY + scale * 0.01],
-        [centerX - scale * 0.04, centerY - scale * 0.03],
-        [centerX - scale * 0.01, centerY + scale * 0.00],
-        [centerX + scale * 0.03, centerY + scale * 0.04],
-        [centerX + scale * 0.06, centerY + scale * 0.08],
-        [centerX + scale * 0.09, centerY + scale * 0.12],
-        [centerX + scale * 0.12, centerY + scale * 0.16]
-    ];
+function drawMotifNetwork(motif) {
+    const shine = Math.pow(Math.max(0, Math.sin(animationTime * motif.pulseSpeed + motif.phase)), 5);
+    const shimmer = 0.2 + shine * 0.8;
+    const nodeAlpha = motif.baseAlpha + shimmer * 0.08;
+    const lineAlpha = motif.baseAlpha + shimmer * 0.18;
+    const glowAlpha = motif.accentAlpha * shine;
+    const scale = motif.scale;
+    const points = motif.nodes.map(([x, y]) => ({
+        x: motif.anchorX + x * scale,
+        y: motif.anchorY + y * scale
+    }));
 
+    // Keep the motifs inside the red network language, not as separate illustrations.
     ctx.save();
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = `rgba(255, 120, 160, ${motifGlow})`;
-    ctx.strokeStyle = `rgba(255, 140, 170, ${motifAlpha})`;
-    ctx.fillStyle = `rgba(255, 210, 225, ${motifAlpha + 0.08})`;
-    ctx.lineWidth = 1.25;
+    ctx.globalCompositeOperation = 'source-over';
 
-    ctx.beginPath();
-    ctx.moveTo(points[0][0], points[0][1]);
-    for (let i = 1; i < points.length; i++) {
-        ctx.lineTo(points[i][0], points[i][1]);
-    }
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(points[points.length - 1][0], points[points.length - 1][1]);
-    ctx.quadraticCurveTo(centerX + scale * 0.15, centerY + scale * 0.19, centerX + scale * 0.11, centerY + scale * 0.27);
-    ctx.quadraticCurveTo(centerX + scale * 0.08, centerY + scale * 0.33, centerX + scale * 0.03, centerY + scale * 0.35);
-    ctx.stroke();
-
-    points.forEach(([x, y], index) => {
+    motif.edges.forEach(([startIndex, endIndex]) => {
+        const start = points[startIndex];
+        const end = points[endIndex];
+        const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
+        gradient.addColorStop(0, `rgba(255, 0, 60, ${lineAlpha})`);
+        gradient.addColorStop(0.5, `rgba(255, 88, 120, ${lineAlpha * (0.8 + shine)})`);
+        gradient.addColorStop(1, `rgba(255, 0, 60, ${lineAlpha})`);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 0.85 + shine * 0.8;
         ctx.beginPath();
-        ctx.arc(x, y, index === 0 ? 2.4 : 2, 0, Math.PI * 2);
-        ctx.fill();
-    });
-    ctx.restore();
-}
-
-function drawBirdMotif(scale, motifAlpha, motifGlow) {
-    const baseX = canvas.width * 0.16;
-    const baseY = canvas.height * 0.23;
-    const birdScale = scale * 0.06;
-
-    ctx.save();
-    ctx.shadowBlur = 16;
-    ctx.shadowColor = `rgba(255, 100, 120, ${motifGlow})`;
-    ctx.strokeStyle = `rgba(255, 120, 150, ${motifAlpha})`;
-    ctx.fillStyle = `rgba(255, 200, 215, ${motifAlpha})`;
-    ctx.lineWidth = 1.15;
-
-    ctx.beginPath();
-    ctx.moveTo(baseX - birdScale * 0.65, baseY + birdScale * 0.1);
-    ctx.quadraticCurveTo(baseX - birdScale * 0.2, baseY - birdScale * 0.55, baseX + birdScale * 0.35, baseY - birdScale * 0.12);
-    ctx.quadraticCurveTo(baseX + birdScale * 0.02, baseY - birdScale * 0.05, baseX - birdScale * 0.35, baseY + birdScale * 0.2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(baseX + birdScale * 0.08, baseY + birdScale * 0.02);
-    ctx.lineTo(baseX + birdScale * 0.42, baseY + birdScale * 0.2);
-    ctx.lineTo(baseX + birdScale * 0.03, baseY + birdScale * 0.26);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(baseX - birdScale * 0.42, baseY + birdScale * 0.18, 2.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(baseX - birdScale * 0.48, baseY + birdScale * 0.22);
-    ctx.lineTo(baseX - birdScale * 0.6, baseY + birdScale * 0.28);
-    ctx.stroke();
-    ctx.restore();
-}
-
-function drawPawMotif(scale, motifAlpha, motifGlow) {
-    const baseX = canvas.width * 0.82;
-    const baseY = canvas.height * 0.83;
-    const pawScale = scale * 0.028;
-
-    ctx.save();
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = `rgba(255, 130, 150, ${motifGlow})`;
-    ctx.strokeStyle = `rgba(255, 150, 175, ${motifAlpha})`;
-    ctx.fillStyle = `rgba(255, 210, 222, ${motifAlpha})`;
-    ctx.lineWidth = 1.1;
-
-    const toes = [
-        [baseX - pawScale * 1.8, baseY - pawScale * 1.6, 2.1],
-        [baseX - pawScale * 0.6, baseY - pawScale * 2.0, 2.2],
-        [baseX + pawScale * 0.8, baseY - pawScale * 1.8, 2.2],
-        [baseX + pawScale * 2.0, baseY - pawScale * 1.2, 2.0]
-    ];
-
-    toes.forEach(([x, y, radius]) => {
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
     });
 
-    ctx.beginPath();
-    ctx.moveTo(baseX - pawScale * 2.6, baseY + pawScale * 0.2);
-    ctx.bezierCurveTo(
-        baseX - pawScale * 2.1, baseY - pawScale * 1.3,
-        baseX + pawScale * 2.2, baseY - pawScale * 1.1,
-        baseX + pawScale * 2.5, baseY + pawScale * 0.7
-    );
-    ctx.bezierCurveTo(
-        baseX + pawScale * 1.8, baseY + pawScale * 2.2,
-        baseX - pawScale * 1.7, baseY + pawScale * 2.1,
-        baseX - pawScale * 2.6, baseY + pawScale * 0.2
-    );
-    ctx.stroke();
-    ctx.fill();
+    points.forEach((point, index) => {
+        const nodePulse = index === 0 || index === points.length - 1 ? 1 : shimmer;
+        const nodeRadius = 1.6 + nodePulse * 1.4;
+
+        if (shine > 0.25) {
+            const halo = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, nodeRadius * 6);
+            halo.addColorStop(0, `rgba(255, 160, 180, ${glowAlpha * 0.55})`);
+            halo.addColorStop(0.45, `rgba(255, 60, 90, ${glowAlpha * 0.2})`);
+            halo.addColorStop(1, 'rgba(255, 0, 60, 0)');
+            ctx.fillStyle = halo;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, nodeRadius * 6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.fillStyle = `rgba(255, 120, 150, ${nodeAlpha + nodePulse * 0.12})`;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, nodeRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (shine > 0.55) {
+            ctx.strokeStyle = `rgba(255, 220, 230, ${shine * 0.55})`;
+            ctx.lineWidth = 0.45;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, nodeRadius * 1.9, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    });
+
     ctx.restore();
 }
 
@@ -554,7 +544,7 @@ function animate(timestamp = 0) {
     });
 
     connectParticles();
-    drawHiddenMotifs();
+    drawMotifNetworks();
 
     animationTime += 0.006 * motionMultiplier;
     
