@@ -69,3 +69,16 @@
         animation: none !important;
     }
 }
+
+    @media (max-width: 768px) {
+      .loading-content,
+      .loading-logo,
+      .loading-name-container,
+      .loading-subtitle,
+      .section-title,
+      .section-title::before,
+      .section-title::after,
+      .loading-char {
+        animation-duration: 0.45s;
+      }
+    }

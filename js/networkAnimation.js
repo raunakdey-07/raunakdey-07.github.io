@@ -1,8 +1,11 @@
 const canvas = document.getElementById('network-bg');
 const ctx = canvas.getContext('2d');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
 const isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
     || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+const motionMultiplier = prefersReducedMotion ? 0 : (isAndroidPhone ? 1.8 : 1);
+const timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
 
 let particles = [];
 let mouse = { 
@@ -32,7 +35,7 @@ let canvasRect = canvas.getBoundingClientRect();
 // Animation timing
 let animationTime = 0;
 let lastFrameTime = 0;
-const frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20);
+const frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20) * timeScale;
 
 class Particle {
     constructor(x, y) {
@@ -61,7 +64,7 @@ class Particle {
     }
 
     update() {
-        animationTime += 0.003; // Slowed down from 0.01 for less distracting movement
+        animationTime += 0.003 * motionMultiplier;
         
         // Update mouse velocity for fluid interactions
         if (mouse.x !== null && mouse.y !== null) {
@@ -94,7 +97,7 @@ class Particle {
                 // Orbital motion for close particles
                 if (distance < maxDistance * 0.3) {
                     this.isOrbiting = true;
-                    const orbitalAngle = Math.atan2(dy, dx) + this.angleSpeed * 1.5; // Slower orbit
+                    const orbitalAngle = Math.atan2(dy, dx) + this.angleSpeed * 1.5 * motionMultiplier;
                     this.x = mouse.x + Math.cos(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
                     this.y = mouse.y + Math.sin(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
                 } else {
@@ -111,7 +114,7 @@ class Particle {
                     const perpY = forceDirectionX * wave * force;
                     this.magneticForce.x = forceDirectionX * force * this.density * interactionStrength * 0.5 + perpX; // Reduce force
                     this.magneticForce.y = forceDirectionY * force * this.density * interactionStrength * 0.5 + perpY;
-                    this.x += this.magneticForce.x * 0.15; // Slower interpolation
+                    this.x += this.magneticForce.x * 0.15 * motionMultiplier;
                     this.y += this.magneticForce.y * 0.15;
                 }
                 
@@ -128,8 +131,8 @@ class Particle {
                 this.magneticForce.y *= 0.95;
                 
                 // Smooth return to base position with sine wave motion
-                const returnForceX = (this.baseX - this.x) * 0.012;
-                const returnForceY = (this.baseY - this.y) * 0.012;
+                const returnForceX = (this.baseX - this.x) * 0.012 * motionMultiplier;
+                const returnForceY = (this.baseY - this.y) * 0.012 * motionMultiplier;
                 this.x += returnForceX;
                 this.y += returnForceY;
                 
@@ -145,14 +148,14 @@ class Particle {
             this.magneticForce.y *= 0.9;
             
             // Organic sine wave movement
-            const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22;
-            const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22;
+            const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22 * motionMultiplier;
+            const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22 * motionMultiplier;
             
-            this.baseX += (this.speedX + sineX) * 0.25; // Slower base drift
+            this.baseX += (this.speedX + sineX) * 0.25 * motionMultiplier;
             this.baseY += (this.speedY + sineY) * 0.25;
             
             // Smooth return to base position
-            this.x += (this.baseX - this.x) * 0.01; // Slower return
+            this.x += (this.baseX - this.x) * 0.01 * motionMultiplier;
             this.y += (this.baseY - this.y) * 0.01;
             
             this.size += (this.baseSize - this.size) * 0.05;
@@ -170,7 +173,7 @@ class Particle {
             this.baseY = Math.max(0, Math.min(canvas.height, this.baseY));
         }
 
-        this.pulsePhase += 0.008;
+        this.pulsePhase += 0.008 * motionMultiplier;
         this.angle += this.angleSpeed;
     }
 
@@ -344,6 +347,140 @@ function connectParticles() {
     }
 }
 
+function drawHiddenMotifs() {
+    const scale = Math.min(canvas.width, canvas.height);
+    const motifAlpha = isAndroidPhone ? 0.24 : 0.18;
+    const motifGlow = isAndroidPhone ? 0.35 : 0.24;
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    drawScorpioMotif(scale, motifAlpha, motifGlow);
+    drawBirdMotif(scale, motifAlpha, motifGlow);
+    drawPawMotif(scale, motifAlpha, motifGlow);
+
+    ctx.restore();
+}
+
+function drawScorpioMotif(scale, motifAlpha, motifGlow) {
+    const centerX = canvas.width * 0.83;
+    const centerY = canvas.height * 0.18;
+    const points = [
+        [centerX - scale * 0.07, centerY + scale * 0.01],
+        [centerX - scale * 0.04, centerY - scale * 0.03],
+        [centerX - scale * 0.01, centerY + scale * 0.00],
+        [centerX + scale * 0.03, centerY + scale * 0.04],
+        [centerX + scale * 0.06, centerY + scale * 0.08],
+        [centerX + scale * 0.09, centerY + scale * 0.12],
+        [centerX + scale * 0.12, centerY + scale * 0.16]
+    ];
+
+    ctx.save();
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = `rgba(255, 120, 160, ${motifGlow})`;
+    ctx.strokeStyle = `rgba(255, 140, 170, ${motifAlpha})`;
+    ctx.fillStyle = `rgba(255, 210, 225, ${motifAlpha + 0.08})`;
+    ctx.lineWidth = 1.25;
+
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i][0], points[i][1]);
+    }
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(points[points.length - 1][0], points[points.length - 1][1]);
+    ctx.quadraticCurveTo(centerX + scale * 0.15, centerY + scale * 0.19, centerX + scale * 0.11, centerY + scale * 0.27);
+    ctx.quadraticCurveTo(centerX + scale * 0.08, centerY + scale * 0.33, centerX + scale * 0.03, centerY + scale * 0.35);
+    ctx.stroke();
+
+    points.forEach(([x, y], index) => {
+        ctx.beginPath();
+        ctx.arc(x, y, index === 0 ? 2.4 : 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.restore();
+}
+
+function drawBirdMotif(scale, motifAlpha, motifGlow) {
+    const baseX = canvas.width * 0.16;
+    const baseY = canvas.height * 0.23;
+    const birdScale = scale * 0.06;
+
+    ctx.save();
+    ctx.shadowBlur = 16;
+    ctx.shadowColor = `rgba(255, 100, 120, ${motifGlow})`;
+    ctx.strokeStyle = `rgba(255, 120, 150, ${motifAlpha})`;
+    ctx.fillStyle = `rgba(255, 200, 215, ${motifAlpha})`;
+    ctx.lineWidth = 1.15;
+
+    ctx.beginPath();
+    ctx.moveTo(baseX - birdScale * 0.65, baseY + birdScale * 0.1);
+    ctx.quadraticCurveTo(baseX - birdScale * 0.2, baseY - birdScale * 0.55, baseX + birdScale * 0.35, baseY - birdScale * 0.12);
+    ctx.quadraticCurveTo(baseX + birdScale * 0.02, baseY - birdScale * 0.05, baseX - birdScale * 0.35, baseY + birdScale * 0.2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(baseX + birdScale * 0.08, baseY + birdScale * 0.02);
+    ctx.lineTo(baseX + birdScale * 0.42, baseY + birdScale * 0.2);
+    ctx.lineTo(baseX + birdScale * 0.03, baseY + birdScale * 0.26);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(baseX - birdScale * 0.42, baseY + birdScale * 0.18, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(baseX - birdScale * 0.48, baseY + birdScale * 0.22);
+    ctx.lineTo(baseX - birdScale * 0.6, baseY + birdScale * 0.28);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function drawPawMotif(scale, motifAlpha, motifGlow) {
+    const baseX = canvas.width * 0.82;
+    const baseY = canvas.height * 0.83;
+    const pawScale = scale * 0.028;
+
+    ctx.save();
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = `rgba(255, 130, 150, ${motifGlow})`;
+    ctx.strokeStyle = `rgba(255, 150, 175, ${motifAlpha})`;
+    ctx.fillStyle = `rgba(255, 210, 222, ${motifAlpha})`;
+    ctx.lineWidth = 1.1;
+
+    const toes = [
+        [baseX - pawScale * 1.8, baseY - pawScale * 1.6, 2.1],
+        [baseX - pawScale * 0.6, baseY - pawScale * 2.0, 2.2],
+        [baseX + pawScale * 0.8, baseY - pawScale * 1.8, 2.2],
+        [baseX + pawScale * 2.0, baseY - pawScale * 1.2, 2.0]
+    ];
+
+    toes.forEach(([x, y, radius]) => {
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.beginPath();
+    ctx.moveTo(baseX - pawScale * 2.6, baseY + pawScale * 0.2);
+    ctx.bezierCurveTo(
+        baseX - pawScale * 2.1, baseY - pawScale * 1.3,
+        baseX + pawScale * 2.2, baseY - pawScale * 1.1,
+        baseX + pawScale * 2.5, baseY + pawScale * 0.7
+    );
+    ctx.bezierCurveTo(
+        baseX + pawScale * 1.8, baseY + pawScale * 2.2,
+        baseX - pawScale * 1.7, baseY + pawScale * 2.1,
+        baseX - pawScale * 2.6, baseY + pawScale * 0.2
+    );
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+}
+
 function init() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -417,8 +554,9 @@ function animate(timestamp = 0) {
     });
 
     connectParticles();
+    drawHiddenMotifs();
 
-    animationTime += 0.006;
+    animationTime += 0.006 * motionMultiplier;
     
     requestAnimationFrame(animate);
 }

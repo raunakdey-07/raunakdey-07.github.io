@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header');
     const getHeaderOffset = () => (header ? header.offsetHeight : 70);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
+    const motionScale = prefersReducedMotion ? 0 : (isAndroidPhone ? 0.55 : 1);
 
     // Typed.js initialization
     if (document.getElementById('typed-role')) {
@@ -14,10 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 "Quant Researcher.",
                 "Kaggle Competitor."
             ],
-            typeSpeed: 40, // Speed of typing in milliseconds
-            backSpeed: 28, // Speed of deleting in milliseconds
-            backDelay: 800, // Pause before deleting
-            startDelay: 150, // Pause before typing starts
+            typeSpeed: Math.max(18, Math.round(40 * motionScale)), // Speed of typing in milliseconds
+            backSpeed: Math.max(14, Math.round(28 * motionScale)), // Speed of deleting in milliseconds
+            backDelay: Math.round(800 * motionScale), // Pause before deleting
+            startDelay: Math.round(150 * motionScale), // Pause before typing starts
             loop: true, // Loop the animation
             showCursor: true,
             cursorChar: '|',
@@ -138,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
             spaceBetween: 30,
             grabCursor: true,
             autoplay: {
-                delay: 4000,
+                delay: Math.max(1800, Math.round(4000 * motionScale)),
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true
             },
@@ -166,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             spaceBetween: 30,
             grabCursor: true,
             autoplay: {
-                delay: 4500,
+                delay: Math.max(2000, Math.round(4500 * motionScale)),
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true
             },
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             spaceBetween: 30,
             grabCursor: true,
             autoplay: {
-                delay: 4500,
+                delay: Math.max(2000, Math.round(4500 * motionScale)),
                 disableOnInteraction: false,
                 pauseOnMouseEnter: false
             },
@@ -264,9 +266,9 @@ document.addEventListener('DOMContentLoaded', function() {
         revealSections.forEach((section) => {
             section.classList.add('scroll-reveal-section');
             sr.reveal(section, {
-                delay: 80,
-                distance: '16px',
-                duration: 420,
+                delay: Math.round(80 * motionScale),
+                distance: isAndroidPhone ? '10px' : '16px',
+                duration: Math.round(420 * motionScale),
                 easing: 'ease-out',
                 origin: 'bottom',
                 reset: false,

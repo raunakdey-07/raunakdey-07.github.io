@@ -68,7 +68,7 @@ raunakdey-07.github.io/
 ├── sitemap.xml             # SEO sitemap
 ├── assets/                 # Static assets
 │   ├── portfolio.jpg       # Profile image
-│   ├── resume.pdf          # Resume download
+│   ├── Raunak Dey - 22F3002175 - IITM.pdf  # Resume download
 │   ├── favicon files       # Site icons
 │   ├── projects/           # Project screenshots
 │   └── achievements/       # Achievement images

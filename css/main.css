@@ -890,6 +890,29 @@ ul {
     transform: translateY(0);
 }
 
+@media (max-width: 768px) {
+    .typed-cursor {
+        animation: typedjsBlink 0.35s infinite;
+    }
+
+    .main-content,
+    a,
+    .nav-links a,
+    .mobile-menu-btn,
+    .cta-btn,
+    .back-to-top,
+    .skill-category-card,
+    .project-card,
+    .achievement-card,
+    .scroll-reveal-section {
+        transition-duration: 0.18s !important;
+    }
+
+    .scroll-reveal-section {
+        transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+    }
+}
+
 /* Improved Glassmorphism effect for main sections - centered and red tint */
 .glassmorphism {
     background: rgba(255, 255, 255, 0.02);
