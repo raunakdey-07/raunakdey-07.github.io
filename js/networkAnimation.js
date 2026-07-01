@@ -19,14 +19,17 @@ let mouse = {
 
 // Adaptive particle count for balanced visuals and runtime cost
 const particleCount = isLowPowerDevice
-    ? (window.innerWidth < 768 ? 28 : 48)
-    : (window.innerWidth < 768 ? 44 : 90);
+    ? (window.innerWidth < 768 ? 24 : 42)
+    : (window.innerWidth < 768 ? 38 : 72);
 // Expanded color palette for artistic effects
 const particleColors = [
     '#ff003c', '#ff4d6d', '#ff809b', '#ff1a47', '#ff6680',
     '#cc0033', '#e60039', '#ff3358', '#ff5c7a', '#ff8ca3'
 ]; 
 const lineColor = 'rgba(255, 0, 60, 0.4)';
+const calmZones = [
+    { x: 0.82, y: 0.18, radius: 170 }
+];
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -36,6 +39,16 @@ let canvasRect = canvas.getBoundingClientRect();
 let animationTime = 0;
 let lastFrameTime = 0;
 const frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20) * timeScale;
+
+function isInsideCalmZone(x, y) {
+    return calmZones.some((zone) => {
+        const zoneX = canvas.width * zone.x;
+        const zoneY = canvas.height * zone.y;
+        const dx = x - zoneX;
+        const dy = y - zoneY;
+        return Math.sqrt(dx * dx + dy * dy) < zone.radius;
+    });
+}
 
 class Particle {
     constructor(x, y) {
@@ -225,13 +238,19 @@ function connectParticles() {
             const maxConnectionDistance = window.innerWidth < 768 ? 80 : 120;
             const energyFactor = (particles[i].energy + particles[j].energy) / 200;
             const connectionDistance = maxConnectionDistance * (1 + energyFactor * 0.5);
+            const midX = (particles[i].x + particles[j].x) / 2;
+            const midY = (particles[i].y + particles[j].y) / 2;
+
+            if (isInsideCalmZone(midX, midY)) {
+                continue;
+            }
 
             if (distance < connectionDistance) {
                 let opacity = 1 - (distance / connectionDistance);
                 
-                opacity *= (1 + energyFactor * 0.5);
+                opacity *= (0.78 + energyFactor * 0.35);
 
-                const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.3 + 0.7;
+                const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.18 + 0.58;
                 opacity *= lineVariation;
 
                 const baseLineWidth = 0.5;
@@ -243,22 +262,22 @@ function connectParticles() {
                         particles[j].x, particles[j].y
                     );
                     gradient.addColorStop(0, `rgba(255, 0, 60, ${opacity})`);
-                    gradient.addColorStop(0.5, `rgba(255, 80, 120, ${opacity * 1.2})`);
+                    gradient.addColorStop(0.5, `rgba(255, 80, 120, ${opacity * 0.95})`);
                     gradient.addColorStop(1, `rgba(255, 0, 60, ${opacity})`);
                     ctx.strokeStyle = gradient;
                 } else {
                     ctx.strokeStyle = `rgba(255, 0, 60, ${opacity})`;
                 }
                 
-                ctx.lineWidth = energyLineWidth;
+                ctx.lineWidth = energyLineWidth * 0.82;
                 ctx.beginPath();
                 ctx.moveTo(particles[i].x, particles[i].y);
                 ctx.lineTo(particles[j].x, particles[j].y);
                 ctx.stroke();
                 
                 if (energyFactor > 0.6) {
-                    ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.3})`;
-                    ctx.lineWidth = energyLineWidth * 0.3;
+                    ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.16})`;
+                    ctx.lineWidth = energyLineWidth * 0.2;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
@@ -360,42 +379,10 @@ function drawMotifNetworks() {
                 [0.62, 0.72], [0.42, 0.84]
             ],
             edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [3, 6]],
-            pulseSpeed: 0.8,
+            pulseSpeed: 0.34,
             phase: 0.7,
-            baseAlpha: 0.18,
-            accentAlpha: 0.36
-        },
-        {
-            name: 'bird',
-            anchorX: canvas.width * 0.17,
-            anchorY: canvas.height * 0.23,
-            scale: Math.min(canvas.width, canvas.height) * 0.11,
-            nodes: [
-                [-0.55, 0.16], [-0.40, -0.02], [-0.16, -0.18], [0.08, -0.12],
-                [0.28, -0.02], [0.45, 0.10], [0.18, 0.18], [-0.02, 0.28],
-                [-0.20, 0.36], [-0.34, 0.24], [0.56, 0.16]
-            ],
-            edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [3, 6], [6, 7], [7, 8], [8, 9], [5, 10]],
-            pulseSpeed: 0.72,
-            phase: 2.4,
-            baseAlpha: 0.15,
-            accentAlpha: 0.32
-        },
-        {
-            name: 'paw',
-            anchorX: canvas.width * 0.82,
-            anchorY: canvas.height * 0.82,
-            scale: Math.min(canvas.width, canvas.height) * 0.095,
-            nodes: [
-                [-0.34, -0.16], [-0.16, -0.28], [0.04, -0.26], [0.22, -0.18],
-                [0.34, -0.02], [0.16, 0.14], [-0.04, 0.18], [-0.22, 0.12],
-                [-0.08, 0.00], [0.02, -0.08], [0.10, 0.02]
-            ],
-            edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 0], [8, 9], [9, 10], [6, 8]],
-            pulseSpeed: 0.9,
-            phase: 4.1,
-            baseAlpha: 0.15,
-            accentAlpha: 0.34
+            baseAlpha: 0.14,
+            accentAlpha: 0.24
         }
     ];
 
@@ -409,10 +396,11 @@ function drawMotifNetworks() {
 }
 
 function drawMotifNetwork(motif) {
-    const shine = Math.pow(Math.max(0, Math.sin(animationTime * motif.pulseSpeed + motif.phase)), 5);
-    const shimmer = 0.2 + shine * 0.8;
-    const nodeAlpha = motif.baseAlpha + shimmer * 0.08;
-    const lineAlpha = motif.baseAlpha + shimmer * 0.18;
+    const calmPulse = Math.max(0, Math.sin(animationTime * motif.pulseSpeed + motif.phase));
+    const shine = calmPulse > 0.985 ? Math.pow((calmPulse - 0.985) / 0.015, 2) : 0;
+    const shimmer = 0.16 + shine * 0.42;
+    const nodeAlpha = motif.baseAlpha + shimmer * 0.06;
+    const lineAlpha = motif.baseAlpha + shimmer * 0.10;
     const glowAlpha = motif.accentAlpha * shine;
     const scale = motif.scale;
     const points = motif.nodes.map(([x, y]) => ({
@@ -432,7 +420,7 @@ function drawMotifNetwork(motif) {
         gradient.addColorStop(0.5, `rgba(255, 88, 120, ${lineAlpha * (0.8 + shine)})`);
         gradient.addColorStop(1, `rgba(255, 0, 60, ${lineAlpha})`);
         ctx.strokeStyle = gradient;
-        ctx.lineWidth = 0.85 + shine * 0.8;
+        ctx.lineWidth = 0.7 + shine * 0.35;
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(end.x, end.y);
@@ -444,26 +432,26 @@ function drawMotifNetwork(motif) {
         const nodeRadius = 1.6 + nodePulse * 1.4;
 
         if (shine > 0.25) {
-            const halo = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, nodeRadius * 6);
-            halo.addColorStop(0, `rgba(255, 160, 180, ${glowAlpha * 0.55})`);
-            halo.addColorStop(0.45, `rgba(255, 60, 90, ${glowAlpha * 0.2})`);
+            const halo = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, nodeRadius * 5);
+            halo.addColorStop(0, `rgba(255, 160, 180, ${glowAlpha * 0.30})`);
+            halo.addColorStop(0.45, `rgba(255, 60, 90, ${glowAlpha * 0.12})`);
             halo.addColorStop(1, 'rgba(255, 0, 60, 0)');
             ctx.fillStyle = halo;
             ctx.beginPath();
-            ctx.arc(point.x, point.y, nodeRadius * 6, 0, Math.PI * 2);
+            ctx.arc(point.x, point.y, nodeRadius * 5, 0, Math.PI * 2);
             ctx.fill();
         }
 
-        ctx.fillStyle = `rgba(255, 120, 150, ${nodeAlpha + nodePulse * 0.12})`;
+        ctx.fillStyle = `rgba(255, 120, 150, ${nodeAlpha + nodePulse * 0.08})`;
         ctx.beginPath();
         ctx.arc(point.x, point.y, nodeRadius, 0, Math.PI * 2);
         ctx.fill();
 
-        if (shine > 0.55) {
-            ctx.strokeStyle = `rgba(255, 220, 230, ${shine * 0.55})`;
-            ctx.lineWidth = 0.45;
+        if (shine > 0.42) {
+            ctx.strokeStyle = `rgba(255, 220, 230, ${shine * 0.22})`;
+            ctx.lineWidth = 0.32;
             ctx.beginPath();
-            ctx.arc(point.x, point.y, nodeRadius * 1.9, 0, Math.PI * 2);
+            ctx.arc(point.x, point.y, nodeRadius * 1.5, 0, Math.PI * 2);
             ctx.stroke();
         }
     });
