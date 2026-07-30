@@ -4,8 +4,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 
 ## Live Demo
 
-**[View Portfolio →](https://raunakdey-07.github.io/)**
-**[Vercel Deployment →](https://raunak-dey.vercel.app/)**
+**[Deployment →](https://raunak-dey.vercel.app/)**
 
 ## Features
 
@@ -174,4 +173,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ### Last Updated
 
-June 2025
+July 2025
