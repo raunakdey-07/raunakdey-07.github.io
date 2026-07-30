@@ -2,12 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header');
     const getHeaderOffset = () => (header ? header.offsetHeight : 70);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth <= 768;
     const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
     const motionScale = prefersReducedMotion ? 0 : (isAndroidPhone ? 0.55 : 1);
 
     // Typed.js initialization
     if (document.getElementById('typed-role')) {
-        if (prefersReducedMotion) {
+        if (prefersReducedMotion || isMobile) {
             document.getElementById('typed-role').textContent = 'Data Science Student.';
         } else {
         new Typed('#typed-role', {

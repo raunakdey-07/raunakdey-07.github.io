@@ -1,9 +1,11 @@
 const canvas = document.getElementById('network-bg');
 const ctx = canvas.getContext('2d');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobileViewport = window.innerWidth <= 768;
 const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
 const isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
     || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+const disableContinuousAnimation = prefersReducedMotion || isMobileViewport || isLowPowerDevice;
 const motionMultiplier = prefersReducedMotion ? 0 : (isAndroidPhone ? 1.8 : 1);
 const timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
 
@@ -474,47 +476,49 @@ function init() {
     }
 }
 
-canvas.addEventListener('mousemove', (event) => {
-    const newX = event.clientX - canvasRect.left;
-    const newY = event.clientY - canvasRect.top;
-    
-    if (mouse.x !== null && mouse.y !== null) {
-        mouse.velocity.x = newX - mouse.x;
-        mouse.velocity.y = newY - mouse.y;
-    }
-    
-    mouse.x = newX;
-    mouse.y = newY;
-    
-}, { passive: true }); // Use passive event listener for better scroll performance
+if (!disableContinuousAnimation) {
+    canvas.addEventListener('mousemove', (event) => {
+        const newX = event.clientX - canvasRect.left;
+        const newY = event.clientY - canvasRect.top;
 
-canvas.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-    mouse.velocity = { x: 0, y: 0 };
-}, { passive: true });
+        if (mouse.x !== null && mouse.y !== null) {
+            mouse.velocity.x = newX - mouse.x;
+            mouse.velocity.y = newY - mouse.y;
+        }
 
-canvas.addEventListener('touchmove', (event) => {
-    event.preventDefault();
-    const touch = event.touches[0];
-    const newX = touch.clientX - canvasRect.left;
-    const newY = touch.clientY - canvasRect.top;
-    
-    if (mouse.x !== null && mouse.y !== null) {
-        mouse.velocity.x = newX - mouse.x;
-        mouse.velocity.y = newY - mouse.y;
-    }
-    
-    mouse.x = newX;
-    mouse.y = newY;
-    
-}, { passive: false }); // preventDefault requires passive: false
+        mouse.x = newX;
+        mouse.y = newY;
 
-canvas.addEventListener('touchend', () => {
-    mouse.x = null;
-    mouse.y = null;
-    mouse.velocity = { x: 0, y: 0 };
-}, { passive: true });
+    }, { passive: true }); // Use passive event listener for better scroll performance
+
+    canvas.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+        mouse.velocity = { x: 0, y: 0 };
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const newX = touch.clientX - canvasRect.left;
+        const newY = touch.clientY - canvasRect.top;
+
+        if (mouse.x !== null && mouse.y !== null) {
+            mouse.velocity.x = newX - mouse.x;
+            mouse.velocity.y = newY - mouse.y;
+        }
+
+        mouse.x = newX;
+        mouse.y = newY;
+
+    }, { passive: false }); // preventDefault requires passive: false
+
+    canvas.addEventListener('touchend', () => {
+        mouse.x = null;
+        mouse.y = null;
+        mouse.velocity = { x: 0, y: 0 };
+    }, { passive: true });
+}
 
 function animate(timestamp = 0) {
     if (timestamp - lastFrameTime < frameInterval) {
@@ -544,14 +548,16 @@ window.addEventListener('resize', () => {
     canvasRect = canvas.getBoundingClientRect();
 });
 
-window.addEventListener('scroll', () => {
-    canvasRect = canvas.getBoundingClientRect();
-}, { passive: true });
+if (!disableContinuousAnimation) {
+    window.addEventListener('scroll', () => {
+        canvasRect = canvas.getBoundingClientRect();
+    }, { passive: true });
+}
 
 // Ensure canvas is present before starting
 if (canvas) {
     init();
-    if (prefersReducedMotion) {
+    if (disableContinuousAnimation) {
         ctx.fillStyle = 'rgba(18, 18, 18, 1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         particles.forEach((particle) => {

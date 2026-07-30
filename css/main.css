@@ -55,6 +55,7 @@ body {
     height: 100vh;
     z-index: -1;
     opacity: 0.25;
+    pointer-events: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -298,6 +299,8 @@ ul {
     font-weight: 600;
     font-family: var(--font-secondary);
     letter-spacing: -0.02rem;
+    display: inline-block;
+    min-width: 16ch;
 }
 
 .hero-title .text-accent {
@@ -891,8 +894,17 @@ ul {
 }
 
 @media (max-width: 768px) {
+    #network-bg {
+        display: none;
+    }
+
+    .hero-title .role {
+        min-width: auto;
+    }
+
     .typed-cursor {
         animation: typedjsBlink 0.35s infinite;
+        display: none;
     }
 
     .main-content,
@@ -1378,4 +1390,3 @@ ul {
         height: 150px;
     }
 }
-
