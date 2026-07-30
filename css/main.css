@@ -301,6 +301,7 @@ ul {
     letter-spacing: -0.02rem;
     display: inline-block;
     min-width: 16ch;
+    white-space: nowrap;
 }
 
 .hero-title .text-accent {
@@ -895,7 +896,8 @@ ul {
 
 @media (max-width: 768px) {
     #network-bg {
-        display: none;
+        display: block;
+        opacity: 0.12;
     }
 
     .hero-title .role {

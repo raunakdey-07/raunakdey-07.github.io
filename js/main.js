@@ -7,25 +7,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const motionScale = prefersReducedMotion ? 0 : (isAndroidPhone ? 0.55 : 1);
 
     // Typed.js initialization
-    if (document.getElementById('typed-role')) {
-        if (prefersReducedMotion || isMobile) {
-            document.getElementById('typed-role').textContent = 'Data Science Student.';
+    const typedRoleElement = document.getElementById('typed-role');
+    const roleStrings = [
+        'Web Developer.',
+        'Quant Researcher.',
+        'Kaggle Competitor.'
+    ];
+    if (typedRoleElement) {
+        if (prefersReducedMotion) {
+            typedRoleElement.textContent = 'Data Science Student.';
+        } else if (isMobile) {
+            let roleIndex = 0;
+            typedRoleElement.textContent = roleStrings[roleIndex];
+            setInterval(() => {
+                roleIndex = (roleIndex + 1) % roleStrings.length;
+                typedRoleElement.textContent = roleStrings[roleIndex];
+            }, 2400);
         } else {
-        new Typed('#typed-role', {
-            strings: [
-                "Web Developer.",
-                "Quant Researcher.",
-                "Kaggle Competitor."
-            ],
-            typeSpeed: Math.max(18, Math.round(40 * motionScale)), // Speed of typing in milliseconds
-            backSpeed: Math.max(14, Math.round(28 * motionScale)), // Speed of deleting in milliseconds
-            backDelay: Math.round(800 * motionScale), // Pause before deleting
-            startDelay: Math.round(150 * motionScale), // Pause before typing starts
-            loop: true, // Loop the animation
-            showCursor: true,
-            cursorChar: '|',
-            smartBackspace: true // Only backspace what doesn't match the next string
-        });
+            new Typed('#typed-role', {
+                strings: roleStrings,
+                typeSpeed: Math.max(18, Math.round(40 * motionScale)), // Speed of typing in milliseconds
+                backSpeed: Math.max(14, Math.round(28 * motionScale)), // Speed of deleting in milliseconds
+                backDelay: Math.round(800 * motionScale), // Pause before deleting
+                startDelay: Math.round(150 * motionScale), // Pause before typing starts
+                loop: true, // Loop the animation
+                showCursor: true,
+                cursorChar: '|',
+                smartBackspace: true // Only backspace what doesn't match the next string
+            });
         }
     }
 
