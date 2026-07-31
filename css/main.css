@@ -110,10 +110,14 @@ ul {
 #about,
 #projects,
 #achievements,
-#skills,
-#contact {
+#skills {
     content-visibility: auto;
     contain-intrinsic-size: 1px 900px;
+}
+
+#contact {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
 }
 
 .section-title {
@@ -755,6 +759,8 @@ ul {
 .contact-section {
     background-color: var(--primary-bg-color); /* Or var(--secondary-bg-color) for contrast */
     text-align: center;
+    opacity: 1;
+    transform: none;
 }
 
 .contact-wrapper {

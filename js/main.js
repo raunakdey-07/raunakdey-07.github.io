@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Scroll Reveal Animations
     if (!prefersReducedMotion && typeof ScrollReveal !== 'undefined') {
         const sr = ScrollReveal();
-        const revealSections = document.querySelectorAll('.section');
+        const revealSections = document.querySelectorAll('.section:not(#contact)');
         revealSections.forEach((section) => {
             section.classList.add('scroll-reveal-section');
             sr.reveal(section, {
