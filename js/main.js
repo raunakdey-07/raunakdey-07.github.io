@@ -5,6 +5,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const isMobile = window.innerWidth <= 768;
     const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
     const motionScale = prefersReducedMotion ? 0 : (isAndroidPhone ? 0.55 : 1);
+    const rootElement = document.documentElement;
+    let scrollbarHideTimer = null;
+
+    function showScrollbarDuringActivity() {
+        rootElement.classList.add('scrolling-active');
+        if (scrollbarHideTimer) {
+            clearTimeout(scrollbarHideTimer);
+        }
+        scrollbarHideTimer = setTimeout(() => {
+            rootElement.classList.remove('scrolling-active');
+        }, 800);
+    }
+
+    window.addEventListener('scroll', showScrollbarDuringActivity, { passive: true });
+    window.addEventListener('wheel', showScrollbarDuringActivity, { passive: true });
+    window.addEventListener('touchmove', showScrollbarDuringActivity, { passive: true });
+    window.addEventListener('keydown', (event) => {
+        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Space'].includes(event.code)) {
+            showScrollbarDuringActivity();
+        }
+    });
 
     // Typed.js initialization
     const typedRoleElement = document.getElementById('typed-role');

@@ -38,6 +38,16 @@ body {
     position: relative;
 }
 
+html {
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+}
+
+html.scrolling-active {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--primary-bg-color);
+}
+
 .main-content {
     opacity: 1;
     transition: opacity 0.3s ease;
@@ -848,21 +858,27 @@ ul {
     background-color: var(--accent-color-hover);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 10px;
+/* Auto-hide scrollbar, show only while scrolling */
+html::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
-::-webkit-scrollbar-track {
+html.scrolling-active::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html.scrolling-active::-webkit-scrollbar-track {
     background: var(--primary-bg-color);
 }
 
-::-webkit-scrollbar-thumb {
+html.scrolling-active::-webkit-scrollbar-thumb {
     background: var(--accent-color);
     border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+html.scrolling-active::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color-hover);
 }
 
