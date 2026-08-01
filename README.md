@@ -54,7 +54,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 
 - **JSON-LD Structured Data** for rich search results
 - **Open Graph Meta Tags** for social media sharing
-- **Comprehensive Sitemap** with proper priorities
+- **Sitemap** (single-page site — root URL only, per sitemap protocol)
 - **Robots.txt** for search engine optimization
 
 ## Project Structure
@@ -72,12 +72,12 @@ raunakdey-07.github.io/
 │   ├── projects/           # Project screenshots
 │   └── achievements/       # Achievement images
 ├── css/                    # Stylesheets
-│   ├── main.css            # Core styling
-│   ├── animations.css      # Animation definitions
-│   └── responsive.css      # Mobile responsiveness
+│   └── main.css            # Core styling + responsive breakpoints
 └── js/                     # JavaScript files
     ├── main.js             # Core functionality
-    └── networkAnimation.js # Background effects
+    ├── main.min.js         # Minified (referenced in HTML)
+    ├── networkAnimation.js # Background effects
+    └── networkAnimation.min.js  # Minified (referenced in HTML)
 ```
 
 ## Sections
@@ -108,7 +108,7 @@ raunakdey-07.github.io/
 
 ### SEO & Technical
 
-- Updated comprehensive sitemap with all sections
+- Sitemap optimized for single-page architecture
 - Enhanced meta tags and structured data
 - Optimized for search engine discoverability
 - Cross-browser compatibility improvements

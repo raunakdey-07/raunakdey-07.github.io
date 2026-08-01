@@ -165,7 +165,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Swiper Initializations
     if (typeof Swiper !== 'undefined') {
-        new Swiper('.project-swiper', {
+        const initSwiper = (selector, config) => {
+            try {
+                return new Swiper(selector, config);
+            } catch (err) {
+                console.warn(`Swiper initialization failed for ${selector}:`, err);
+                return null;
+            }
+        };
+
+        initSwiper('.project-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -180,20 +189,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickable: true,
             },
             breakpoints: {
-                // when window width is >= 768px
-                768: {
-                    slidesPerView: 2,
-                    spaceBetween: 30
-                },
-                // when window width is >= 1024px
-                1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 40
-                }
+                768: { slidesPerView: 2, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: 40 }
             }
         });
 
-        new Swiper('.achievement-swiper', {
+        initSwiper('.achievement-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -208,18 +209,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 clickable: true,
             },
             breakpoints: {
-                768: {
-                    slidesPerView: 2,
-                    spaceBetween: 30
-                },
-                1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 40
-                }
+                768: { slidesPerView: 2, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: 40 }
             }
         });
 
-        new Swiper('.skill-swiper', {
+        initSwiper('.skill-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -235,23 +230,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             on: {
                 init(swiper) {
-                    if (swiper.autoplay) {
-                        swiper.autoplay.start();
-                    }
+                    if (swiper.autoplay) swiper.autoplay.start();
                 }
             },
             breakpoints: {
-                768: {
-                    slidesPerView: 2,
-                    spaceBetween: 30
-                },
-                1024: {
-                    slidesPerView: 3,
-                    spaceBetween: 30
-                }
+                768: { slidesPerView: 2, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: 30 }
             }
         });
-
     }
 
     // Mobile Menu Toggle
