@@ -54,7 +54,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 
 - **JSON-LD Structured Data** for rich search results
 - **Open Graph Meta Tags** for social media sharing
-- **Sitemap** with lastmod, changefreq, and priority for SEO
+- **Sitemap** with lastmod, changefreq, priority, and section anchors for full SEO coverage
 - **Robots.txt** for search engine optimization
 
 ## Project Structure
