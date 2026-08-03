@@ -1,23 +1,23 @@
 const canvas = document.getElementById('network-bg');
 const ctx = canvas.getContext('2d');
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isMobileViewport = window.innerWidth <= 768;
-const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
-const isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let isMobileViewport = window.innerWidth <= 768;
+let isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
+let isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
     || (navigator.deviceMemory && navigator.deviceMemory <= 4);
-const disableContinuousAnimation = prefersReducedMotion || isMobileViewport || isLowPowerDevice;
-const motionMultiplier = prefersReducedMotion ? 0 : (isAndroidPhone ? 1.8 : 1);
-const timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
+let disableContinuousAnimation = prefersReducedMotion || isMobileViewport || isLowPowerDevice;
+let motionMultiplier = prefersReducedMotion ? 0 : (isAndroidPhone ? 1.8 : 1);
+let timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
 
 let particles = [];
-let mouse = { 
-    x: null, 
-    y: null, 
-    radius: 200, 
-    lastX: null, 
+let mouse = {
+    x: null,
+    y: null,
+    radius: 200,
+    lastX: null,
     lastY: null,
     velocity: { x: 0, y: 0 }
-}; 
+};
 
 // Adaptive particle count for balanced visuals and runtime cost
 const particleCount = isLowPowerDevice
@@ -27,7 +27,7 @@ const particleCount = isLowPowerDevice
 const particleColors = [
     '#ff003c', '#ff4d6d', '#ff809b', '#ff1a47', '#ff6680',
     '#cc0033', '#e60039', '#ff3358', '#ff5c7a', '#ff8ca3'
-]; 
+];
 const lineColor = 'rgba(255, 0, 60, 0.4)';
 const calmZones = [
     { x: 0.82, y: 0.18, radius: 170 }
@@ -40,14 +40,51 @@ let canvasRect = canvas.getBoundingClientRect();
 // Animation timing
 let animationTime = 0;
 let lastFrameTime = 0;
-const frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20) * timeScale;
+let frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20) * timeScale;
+
+// Calm zone world-coordinate cache — recomputed on resize only
+let calmZoneCache = [];
+
+// Page Visibility & Intersection state
+let isVisible = true;
+let isCanvasVisible = true;
+let isAnimating = false;
+let animationFrameId = null;
+let isDestroyed = false;
+
+// Intersection Observer reference for cleanup
+let intersectionObserver = null;
+
+// matchMedia query reference for cleanup
+const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+// Tracked listeners for cleanup
+const trackedListeners = [];
+
+function recomputeDeviceCapabilities() {
+    prefersReducedMotion = motionQuery.matches;
+    isMobileViewport = window.innerWidth <= 768;
+    isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
+    isLowPowerDevice = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+        || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    disableContinuousAnimation = prefersReducedMotion || isMobileViewport || isLowPowerDevice;
+    motionMultiplier = prefersReducedMotion ? 0 : (isAndroidPhone ? 1.8 : 1);
+    timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
+    frameInterval = prefersReducedMotion ? 1000 : (isLowPowerDevice ? 33 : 20) * timeScale;
+}
+
+function updateCalmZoneCache() {
+    calmZoneCache = calmZones.map((zone) => ({
+        x: canvas.width * zone.x,
+        y: canvas.height * zone.y,
+        radius: zone.radius
+    }));
+}
 
 function isInsideCalmZone(x, y) {
-    return calmZones.some((zone) => {
-        const zoneX = canvas.width * zone.x;
-        const zoneY = canvas.height * zone.y;
-        const dx = x - zoneX;
-        const dy = y - zoneY;
+    return calmZoneCache.some((zone) => {
+        const dx = x - zone.x;
+        const dy = y - zone.y;
         return Math.sqrt(dx * dx + dy * dy) < zone.radius;
     });
 }
@@ -56,16 +93,16 @@ class Particle {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.baseX = x; 
+        this.baseX = x;
         this.baseY = y;
         this.size = Math.random() * 4 + 1;
         this.baseSize = this.size;
         this.speedX = Math.random() * 2 - 1;
         this.speedY = Math.random() * 2 - 1;
-        this.density = Math.random() * 40 + 10; 
+        this.density = Math.random() * 40 + 10;
         this.opacity = Math.random() * 0.8 + 0.2;
         this.baseOpacity = this.opacity;
-        
+
         this.angle = Math.random() * Math.PI * 2;
         this.angleSpeed = (Math.random() - 0.5) * 0.02;
         this.pulsePhase = Math.random() * Math.PI * 2;
@@ -80,7 +117,7 @@ class Particle {
 
     update() {
         animationTime += 0.003 * motionMultiplier;
-        
+
         // Update mouse velocity for fluid interactions
         if (mouse.x !== null && mouse.y !== null) {
             if (mouse.lastX !== null && mouse.lastY !== null) {
@@ -103,12 +140,12 @@ class Particle {
             const dy = mouse.y - this.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             const maxDistance = mouse.radius;
-            
+
             if (distance < maxDistance) {
                 // Dynamic interaction based on mouse velocity
                 const velocityMagnitude = Math.sqrt(mouse.velocity.x ** 2 + mouse.velocity.y ** 2);
                 const interactionStrength = Math.max(0.3, velocityMagnitude * 0.1);
-                
+
                 // Orbital motion for close particles
                 if (distance < maxDistance * 0.3) {
                     this.isOrbiting = true;
@@ -117,12 +154,12 @@ class Particle {
                     this.y = mouse.y + Math.sin(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
                 } else {
                     this.isOrbiting = false;
-                    
+
                     // Fluid magnetic field effect
                     const forceDirectionX = dx / distance;
                     const forceDirectionY = dy / distance;
                     const force = (maxDistance - distance) / maxDistance;
-                    
+
                     // Wave-like distortion
                     const wave = Math.sin(animationTime + distance * 0.01) * 0.18; // Reduced wave amplitude
                     const perpX = -forceDirectionY * wave * force;
@@ -132,25 +169,25 @@ class Particle {
                     this.x += this.magneticForce.x * 0.15 * motionMultiplier;
                     this.y += this.magneticForce.y * 0.15;
                 }
-                
+
                 // Dynamic size and opacity based on proximity
                 const proximityFactor = 1 - (distance / maxDistance);
                 this.size = this.baseSize * (1 + proximityFactor * 2);
                 this.opacity = this.baseOpacity * (1 + proximityFactor);
                 this.energy = Math.min(100, this.energy + proximityFactor * 10);
-                
+
             } else {
                 // Return to natural state
                 this.isOrbiting = false;
                 this.magneticForce.x *= 0.95;
                 this.magneticForce.y *= 0.95;
-                
+
                 // Smooth return to base position with sine wave motion
                 const returnForceX = (this.baseX - this.x) * 0.012 * motionMultiplier;
                 const returnForceY = (this.baseY - this.y) * 0.012 * motionMultiplier;
                 this.x += returnForceX;
                 this.y += returnForceY;
-                
+
                 // Return to base size and opacity
                 this.size += (this.baseSize - this.size) * 0.05;
                 this.opacity += (this.baseOpacity - this.opacity) * 0.05;
@@ -161,18 +198,18 @@ class Particle {
             this.isOrbiting = false;
             this.magneticForce.x *= 0.9;
             this.magneticForce.y *= 0.9;
-            
+
             // Organic sine wave movement
             const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22 * motionMultiplier;
             const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22 * motionMultiplier;
-            
+
             this.baseX += (this.speedX + sineX) * 0.25 * motionMultiplier;
             this.baseY += (this.speedY + sineY) * 0.25;
-            
+
             // Smooth return to base position
             this.x += (this.baseX - this.x) * 0.01 * motionMultiplier;
             this.y += (this.baseY - this.y) * 0.01;
-            
+
             this.size += (this.baseSize - this.size) * 0.05;
             this.opacity += (this.baseOpacity - this.opacity) * 0.05;
             this.energy *= 0.99;
@@ -203,29 +240,29 @@ class Particle {
             );
             gradient.addColorStop(0, `rgba(255, 0, 60, ${this.opacity * glowIntensity * 0.3})`);
             gradient.addColorStop(1, 'rgba(255, 0, 60, 0)');
-            
+
             ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(this.x, this.y, pulseSize * 3, 0, Math.PI * 2);
             ctx.fill();
         }
-        
+
         const energyFactor = this.energy / 100;
         const colorIndex = Math.floor(this.colorIndex + energyFactor * 2) % particleColors.length;
-        
+
         ctx.globalAlpha = this.opacity;
         ctx.fillStyle = particleColors[colorIndex];
         ctx.beginPath();
         ctx.arc(this.x, this.y, pulseSize, 0, Math.PI * 2);
         ctx.fill();
-        
+
         if (energyFactor > 0.3) {
             ctx.fillStyle = `rgba(255, 255, 255, ${energyFactor * 0.5})`;
             ctx.beginPath();
             ctx.arc(this.x, this.y, pulseSize * 0.3, 0, Math.PI * 2);
             ctx.fill();
         }
-        
+
         ctx.globalAlpha = 1;
     }
 }
@@ -236,7 +273,7 @@ function connectParticles() {
             const dx = particles[i].x - particles[j].x;
             const dy = particles[i].y - particles[j].y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             const maxConnectionDistance = window.innerWidth < 768 ? 80 : 120;
             const energyFactor = (particles[i].energy + particles[j].energy) / 200;
             const connectionDistance = maxConnectionDistance * (1 + energyFactor * 0.5);
@@ -249,7 +286,7 @@ function connectParticles() {
 
             if (distance < connectionDistance) {
                 let opacity = 1 - (distance / connectionDistance);
-                
+
                 opacity *= (0.78 + energyFactor * 0.35);
 
                 const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.18 + 0.58;
@@ -270,13 +307,13 @@ function connectParticles() {
                 } else {
                     ctx.strokeStyle = `rgba(255, 0, 60, ${opacity})`;
                 }
-                
+
                 ctx.lineWidth = energyLineWidth * 0.82;
                 ctx.beginPath();
                 ctx.moveTo(particles[i].x, particles[i].y);
                 ctx.lineTo(particles[j].x, particles[j].y);
                 ctx.stroke();
-                
+
                 if (energyFactor > 0.6) {
                     ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.16})`;
                     ctx.lineWidth = energyLineWidth * 0.2;
@@ -288,7 +325,7 @@ function connectParticles() {
             }
         }
     }
-    
+
     if (mouse.x !== null && mouse.y !== null) {
         const mouseGlow = ctx.createRadialGradient(
             mouse.x, mouse.y, 0,
@@ -297,21 +334,21 @@ function connectParticles() {
         mouseGlow.addColorStop(0, 'rgba(255, 0, 60, 0.1)');
         mouseGlow.addColorStop(0.7, 'rgba(255, 0, 60, 0.05)');
         mouseGlow.addColorStop(1, 'rgba(255, 0, 60, 0)');
-        
+
         ctx.fillStyle = mouseGlow;
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
         ctx.fill();
-        
+
         particles.forEach(particle => {
             const dx = mouse.x - particle.x;
             const dy = mouse.y - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             if (distance < mouse.radius) {
                 const opacity = (1 - (distance / mouse.radius)) * 0.8;
                 const energyBonus = particle.energy / 100;
-                
+
                 const connectionGradient = ctx.createLinearGradient(
                     mouse.x, mouse.y,
                     particle.x, particle.y
@@ -319,20 +356,20 @@ function connectParticles() {
                 connectionGradient.addColorStop(0, `rgba(255, 80, 120, ${opacity})`);
                 connectionGradient.addColorStop(0.6, `rgba(255, 0, 60, ${opacity * 0.8})`);
                 connectionGradient.addColorStop(1, `rgba(255, 40, 80, ${opacity * 0.6})`);
-                
+
                 ctx.strokeStyle = connectionGradient;
                 ctx.lineWidth = 1.5 + energyBonus;
                 ctx.beginPath();
                 ctx.moveTo(mouse.x, mouse.y);
                 ctx.lineTo(particle.x, particle.y);
                 ctx.stroke();
-                
+
                 if (energyBonus > 0.5 && Math.random() > 0.7) {
                     const midX = (mouse.x + particle.x) / 2;
                     const midY = (mouse.y + particle.y) / 2;
                     const offsetX = (Math.random() - 0.5) * 40;
                     const offsetY = (Math.random() - 0.5) * 40;
-                    
+
                     ctx.strokeStyle = `rgba(255, 200, 220, ${opacity * 0.4})`;
                     ctx.lineWidth = 0.5;
                     ctx.beginPath();
@@ -340,7 +377,7 @@ function connectParticles() {
                     ctx.quadraticCurveTo(midX + offsetX, midY + offsetY, particle.x, particle.y);
                     ctx.stroke();
                 }
-                
+
                 if (energyBonus > 0.7) {
                     const rippleRadius = 20 + Math.sin(animationTime * 3) * 10;
                     ctx.strokeStyle = `rgba(255, 0, 60, ${opacity * 0.2})`;
@@ -351,14 +388,14 @@ function connectParticles() {
                 }
             }
         });
-        
+
         const velocityMagnitude = Math.sqrt(mouse.velocity.x ** 2 + mouse.velocity.y ** 2);
         if (velocityMagnitude > 2) {
             for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
                 const fieldRadius = mouse.radius * 0.7;
                 const fieldX = mouse.x + Math.cos(angle + animationTime * 2) * fieldRadius;
                 const fieldY = mouse.y + Math.sin(angle + animationTime * 2) * fieldRadius;
-                
+
                 ctx.fillStyle = `rgba(255, 0, 60, ${velocityMagnitude * 0.02})`;
                 ctx.beginPath();
                 ctx.arc(fieldX, fieldY, 2, 0, Math.PI * 2);
@@ -468,7 +505,7 @@ function init() {
     const currentParticleCount = isLowPowerDevice
         ? (window.innerWidth < 768 ? 28 : 48)
         : (window.innerWidth < 768 ? 44 : 90);
-    
+
     for (let i = 0; i < currentParticleCount; i++) {
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height;
@@ -476,53 +513,136 @@ function init() {
     }
 }
 
+// --- Animation lifecycle helpers ---
+
+function startAnimation() {
+    if (isDestroyed || isAnimating || disableContinuousAnimation) return;
+    isAnimating = true;
+    lastFrameTime = 0;
+    animationFrameId = requestAnimationFrame(animate);
+}
+
+function stopAnimation() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+    isAnimating = false;
+}
+
+function handleVisibilityChange() {
+    if (isDestroyed) return;
+    isVisible = !document.hidden;
+    if (isVisible && !isAnimating && !disableContinuousAnimation && isCanvasVisible) {
+        startAnimation();
+    } else if (!isVisible && isAnimating) {
+        stopAnimation();
+    }
+}
+
+function handleIntersection(entries) {
+    if (isDestroyed) return;
+    entries.forEach((entry) => {
+        isCanvasVisible = entry.isIntersecting;
+        if (isCanvasVisible && !isAnimating && !disableContinuousAnimation && isVisible) {
+            startAnimation();
+        } else if (!isCanvasVisible && isAnimating) {
+            stopAnimation();
+        }
+    });
+}
+
+function handleMotionChange() {
+    const wasDisabled = disableContinuousAnimation;
+    recomputeDeviceCapabilities();
+    if (wasDisabled && !disableContinuousAnimation && isVisible && isCanvasVisible) {
+        startAnimation();
+    } else if (!wasDisabled && disableContinuousAnimation) {
+        stopAnimation();
+    }
+}
+
+function handleResize() {
+    const wasDisabled = disableContinuousAnimation;
+    init();
+    recomputeDeviceCapabilities();
+    updateCalmZoneCache();
+    canvasRect = canvas.getBoundingClientRect();
+    if (wasDisabled && !disableContinuousAnimation && isVisible && isCanvasVisible) {
+        startAnimation();
+    } else if (!wasDisabled && disableContinuousAnimation) {
+        stopAnimation();
+    }
+}
+
+function handleScroll() {
+    canvasRect = canvas.getBoundingClientRect();
+}
+
+function handleMouseMove(event) {
+    const newX = event.clientX - canvasRect.left;
+    const newY = event.clientY - canvasRect.top;
+
+    if (mouse.x !== null && mouse.y !== null) {
+        mouse.velocity.x = newX - mouse.x;
+        mouse.velocity.y = newY - mouse.y;
+    }
+
+    mouse.x = newX;
+    mouse.y = newY;
+}
+
+function handleMouseLeave() {
+    mouse.x = null;
+    mouse.y = null;
+    mouse.velocity = { x: 0, y: 0 };
+}
+
+function handleTouchMove(event) {
+    event.preventDefault();
+    const touch = event.touches[0];
+    const newX = touch.clientX - canvasRect.left;
+    const newY = touch.clientY - canvasRect.top;
+
+    if (mouse.x !== null && mouse.y !== null) {
+        mouse.velocity.x = newX - mouse.x;
+        mouse.velocity.y = newY - mouse.y;
+    }
+
+    mouse.x = newX;
+    mouse.y = newY;
+}
+
+function handleTouchEnd() {
+    mouse.x = null;
+    mouse.y = null;
+    mouse.velocity = { x: 0, y: 0 };
+}
+
+// --- Event listener setup ---
+
 if (!disableContinuousAnimation) {
-    canvas.addEventListener('mousemove', (event) => {
-        const newX = event.clientX - canvasRect.left;
-        const newY = event.clientY - canvasRect.top;
+    canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
+    trackedListeners.push({ target: canvas, type: 'mousemove', handler: handleMouseMove, options: { passive: true } });
 
-        if (mouse.x !== null && mouse.y !== null) {
-            mouse.velocity.x = newX - mouse.x;
-            mouse.velocity.y = newY - mouse.y;
-        }
+    canvas.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+    trackedListeners.push({ target: canvas, type: 'mouseleave', handler: handleMouseLeave, options: { passive: true } });
 
-        mouse.x = newX;
-        mouse.y = newY;
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    trackedListeners.push({ target: canvas, type: 'touchmove', handler: handleTouchMove, options: { passive: false } });
 
-    }, { passive: true }); // Use passive event listener for better scroll performance
-
-    canvas.addEventListener('mouseleave', () => {
-        mouse.x = null;
-        mouse.y = null;
-        mouse.velocity = { x: 0, y: 0 };
-    }, { passive: true });
-
-    canvas.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-        const touch = event.touches[0];
-        const newX = touch.clientX - canvasRect.left;
-        const newY = touch.clientY - canvasRect.top;
-
-        if (mouse.x !== null && mouse.y !== null) {
-            mouse.velocity.x = newX - mouse.x;
-            mouse.velocity.y = newY - mouse.y;
-        }
-
-        mouse.x = newX;
-        mouse.y = newY;
-
-    }, { passive: false }); // preventDefault requires passive: false
-
-    canvas.addEventListener('touchend', () => {
-        mouse.x = null;
-        mouse.y = null;
-        mouse.velocity = { x: 0, y: 0 };
-    }, { passive: true });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+    trackedListeners.push({ target: canvas, type: 'touchend', handler: handleTouchEnd, options: { passive: true } });
 }
 
 function animate(timestamp = 0) {
+    if (isDestroyed || !isVisible || !isCanvasVisible) {
+        stopAnimation();
+        return;
+    }
+
     if (timestamp - lastFrameTime < frameInterval) {
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
         return;
     }
     lastFrameTime = timestamp;
@@ -539,24 +659,37 @@ function animate(timestamp = 0) {
     drawMotifNetworks();
 
     animationTime += 0.006 * motionMultiplier;
-    
-    requestAnimationFrame(animate);
+
+    animationFrameId = requestAnimationFrame(animate);
 }
 
-window.addEventListener('resize', () => {
-    init();
-    canvasRect = canvas.getBoundingClientRect();
-});
+window.addEventListener('resize', handleResize);
+trackedListeners.push({ target: window, type: 'resize', handler: handleResize, options: undefined });
 
 if (!disableContinuousAnimation) {
-    window.addEventListener('scroll', () => {
-        canvasRect = canvas.getBoundingClientRect();
-    }, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    trackedListeners.push({ target: window, type: 'scroll', handler: handleScroll, options: { passive: true } });
 }
+
+// Page Visibility API — pause when tab is hidden
+document.addEventListener('visibilitychange', handleVisibilityChange);
+trackedListeners.push({ target: document, type: 'visibilitychange', handler: handleVisibilityChange, options: undefined });
+
+// Intersection Observer — pause when canvas is offscreen
+if ('IntersectionObserver' in window) {
+    intersectionObserver = new IntersectionObserver(handleIntersection, { threshold: 0 });
+    intersectionObserver.observe(canvas);
+}
+
+// React to prefers-reduced-motion changes at runtime
+motionQuery.addEventListener('change', handleMotionChange);
+trackedListeners.push({ target: motionQuery, type: 'change', handler: handleMotionChange, options: undefined });
 
 // Ensure canvas is present before starting
 if (canvas) {
     init();
+    updateCalmZoneCache();
+    recomputeDeviceCapabilities();
     if (disableContinuousAnimation) {
         ctx.fillStyle = 'rgba(18, 18, 18, 1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -565,8 +698,32 @@ if (canvas) {
         });
         connectParticles();
     } else {
-        animate();
+        startAnimation();
     }
 } else {
     console.error('Network animation canvas not found');
+}
+
+/**
+ * Clean up all listeners, observers, and animation frames.
+ * Call this when the animation is no longer needed (e.g., component unmount).
+ */
+function destroy() {
+    isDestroyed = true;
+    stopAnimation();
+
+    // Remove all tracked event listeners
+    trackedListeners.forEach(({ target, type, handler, options }) => {
+        target.removeEventListener(type, handler, options);
+    });
+    trackedListeners.length = 0;
+
+    // Disconnect Intersection Observer
+    if (intersectionObserver) {
+        intersectionObserver.disconnect();
+        intersectionObserver = null;
+    }
+
+    // Remove matchMedia listener
+    motionQuery.removeEventListener('change', handleMotionChange);
 }

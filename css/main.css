@@ -40,11 +40,12 @@ body {
 
 html {
     scrollbar-gutter: stable;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
 }
 
 html.scrolling-active {
-    scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--primary-bg-color);
 }
 
@@ -860,8 +861,20 @@ ul {
 
 /* Auto-hide scrollbar, show only while scrolling */
 html::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+    width: 6px;
+    height: 6px;
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+html::-webkit-scrollbar-track {
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 3px;
+    transition: background 0.3s ease;
 }
 
 html.scrolling-active::-webkit-scrollbar {
@@ -875,6 +888,9 @@ html.scrolling-active::-webkit-scrollbar-track {
 
 html.scrolling-active::-webkit-scrollbar-thumb {
     background: var(--accent-color);
+}
+
+html.scrolling-active::-webkit-scrollbar-thumb {
     border-radius: 5px;
 }
 
@@ -1412,5 +1428,46 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .about-wrapper__image img.profile-img {
         width: 150px;
         height: 150px;
+    }
+}
+
+/* ── Reduced Motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+        scrollbar-width: auto;
+        scrollbar-color: var(--accent-color) var(--primary-bg-color);
+    }
+
+    .scroll-reveal-section {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .typed-cursor {
+        animation: none;
+        display: none;
+    }
+
+    #network-bg {
+        display: none;
+    }
+
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    html::-webkit-scrollbar,
+    html.scrolling-active::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    html::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
     }
 }

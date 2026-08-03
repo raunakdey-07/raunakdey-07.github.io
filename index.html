@@ -59,6 +59,20 @@
         <link rel="preload" href="https://unpkg.com/swiper/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css"></noscript>
         <link rel="stylesheet" href="css/main.css">
+        <!-- Progressive enhancement: show Swiper slides when JS is disabled -->
+        <noscript>
+            <style>
+                .swiper-wrapper { display: flex; flex-wrap: wrap; }
+                .swiper-slide { flex: 0 0 100%; max-width: 100%; }
+                @media (min-width: 768px) {
+                    .swiper-slide { flex: 0 0 50%; max-width: 50%; }
+                }
+                @media (min-width: 1024px) {
+                    .swiper-slide { flex: 0 0 33.333%; max-width: 33.333%; }
+                }
+                .swiper-pagination, .swiper-button-prev, .swiper-button-next { display: none; }
+            </style>
+        </noscript>
         <!-- Enhanced JSON-LD Structured Data -->
         <script type="application/ld+json">
     {
@@ -521,5 +535,14 @@
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js" defer></script>
     <script src="js/main.min.js" defer></script>
     <script src="js/networkAnimation.min.js" defer></script>
+    <!-- Fallback for no-JS: static background for canvas -->
+    <noscript>
+        <style>
+            #network-bg {
+                background: #121212;
+                display: block;
+            }
+        </style>
+    </noscript>
 </body>
 </html>

@@ -1,13 +1,17 @@
-document.addEventListener('DOMContentLoaded', function() {
+(function () {
+    'use strict';
+
+    // ── Feature: Device & Motion State ──────────────────────────
     const header = document.querySelector('.header');
     const getHeaderOffset = () => (header ? header.offsetHeight : 70);
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const isMobile = window.innerWidth <= 768;
     const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
-    const motionScale = prefersReducedMotion ? 0 : (isAndroidPhone ? 0.55 : 1);
+    const motionScale = prefersReducedMotion.matches ? 0 : (isAndroidPhone ? 0.55 : 1);
     const rootElement = document.documentElement;
     let scrollbarHideTimer = null;
 
+    // ── Feature: Scrollbar Visibility ───────────────────────────
     function showScrollbarDuringActivity() {
         rootElement.classList.add('scrolling-active');
         if (scrollbarHideTimer) {
@@ -27,15 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Typed.js initialization
+    // ── Feature: Typed Role Text ────────────────────────────────
     const typedRoleElement = document.getElementById('typed-role');
     const roleStrings = [
         'Web Developer.',
         'Quant Researcher.',
         'Kaggle Competitor.'
     ];
+
     if (typedRoleElement) {
-        if (prefersReducedMotion) {
+        if (prefersReducedMotion.matches) {
             typedRoleElement.textContent = 'Data Science Student.';
         } else if (isMobile) {
             let roleIndex = 0;
@@ -45,23 +50,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 typedRoleElement.textContent = roleStrings[roleIndex];
             }, 2400);
         } else {
-            new Typed('#typed-role', {
-                strings: roleStrings,
-                typeSpeed: Math.max(18, Math.round(40 * motionScale)), // Speed of typing in milliseconds
-                backSpeed: Math.max(14, Math.round(28 * motionScale)), // Speed of deleting in milliseconds
-                backDelay: Math.round(800 * motionScale), // Pause before deleting
-                startDelay: Math.round(150 * motionScale), // Pause before typing starts
-                loop: true, // Loop the animation
-                showCursor: true,
-                cursorChar: '|',
-                smartBackspace: true // Only backspace what doesn't match the next string
-            });
+            if (typeof Typed !== 'undefined') {
+                new Typed('#typed-role', {
+                    strings: roleStrings,
+                    typeSpeed: Math.max(18, Math.round(40 * motionScale)),
+                    backSpeed: Math.max(14, Math.round(28 * motionScale)),
+                    backDelay: Math.round(800 * motionScale),
+                    startDelay: Math.round(150 * motionScale),
+                    loop: true,
+                    showCursor: true,
+                    cursorChar: '|',
+                    smartBackspace: true
+                });
+            } else {
+                // Fallback: static first string if Typed.js fails to load
+                typedRoleElement.textContent = roleStrings[0];
+            }
         }
     }
 
-    // Active Nav Link Highlighting
+    // ── Feature: Active Nav Link Highlighting ───────────────────
     const sections = document.querySelectorAll('section[id]');
-    const navLinksForHighlight = document.querySelectorAll('.nav-links li a'); // Renamed for clarity
+    const navLinksForHighlight = document.querySelectorAll('.nav-links li a');
     let sectionPositions = [];
 
     function cacheSectionPositions() {
@@ -78,21 +88,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const section = sectionPositions[i];
             if (scrollY + getHeaderOffset() >= section.top) {
                 currentSectionId = section.id;
-                break; 
+                break;
             }
         }
-        
-        navLinksForHighlight.forEach(link => { // Use renamed variable
+
+        navLinksForHighlight.forEach((link) => {
             const linkHref = link.getAttribute('href');
-            // Check if it's an internal section link
             if (linkHref && linkHref.startsWith('#')) {
-                if (linkHref === `#${currentSectionId}`) {
-                    link.classList.add('active-link');
-                } else {
-                    link.classList.remove('active-link');
-                }
+                link.classList.toggle('active-link', linkHref === `#${currentSectionId}`);
             } else {
-                // For non-section links (like Resume), ensure they are not active
                 link.classList.remove('active-link');
             }
         });
@@ -101,9 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const backToTopButton = document.querySelector('.back-to-top');
 
     function setBackToTopVisibility() {
-        if (!backToTopButton) {
-            return;
-        }
+        if (!backToTopButton) return;
         const scrollY = window.scrollY || document.documentElement.scrollTop;
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         const docHeight = Math.max(
@@ -114,9 +116,12 @@ document.addEventListener('DOMContentLoaded', function() {
         backToTopButton.classList.toggle('visible', scrollY > 260 || isNearBottom);
     }
 
-    cacheSectionPositions();
-    setActiveLink();
-    setBackToTopVisibility();
+    function onScroll() {
+        cacheSectionPositions();
+        setActiveLink();
+        setBackToTopVisibility();
+    }
+
     let activeLinkTicking = false;
     window.addEventListener('scroll', () => {
         if (activeLinkTicking) return;
@@ -128,18 +133,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, { passive: true });
 
+    let resizeTimer = null;
     window.addEventListener('resize', () => {
-        cacheSectionPositions();
-        setBackToTopVisibility();
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            cacheSectionPositions();
+            setBackToTopVisibility();
+        }, 150);
     }, { passive: true });
 
-    window.addEventListener('load', () => {
-        cacheSectionPositions();
-        setBackToTopVisibility();
-    });
+    window.addEventListener('load', onScroll);
+    cacheSectionPositions();
+    setActiveLink();
+    setBackToTopVisibility();
 
-    // Smooth scroll for navigation links
-    document.querySelectorAll('.nav-links a[href^="#"], a.cta-btn--hero[href^="#"], .back-to-top[href^="#"]').forEach(anchor => {
+    // ── Feature: Smooth Scroll for Navigation ───────────────────
+    document.querySelectorAll('.nav-links a[href^="#"], a.cta-btn--hero[href^="#"], .back-to-top[href^="#"]').forEach((anchor) => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
@@ -147,34 +156,74 @@ document.addEventListener('DOMContentLoaded', function() {
             if (targetElement) {
                 const targetTop = targetElement.getBoundingClientRect().top + window.scrollY;
                 let scrollToPosition = targetTop - Math.max(getHeaderOffset() - 10, 0);
-                if (targetId === '#top') { // Special case for back-to-top
+                if (targetId === '#top') {
                     scrollToPosition = 0;
                 }
                 window.scrollTo({
                     top: scrollToPosition,
-                    behavior: 'smooth'
+                    behavior: prefersReducedMotion.matches ? 'auto' : 'smooth'
                 });
             }
         });
     });
 
-    // Current Year for Footer
-    if (document.getElementById('current-year')) {
-        document.getElementById('current-year').textContent = new Date().getFullYear();
+    // ── Feature: Footer Current Year ────────────────────────────
+    const currentYearEl = document.getElementById('current-year');
+    if (currentYearEl) {
+        currentYearEl.textContent = new Date().getFullYear();
     }
 
-    // Swiper Initializations
+    // ── Feature: Swiper Initializations ─────────────────────────
     if (typeof Swiper !== 'undefined') {
+        const sectionObservers = [];
+        const swiperRegistry = [];
+
         const initSwiper = (selector, config) => {
             try {
-                return new Swiper(selector, config);
+                const instance = new Swiper(selector, config);
+                swiperRegistry.push(instance);
+                return instance;
             } catch (err) {
                 console.warn(`Swiper initialization failed for ${selector}:`, err);
                 return null;
             }
         };
 
-        initSwiper('.project-swiper', {
+        const bindSwiperVisibility = (swiper, rootSelector) => {
+            const root = document.querySelector(rootSelector);
+            if (!swiper || !root || !('IntersectionObserver' in window)) return;
+
+            const start = () => {
+                if (swiper.autoplay && !swiper.autoplay.running) swiper.autoplay.start();
+            };
+            const stop = () => {
+                if (swiper.autoplay && swiper.autoplay.running) swiper.autoplay.stop();
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
+                        start();
+                    } else {
+                        stop();
+                    }
+                });
+            }, { threshold: [0, 0.25, 0.45, 0.7] });
+
+            observer.observe(root);
+            sectionObservers.push(observer);
+
+            root.addEventListener('focusin', start);
+            root.addEventListener('mouseenter', start);
+            root.addEventListener('focusout', () => {
+                if (!root.matches(':focus-within')) stop();
+            });
+            root.addEventListener('mouseleave', () => {
+                if (!root.matches(':focus-within')) stop();
+            });
+        };
+
+        const projectSwiper = initSwiper('.project-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -182,7 +231,8 @@ document.addEventListener('DOMContentLoaded', function() {
             autoplay: {
                 delay: Math.max(1800, Math.round(4000 * motionScale)),
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true
+                pauseOnMouseEnter: true,
+                stopOnLastSlide: false
             },
             pagination: {
                 el: '.project-swiper-pagination',
@@ -193,8 +243,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 1024: { slidesPerView: 3, spaceBetween: 40 }
             }
         });
+        bindSwiperVisibility(projectSwiper, '.projects-section');
 
-        initSwiper('.achievement-swiper', {
+        const achievementSwiper = initSwiper('.achievement-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -202,7 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
             autoplay: {
                 delay: Math.max(2000, Math.round(4500 * motionScale)),
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true
+                pauseOnMouseEnter: true,
+                stopOnLastSlide: false
             },
             pagination: {
                 el: '.achievement-swiper-pagination',
@@ -213,8 +265,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 1024: { slidesPerView: 3, spaceBetween: 40 }
             }
         });
+        bindSwiperVisibility(achievementSwiper, '.achievements-section');
 
-        initSwiper('.skill-swiper', {
+        const skillSwiper = initSwiper('.skill-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -222,7 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
             autoplay: {
                 delay: Math.max(2000, Math.round(4500 * motionScale)),
                 disableOnInteraction: false,
-                pauseOnMouseEnter: false
+                pauseOnMouseEnter: true,
+                stopOnLastSlide: false
             },
             pagination: {
                 el: '.skill-swiper-pagination',
@@ -230,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             on: {
                 init(swiper) {
-                    if (swiper.autoplay) swiper.autoplay.start();
+                    if (swiper.autoplay) swiper.autoplay.stop();
                 }
             },
             breakpoints: {
@@ -238,46 +292,48 @@ document.addEventListener('DOMContentLoaded', function() {
                 1024: { slidesPerView: 3, spaceBetween: 30 }
             }
         });
+        bindSwiperVisibility(skillSwiper, '.skills-section');
+
+        if (prefersReducedMotion.matches) {
+            swiperRegistry.forEach((swiper) => {
+                if (swiper.autoplay) swiper.autoplay.stop();
+            });
+        }
     }
 
-    // Mobile Menu Toggle
+    // ── Feature: Mobile Menu Toggle ─────────────────────────────
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const mobileNavLinks = document.querySelector('.nav-links'); // Renamed to avoid conflict
+    const mobileNavLinks = document.querySelector('.nav-links');
     const menuIcon = mobileMenuBtn?.querySelector('.fa-bars') ?? null;
     const closeIcon = mobileMenuBtn?.querySelector('.fa-times') ?? null;
+
+    function closeMobileMenu() {
+        if (mobileNavLinks) mobileNavLinks.classList.remove('active');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            mobileMenuBtn.setAttribute('aria-label', 'Open menu');
+        }
+        if (menuIcon) menuIcon.style.display = 'block';
+        if (closeIcon) closeIcon.style.display = 'none';
+    }
 
     if (mobileMenuBtn && mobileNavLinks) {
         mobileMenuBtn.addEventListener('click', () => {
             mobileNavLinks.classList.toggle('active');
             const isOpen = mobileNavLinks.classList.contains('active');
             mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
-            if (isOpen) {
-                mobileMenuBtn.setAttribute('aria-label', 'Close menu');
-                if(menuIcon) menuIcon.style.display = 'none';
-                if(closeIcon) closeIcon.style.display = 'block';
-            } else {
-                mobileMenuBtn.setAttribute('aria-label', 'Open menu');
-                if(menuIcon) menuIcon.style.display = 'block';
-                if(closeIcon) closeIcon.style.display = 'none';
-            }
+            mobileMenuBtn.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+            if (menuIcon) menuIcon.style.display = isOpen ? 'none' : 'block';
+            if (closeIcon) closeIcon.style.display = isOpen ? 'block' : 'none';
         });
 
-        // Close mobile menu when a link is clicked
-        mobileNavLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (mobileNavLinks.classList.contains('active')) {
-                    mobileNavLinks.classList.remove('active');
-                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                    mobileMenuBtn.setAttribute('aria-label', 'Open menu');
-                    if(menuIcon) menuIcon.style.display = 'block';
-                    if(closeIcon) closeIcon.style.display = 'none';
-                }
-            });
+        mobileNavLinks.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', closeMobileMenu);
         });
     }
 
-    // Scroll Reveal Animations
-    if (!prefersReducedMotion && typeof ScrollReveal !== 'undefined') {
+    // ── Feature: Scroll Reveal Animations ───────────────────────
+    if (!prefersReducedMotion.matches && typeof ScrollReveal !== 'undefined') {
         const sr = ScrollReveal();
         const revealSections = document.querySelectorAll('.section:not(#contact)');
         revealSections.forEach((section) => {
@@ -294,5 +350,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    } else if (typeof ScrollReveal !== 'undefined') {
+        // Reduced motion: make sections visible immediately
+        document.querySelectorAll('.section:not(#contact)').forEach((section) => {
+            section.classList.add('scroll-reveal-section', 'active');
+        });
     }
-});
+
+    // ── Feature: Lifecycle & Cleanup ────────────────────────────
+    let isPageVisible = true;
+
+    function handleVisibilityChange() {
+        isPageVisible = !document.hidden;
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // React to prefers-reduced-motion changes at runtime
+    prefersReducedMotion.addEventListener('change', () => {
+        // ScrollReveal doesn't support dynamic reconfiguration,
+        // but we can at least ensure sections are visible if motion is reduced
+        if (prefersReducedMotion.matches) {
+            document.querySelectorAll('.scroll-reveal-section').forEach((el) => {
+                el.classList.add('active');
+            });
+        }
+    });
+
+    /**
+     * Tear down all runtime behaviors.
+     * Call this if the page is dynamically unloaded or during testing.
+     */
+    function destroy() {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (resizeTimer) clearTimeout(resizeTimer);
+        if (scrollbarHideTimer) clearTimeout(scrollbarHideTimer);
+        sectionObservers.forEach((observer) => observer.disconnect());
+        swiperRegistry.forEach((swiper) => {
+            if (swiper && swiper.autoplay) swiper.autoplay.stop();
+        });
+    }
+
+})();
