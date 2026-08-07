@@ -5,7 +5,6 @@
     const header = document.querySelector('.header');
     const getHeaderOffset = () => (header ? header.offsetHeight : 70);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const isMobile = window.innerWidth <= 768;
     const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
     const motionScale = prefersReducedMotion.matches ? 0 : (isAndroidPhone ? 0.55 : 1);
     const rootElement = document.documentElement;
@@ -33,39 +32,35 @@
 
     // ── Feature: Typed Role Text ────────────────────────────────
     const typedRoleElement = document.getElementById('typed-role');
-    const roleStrings = [
-        'Web Developer.',
+  const roleStrings = [
         'Quant Researcher.',
-        'Kaggle Competitor.'
+        'Kaggle Competitor.',
+        'Web Developer.',
     ];
 
     if (typedRoleElement) {
         if (prefersReducedMotion.matches) {
-            typedRoleElement.textContent = 'Data Science Student.';
-        } else if (isMobile) {
+            typedRoleElement.textContent = roleStrings.join(' • ');
+        } else if (typeof Typed !== 'undefined') {
+            new Typed('#typed-role', {
+                strings: roleStrings,
+                typeSpeed: Math.max(18, Math.round(40 * motionScale)),
+                backSpeed: Math.max(14, Math.round(28 * motionScale)),
+                backDelay: Math.round(800 * motionScale),
+                startDelay: Math.round(150 * motionScale),
+                loop: true,
+                showCursor: true,
+                cursorChar: '|',
+                smartBackspace: true
+            });
+        } else {
+            // Fallback: rotate all roles without Typed.js
             let roleIndex = 0;
             typedRoleElement.textContent = roleStrings[roleIndex];
             setInterval(() => {
                 roleIndex = (roleIndex + 1) % roleStrings.length;
                 typedRoleElement.textContent = roleStrings[roleIndex];
             }, 2400);
-        } else {
-            if (typeof Typed !== 'undefined') {
-                new Typed('#typed-role', {
-                    strings: roleStrings,
-                    typeSpeed: Math.max(18, Math.round(40 * motionScale)),
-                    backSpeed: Math.max(14, Math.round(28 * motionScale)),
-                    backDelay: Math.round(800 * motionScale),
-                    startDelay: Math.round(150 * motionScale),
-                    loop: true,
-                    showCursor: true,
-                    cursorChar: '|',
-                    smartBackspace: true
-                });
-            } else {
-                // Fallback: static first string if Typed.js fails to load
-                typedRoleElement.textContent = roleStrings[0];
-            }
         }
     }
 
@@ -174,9 +169,9 @@
     }
 
     // ── Feature: Swiper Initializations ─────────────────────────
+    const sectionObservers = [];
+    const swiperRegistry = [];
     if (typeof Swiper !== 'undefined') {
-        const sectionObservers = [];
-        const swiperRegistry = [];
 
         const initSwiper = (selector, config) => {
             try {
