@@ -1471,3 +1471,14 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         background: var(--accent-color);
     }
 }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10000;
+}
