@@ -54,10 +54,6 @@ html.scrolling-active {
     transition: opacity 0.3s ease;
 }
 
-.main-content.loaded {
-    opacity: 1;
-}
-
 #network-bg {
     position: fixed;
     top: 0;
@@ -210,7 +206,6 @@ ul {
 }
 .logo .k-left { color: var(--primary-text-color); }
 .logo .k-right { color: var(--accent-color); }
-
 
 .nav-links {
     display: flex;
@@ -390,13 +385,6 @@ ul {
 .cta-btn--hero {
     font-size: 1.05rem;
     padding: 0.95rem 2.2rem;
-}
-
-.hero-btn-secondary {
-    background-color: transparent;
-    color: var(--primary-text-color);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: none;
 }
 
 .hero-btn-secondary:hover {
@@ -715,7 +703,6 @@ ul {
     margin: 0 auto; /* Center card in slide if max-width is used */
 }
 
-
 /* Swiper Navigation Buttons */
 .swiper-button-prev,
 .swiper-button-next {
@@ -764,7 +751,6 @@ ul {
     top: 50%; /* Vertically center navigation buttons */
     transform: translateY(-50%);
 }
-
 
 /* Contact Section */
 .contact-section {
@@ -1042,7 +1028,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         top: 65px;
         left: 0;
         background-color: #111;
-        border-top: 1px solid var(--primary-color);
+        border-top: 1px solid var(--accent-color);
         z-index: 1000;
         padding-bottom: 1rem;
     }
@@ -1063,7 +1049,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         width: 100%;
         border-bottom: 1px solid #222;
         font-size: 1rem;
-        color: var(--text-color-light);
+        color: var(--primary-text-color);
     }
     .nav-links li:last-child a {
         border-bottom: none;
@@ -1074,24 +1060,23 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         display: inline-block;
         width: auto;
         padding: 0.6rem 1.2rem;
-        background-color: var(--primary-color);
+        background-color: var(--accent-color);
         color: #fff;
         border-radius: 5px;
     }
     .nav-links li a.btn--resume:hover {
-        background-color: var(--primary-color-dark);
+        background-color: var(--accent-color-hover);
     }
-
 
     .nav-links li a:hover,
     .nav-links li a.active-link {
-        background-color: var(--primary-color-transparent);
-        color: var(--primary-color);
+        background-color: rgba(255, 0, 0, 0.1);
+        color: var(--accent-color);
     }
     
     .mobile-menu-btn {
         display: none;
-        color: var(--text-color-light);
+        color: var(--primary-text-color);
         font-size: 1.8rem;
         background: none;
         border: none;
@@ -1116,7 +1101,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         top: 65px;
         left: 0;
         background-color: #111; 
-        border-top: 1px solid var(--primary-color); 
+        border-top: 1px solid var(--accent-color); 
         z-index: 1000; 
         padding-bottom: 1rem;
     }
@@ -1196,7 +1181,6 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         max-width: 500px;
     }
 
-
     .hero-content h1 {
         font-size: 2.5rem;
     }
@@ -1225,7 +1209,6 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .profile-pic-container img {
         max-width: 200px;
     }
-
 
     .about-content {
         flex-direction: column;
@@ -1320,7 +1303,6 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         font-size: 0.96rem;
         line-height: 1.5;
     }
-
 
     .footer-content {
         flex-direction: column;

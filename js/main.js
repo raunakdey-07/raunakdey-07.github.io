@@ -11,14 +11,23 @@
     let scrollbarHideTimer = null;
 
     // ── Feature: Scrollbar Visibility ───────────────────────────
+    let scrollbarTicking = false;
+    
     function showScrollbarDuringActivity() {
-        rootElement.classList.add('scrolling-active');
-        if (scrollbarHideTimer) {
+        if (scrollbarTicking) return;
+    
+        scrollbarTicking = true;
+    
+        requestAnimationFrame(() => {
+            rootElement.classList.add('scrolling-active');
+    
             clearTimeout(scrollbarHideTimer);
-        }
-        scrollbarHideTimer = setTimeout(() => {
-            rootElement.classList.remove('scrolling-active');
-        }, 800);
+            scrollbarHideTimer = setTimeout(() => {
+                rootElement.classList.remove('scrolling-active');
+            }, 800);
+    
+            scrollbarTicking = false;
+        });
     }
 
     window.addEventListener('scroll', showScrollbarDuringActivity, { passive: true });
@@ -31,18 +40,24 @@
     });
 
     // ── Feature: Typed Role Text ────────────────────────────────
-    const typedRoleElement = document.getElementById('typed-role');
-  const roleStrings = [
-        'Quant Researcher.',
-        'Kaggle Competitor.',
-        'Web Developer.',
-    ];
-
-    if (typedRoleElement) {
+    function initTypedRole() {
+        const typedRoleElement = document.getElementById('typed-role');
+        if (!typedRoleElement) return;
+    
+        const roleStrings = [
+            'Quant Researcher.',
+            'Kaggle Competitor.',
+            'Web Developer.'
+        ];
+    
         if (prefersReducedMotion.matches) {
             typedRoleElement.textContent = roleStrings.join(' • ');
-        } else if (typeof Typed !== 'undefined') {
-            new Typed('#typed-role', {
+            return;
+        }
+    
+        if (typeof Typed !== 'undefined') {
+            typedRoleElement.textContent = '';
+            new Typed(typedRoleElement, {
                 strings: roleStrings,
                 typeSpeed: Math.max(18, Math.round(40 * motionScale)),
                 backSpeed: Math.max(14, Math.round(28 * motionScale)),
@@ -53,16 +68,20 @@
                 cursorChar: '|',
                 smartBackspace: true
             });
-        } else {
-            // Fallback: rotate all roles without Typed.js
-            let roleIndex = 0;
-            typedRoleElement.textContent = roleStrings[roleIndex];
-            setInterval(() => {
-                roleIndex = (roleIndex + 1) % roleStrings.length;
-                typedRoleElement.textContent = roleStrings[roleIndex];
-            }, 2400);
+            return;
         }
+    
+        // Fallback without Typed.js
+        let roleIndex = 0;
+        typedRoleElement.textContent = roleStrings[roleIndex];
+    
+        setInterval(() => {
+            roleIndex = (roleIndex + 1) % roleStrings.length;
+            typedRoleElement.textContent = roleStrings[roleIndex];
+        }, 2400);
     }
+    
+    initTypedRole();
 
     // ── Feature: Active Nav Link Highlighting ───────────────────
     const sections = document.querySelectorAll('section[id]');
@@ -353,12 +372,6 @@
     }
 
     // ── Feature: Lifecycle & Cleanup ────────────────────────────
-    let isPageVisible = true;
-
-    function handleVisibilityChange() {
-        isPageVisible = !document.hidden;
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // React to prefers-reduced-motion changes at runtime
     prefersReducedMotion.addEventListener('change', () => {
@@ -376,7 +389,6 @@
      * Call this if the page is dynamically unloaded or during testing.
      */
     function destroy() {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
         if (resizeTimer) clearTimeout(resizeTimer);
         if (scrollbarHideTimer) clearTimeout(scrollbarHideTimer);
         sectionObservers.forEach((observer) => observer.disconnect());
