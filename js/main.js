@@ -205,35 +205,47 @@
 
         const bindSwiperVisibility = (swiper, rootSelector) => {
             const root = document.querySelector(rootSelector);
-            if (!swiper || !root || !('IntersectionObserver' in window)) return;
+            if (!swiper || !root) return;
 
+            let isVisible = !('IntersectionObserver' in window);
+            let isHovered = root.matches(':hover');
             const start = () => {
+                if (!isVisible || isHovered || root.matches(':focus-within') || prefersReducedMotion.matches) return;
                 if (swiper.autoplay && !swiper.autoplay.running) swiper.autoplay.start();
             };
             const stop = () => {
                 if (swiper.autoplay && swiper.autoplay.running) swiper.autoplay.stop();
             };
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting && entry.intersectionRatio >= 0.45) {
-                        start();
-                    } else {
-                        stop();
-                    }
-                });
-            }, { threshold: [0, 0.25, 0.45, 0.7] });
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        isVisible = entry.isIntersecting && entry.intersectionRatio >= 0.45;
+                        if (isVisible) start();
+                        else stop();
+                    });
+                }, { threshold: [0, 0.25, 0.45, 0.7] });
 
-            observer.observe(root);
-            sectionObservers.push(observer);
+                observer.observe(root);
+                sectionObservers.push(observer);
+            }
 
-            root.addEventListener('focusin', start);
-            root.addEventListener('mouseenter', start);
-            root.addEventListener('focusout', () => {
-                if (!root.matches(':focus-within')) stop();
+            root.addEventListener('focusin', stop);
+            root.addEventListener('focusout', (event) => {
+                // Moving between carousel links must not restart autoplay.
+                if (!root.contains(event.relatedTarget)) start();
+            });
+            root.addEventListener('mouseenter', () => {
+                isHovered = true;
+                stop();
             });
             root.addEventListener('mouseleave', () => {
-                if (!root.matches(':focus-within')) stop();
+                isHovered = false;
+                start();
+            });
+            prefersReducedMotion.addEventListener('change', () => {
+                if (prefersReducedMotion.matches) stop();
+                else start();
             });
         };
 
