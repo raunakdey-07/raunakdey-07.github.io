@@ -11,7 +11,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 ### Design & Animation
 
 - **Modern Dark Theme** with red accent colors
-- **Animated Loading Screen** with network background effects
+- **Network Particle Background** animating on the hero canvas
 - **Smooth Scroll Animations** with ScrollReveal.js
 - **Enhanced Section Headers** with gradient backgrounds and glowing effects
 - **Interactive Hover Effects** on cards and buttons
@@ -42,7 +42,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 - **CSS3** - Advanced animations, gradients, and responsive design
 - **Vanilla JavaScript** - Performance-optimized interactions
 - **Font Awesome** - Professional iconography
-- **Google Fonts** - Typography (Poppins, Inter, Fira Code)
+- **Google Fonts** - Typography (Fraunces, IBM Plex Sans)
 
 ### Libraries & Frameworks
 
@@ -54,7 +54,7 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 
 - **JSON-LD Structured Data** for rich search results
 - **Open Graph Meta Tags** for social media sharing
-- **Sitemap** with lastmod, changefreq, priority, and section anchors for full SEO coverage
+- **Sitemap** with lastmod, changefreq and priority
 - **Robots.txt** for search engine optimization
 
 ## Project Structure
@@ -74,10 +74,8 @@ raunakdey-07.github.io/
 ├── css/                    # Stylesheets
 │   └── main.css            # Core styling + responsive breakpoints
 └── js/                     # JavaScript files
-    ├── main.js             # Core functionality
-    ├── main.min.js         # Minified (referenced in HTML)
-    ├── networkAnimation.js # Background effects
-    └── networkAnimation.min.js  # Minified (referenced in HTML)
+    ├── main.js             # Core functionality (loaded directly, served gzipped)
+    └── networkAnimation.js # Background effects (loaded directly, served gzipped)
 ```
 
 ## Sections
@@ -103,7 +101,6 @@ raunakdey-07.github.io/
 
 - Optimized animation timing for instant responsiveness
 - Reduced ScrollReveal delays for immediate section appearance
-- Enhanced loading screen with smooth transitions
 - Improved mobile responsiveness across all devices
 
 ### SEO & Technical
@@ -142,13 +139,6 @@ npx serve .
 
 The site is automatically deployed via GitHub Pages when changes are pushed to the main branch.
 
-## Performance Metrics
-
-- **Page Load Speed**: Optimized for sub-3 second loading
-- **Mobile Performance**: 95+ Google PageSpeed score
-- **SEO Score**: Comprehensive optimization
-- **Accessibility**: WCAG 2.1 compliant
-
 ## Contributing
 
 While this is a personal portfolio, suggestions and feedback are welcome! Feel free to:
@@ -156,10 +146,6 @@ While this is a personal portfolio, suggestions and feedback are welcome! Feel f
 - Open an issue for bug reports
 - Submit feature suggestions
 - Provide feedback on design and UX
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ## Contact
 
@@ -170,7 +156,3 @@ This project is open source and available under the [MIT License](LICENSE).
 ---
 
 **Star this repository if you found it helpful!**
-
-### Last Updated
-
-July 2025
