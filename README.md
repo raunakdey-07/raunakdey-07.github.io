@@ -137,7 +137,13 @@ npx serve .
 
 ### Deployment
 
-The site is automatically deployed via GitHub Pages when changes are pushed to the main branch.
+Production is served from **https://raunak-dey.vercel.app/** (Vercel). This repository
+is the source for that deployment. The canonical URL, Open Graph URL, `robots.txt`
+sitemap reference and JSON-LD all identify the Vercel host.
+
+GitHub Pages also serves this repository at `https://raunakdey-07.github.io/`. It
+serves identical markup, so its `<link rel="canonical">` points crawlers to the
+Vercel host rather than competing with it.
 
 ## Contributing
 

@@ -540,8 +540,20 @@ ul {
     top: 1rem;
     right: 1rem;
     font-size: 1.2rem;
-        color: var(--primary-text-color);
+    color: var(--primary-text-color);
     transition: color 0.3s ease;
+}
+
+/* The icon itself renders around 17px wide, below the WCAG 2.2 target-size
+   minimum. Extend the hit area with a pseudo-element so the link is at least
+   24x24 without moving or enlarging the visible icon. */
+.achievement-post-link::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    bottom: -2px;
+    left: -4px;
 }
 
 .achievement-post-link:hover {
@@ -574,7 +586,6 @@ ul {
     background-color: var(--secondary-bg-color);
     padding: 1.8rem; /* Increased padding */
     border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
     text-align: left;
     display: flex;
     flex-direction: column;
@@ -709,6 +720,18 @@ ul {
 }
 
 /* Swiper Pagination */
+/* Swiper gives each bullet a 4px side margin, which puts the centres about 14px
+   apart. That is too tight for WCAG 2.2 target size, because a 24px circle
+   around one bullet would intersect its neighbour's. A wider gap spaces the
+   centres 28px+ apart so the bullets pass via the spacing exception, without
+   enlarging the dot itself. justify-content restores the centring that the
+   previous inline-block layout got from text-align. */
+.swiper-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+}
+
 .swiper-pagination-bullet {
     background-color: var(--secondary-text-color); /* Default bullet color */
     opacity: 0.7;
@@ -1173,7 +1196,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     }
     
     .hero-content .typed-cursor {
-        font-size: 2.5rem;
+        font-size: 2.25rem;
         display: inline-block;
         vertical-align: baseline;
     }
@@ -1223,7 +1246,8 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .hero-content h1 {
         font-size: 2rem;
     }
-    .hero-content .role {
+    .hero-content .hero-title .role,
+    .hero-content .hero-title .typed-cursor {
         font-size: 1.45rem;
     }
     .about-wrapper__info-text {
@@ -1326,7 +1350,8 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .hero-content h1 {
         font-size: 2rem;
     }
-    .hero-content .role {
+    .hero-content .hero-title .role,
+    .hero-content .hero-title .typed-cursor {
         font-size: 1.3rem;
     }
     .hero-actions .cta-btn {
@@ -1382,9 +1407,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
 
 @media (max-width: 480px) {
     .hero-content .hero-title,
-    .hero-content .hero-title .name,
-    .hero-content .hero-title .role,
-    .hero-content .hero-title .typed-cursor {
+    .hero-content .hero-title .name {
         font-size: 2.0rem;
     }
 
@@ -1400,6 +1423,13 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         scroll-behavior: auto;
         scrollbar-width: auto;
         scrollbar-color: var(--accent-color) var(--primary-bg-color);
+    }
+
+    /* Typed.js is not used under reduced motion, so the role text is a static
+       string listing every role. It must be allowed to wrap, otherwise the
+       nowrap on .role pushes the hero wider than narrow viewports. */
+    .hero-title .role {
+        white-space: normal;
     }
 
     .scroll-reveal-section {

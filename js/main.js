@@ -108,10 +108,14 @@
 
         navLinksForHighlight.forEach((link) => {
             const linkHref = link.getAttribute('href');
-            if (linkHref && linkHref.startsWith('#')) {
-                link.classList.toggle('active-link', linkHref === `#${currentSectionId}`);
+            const isActive = Boolean(linkHref) && linkHref === `#${currentSectionId}`;
+            link.classList.toggle('active-link', isActive);
+            // Mirror the highlighted state for assistive tech. An absent attribute
+            // means "not the current section", which is the correct default.
+            if (isActive) {
+                link.setAttribute('aria-current', 'true');
             } else {
-                link.classList.remove('active-link');
+                link.removeAttribute('aria-current');
             }
         });
     }
@@ -130,7 +134,10 @@
         backToTopButton.classList.toggle('visible', scrollY > 260 || isNearBottom);
     }
 
-    function onScroll() {
+    function updateOnScroll() {
+        // Section offsets are re-read on every throttled scroll frame. Sections using
+        // content-visibility change height as they render, and late webfonts change
+        // text height, so caching these on load and resize alone goes stale.
         cacheSectionPositions();
         setActiveLink();
         setBackToTopVisibility();
@@ -141,8 +148,7 @@
         if (activeLinkTicking) return;
         activeLinkTicking = true;
         requestAnimationFrame(() => {
-            setActiveLink();
-            setBackToTopVisibility();
+            updateOnScroll();
             activeLinkTicking = false;
         });
     }, { passive: true });
@@ -156,7 +162,7 @@
         }, 150);
     }, { passive: true });
 
-    window.addEventListener('load', onScroll);
+    window.addEventListener('load', updateOnScroll);
     cacheSectionPositions();
     setActiveLink();
     setBackToTopVisibility();
@@ -188,7 +194,6 @@
     }
 
     // ── Feature: Swiper Initializations ─────────────────────────
-    const sectionObservers = [];
     const swiperRegistry = [];
     if (typeof Swiper !== 'undefined') {
 
@@ -227,7 +232,6 @@
                 }, { threshold: [0, 0.25, 0.45, 0.7] });
 
                 observer.observe(root);
-                sectionObservers.push(observer);
             }
 
             root.addEventListener('focusin', stop);
@@ -249,7 +253,15 @@
             });
         };
 
-        const projectSwiper = initSwiper('.project-swiper', {
+        // When every slide fits on screen at once there is nothing to page
+                // through, so the dots would be focusable controls that do nothing.
+                function syncPagination(swiper) {
+                    if (!swiper || !swiper.pagination || !swiper.pagination.el) return;
+                    const allVisible = swiper.slides.length <= swiper.params.slidesPerView;
+                    swiper.pagination.el.style.display = allVisible ? 'none' : '';
+                }
+
+                const projectSwiper = initSwiper('.project-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 30,
@@ -263,6 +275,10 @@
             pagination: {
                 el: '.project-swiper-pagination',
                 clickable: true,
+            },
+            on: {
+                init(swiper) { syncPagination(swiper); },
+                resize(swiper) { syncPagination(swiper); }
             },
             breakpoints: {
                 768: { slidesPerView: 2, spaceBetween: 30 },
@@ -333,28 +349,46 @@
     const menuIcon = mobileMenuBtn?.querySelector('.fa-bars') ?? null;
     const closeIcon = mobileMenuBtn?.querySelector('.fa-times') ?? null;
 
-    function closeMobileMenu() {
-        if (mobileNavLinks) mobileNavLinks.classList.remove('active');
+    const mobileNavItems = mobileNavLinks ? Array.from(mobileNavLinks.querySelectorAll('a')) : [];
+
+    // restoreFocus is false when a menu item was activated, because focus should
+    // follow the navigation rather than jump back to the toggle.
+    function closeMobileMenu(restoreFocus = false) {
+        if (!mobileNavLinks || !mobileNavLinks.classList.contains('active')) return;
+        mobileNavLinks.classList.remove('active');
         if (mobileMenuBtn) {
             mobileMenuBtn.setAttribute('aria-expanded', 'false');
             mobileMenuBtn.setAttribute('aria-label', 'Open menu');
         }
         if (menuIcon) menuIcon.style.display = 'block';
         if (closeIcon) closeIcon.style.display = 'none';
+        if (restoreFocus && mobileMenuBtn) mobileMenuBtn.focus();
     }
 
     if (mobileMenuBtn && mobileNavLinks) {
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileNavLinks.classList.toggle('active');
-            const isOpen = mobileNavLinks.classList.contains('active');
+        mobileMenuBtn.addEventListener('click', (event) => {
+            const isOpen = !mobileNavLinks.classList.contains('active');
+            mobileNavLinks.classList.toggle('active', isOpen);
             mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
             mobileMenuBtn.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
             if (menuIcon) menuIcon.style.display = isOpen ? 'none' : 'block';
             if (closeIcon) closeIcon.style.display = isOpen ? 'block' : 'none';
+            // Keyboard activation (click detail 0) moves focus into the menu so the
+            // user is not stranded on the toggle. Pointer activation is left alone
+            // so no focus ring appears after a tap.
+            if (isOpen && event.detail === 0 && mobileNavItems.length) {
+                mobileNavItems[0].focus();
+            }
         });
 
-        mobileNavLinks.querySelectorAll('a').forEach((link) => {
-            link.addEventListener('click', closeMobileMenu);
+        mobileNavItems.forEach((link) => {
+            link.addEventListener('click', () => closeMobileMenu(false));
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') return;
+            if (!mobileNavLinks.classList.contains('active')) return;
+            closeMobileMenu(true);
         });
     }
 
@@ -395,18 +429,5 @@
             });
         }
     });
-
-    /**
-     * Tear down all runtime behaviors.
-     * Call this if the page is dynamically unloaded or during testing.
-     */
-    function destroy() {
-        if (resizeTimer) clearTimeout(resizeTimer);
-        if (scrollbarHideTimer) clearTimeout(scrollbarHideTimer);
-        sectionObservers.forEach((observer) => observer.disconnect());
-        swiperRegistry.forEach((swiper) => {
-            if (swiper && swiper.autoplay) swiper.autoplay.stop();
-        });
-    }
 
 })();

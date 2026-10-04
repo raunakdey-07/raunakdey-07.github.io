@@ -24,10 +24,6 @@ if (!canvas) {
         velocity: { x: 0, y: 0 }
     };
     
-    // Adaptive particle count for balanced visuals and runtime cost
-    const particleCount = isLowPowerDevice
-        ? (window.innerWidth < 768 ? 24 : 42)
-        : (window.innerWidth < 768 ? 38 : 72);
     // Expanded color palette for artistic effects
     const particleColors = [
         '#ff003c', '#ff4d6d', '#ff809b', '#ff1a47', '#ff6680',
@@ -55,17 +51,10 @@ if (!canvas) {
     let isCanvasVisible = true;
     let isAnimating = false;
     let animationFrameId = null;
-    let isDestroyed = false;
-    
-    // Intersection Observer reference for cleanup
-    let intersectionObserver = null;
-    
-    // matchMedia query reference for cleanup
+
+    // matchMedia query, re-read when the preference changes at runtime
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
-    // Tracked listeners for cleanup
-    const trackedListeners = [];
-    
+
     function recomputeDeviceCapabilities() {
         prefersReducedMotion = motionQuery.matches;
         isMobileViewport = window.innerWidth <= 768;
@@ -273,60 +262,65 @@ if (!canvas) {
     }
     
     function connectParticles() {
+        const maxConnectionDistance = window.innerWidth < 768 ? 80 : 120;
+
         for (let i = 0; i < particles.length; i++) {
             for (let j = i + 1; j < particles.length; j++) {
                 const dx = particles[i].x - particles[j].x;
                 const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-    
-                const maxConnectionDistance = window.innerWidth < 768 ? 80 : 120;
                 const energyFactor = (particles[i].energy + particles[j].energy) / 200;
                 const connectionDistance = maxConnectionDistance * (1 + energyFactor * 0.5);
+
+                // Reject on squared distance before taking the square root. Most pairs
+                // are far apart, so this skips the root and the midpoint work for them.
+                if (dx * dx + dy * dy >= connectionDistance * connectionDistance) {
+                    continue;
+                }
+
                 const midX = (particles[i].x + particles[j].x) / 2;
                 const midY = (particles[i].y + particles[j].y) / 2;
-    
+
                 if (isInsideCalmZone(midX, midY)) {
                     continue;
                 }
-    
-                if (distance < connectionDistance) {
-                    let opacity = 1 - (distance / connectionDistance);
-    
-                    opacity *= (0.78 + energyFactor * 0.35);
-    
-                    const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.18 + 0.58;
-                    opacity *= lineVariation;
-    
-                    const baseLineWidth = 0.5;
-                    const energyLineWidth = baseLineWidth * (1 + energyFactor);
-    
-                    if (energyFactor > 0.3) {
-                        const gradient = ctx.createLinearGradient(
-                            particles[i].x, particles[i].y,
-                            particles[j].x, particles[j].y
-                        );
-                        gradient.addColorStop(0, `rgba(255, 0, 60, ${opacity})`);
-                        gradient.addColorStop(0.5, `rgba(255, 80, 120, ${opacity * 0.95})`);
-                        gradient.addColorStop(1, `rgba(255, 0, 60, ${opacity})`);
-                        ctx.strokeStyle = gradient;
-                    } else {
-                        ctx.strokeStyle = `rgba(255, 0, 60, ${opacity})`;
-                    }
-    
-                    ctx.lineWidth = energyLineWidth * 0.82;
+
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                let opacity = 1 - (distance / connectionDistance);
+
+                opacity *= (0.78 + energyFactor * 0.35);
+
+                const lineVariation = Math.sin(animationTime + distance * 0.01) * 0.18 + 0.58;
+                opacity *= lineVariation;
+
+                const baseLineWidth = 0.5;
+                const energyLineWidth = baseLineWidth * (1 + energyFactor);
+
+                if (energyFactor > 0.3) {
+                    const gradient = ctx.createLinearGradient(
+                        particles[i].x, particles[i].y,
+                        particles[j].x, particles[j].y
+                    );
+                    gradient.addColorStop(0, `rgba(255, 0, 60, ${opacity})`);
+                    gradient.addColorStop(0.5, `rgba(255, 80, 120, ${opacity * 0.95})`);
+                    gradient.addColorStop(1, `rgba(255, 0, 60, ${opacity})`);
+                    ctx.strokeStyle = gradient;
+                } else {
+                    ctx.strokeStyle = `rgba(255, 0, 60, ${opacity})`;
+                }
+
+                ctx.lineWidth = energyLineWidth * 0.82;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+
+                if (energyFactor > 0.6) {
+                    ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.16})`;
+                    ctx.lineWidth = energyLineWidth * 0.2;
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
                     ctx.stroke();
-    
-                    if (energyFactor > 0.6) {
-                        ctx.strokeStyle = `rgba(255, 120, 160, ${opacity * 0.16})`;
-                        ctx.lineWidth = energyLineWidth * 0.2;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
                 }
             }
         }
@@ -521,7 +515,7 @@ if (!canvas) {
     // --- Animation lifecycle helpers ---
     
     function startAnimation() {
-        if (isDestroyed || isAnimating || disableContinuousAnimation) return;
+        if (isAnimating || disableContinuousAnimation) return;
         isAnimating = true;
         lastFrameTime = 0;
         animationFrameId = requestAnimationFrame(animate);
@@ -536,7 +530,6 @@ if (!canvas) {
     }
     
     function handleVisibilityChange() {
-        if (isDestroyed) return;
         isVisible = !document.hidden;
         if (isVisible && !isAnimating && !disableContinuousAnimation && isCanvasVisible) {
             startAnimation();
@@ -546,7 +539,6 @@ if (!canvas) {
     }
     
     function handleIntersection(entries) {
-        if (isDestroyed) return;
         entries.forEach((entry) => {
             isCanvasVisible = entry.isIntersecting;
             if (isCanvasVisible && !isAnimating && !disableContinuousAnimation && isVisible) {
@@ -567,16 +559,32 @@ if (!canvas) {
         }
     }
     
+    // Paint a single static frame. Used when continuous animation is off (mobile
+    // viewports, reduced motion, low-power devices). init() resizes the canvas
+    // backing store, which clears it, so this must follow every re-init.
+    function renderStaticFrame() {
+        ctx.fillStyle = 'rgba(18, 18, 18, 1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((particle) => {
+            particle.draw();
+        });
+        connectParticles();
+    }
+
     function handleResize() {
         const wasDisabled = disableContinuousAnimation;
         init();
         recomputeDeviceCapabilities();
         updateCalmZoneCache();
         canvasRect = canvas.getBoundingClientRect();
-        if (wasDisabled && !disableContinuousAnimation && isVisible && isCanvasVisible) {
-            startAnimation();
-        } else if (!wasDisabled && disableContinuousAnimation) {
+
+        if (disableContinuousAnimation) {
+            // init() cleared the backing store above, so repaint rather than leave
+            // a blank canvas whenever continuous animation stays off.
+            renderStaticFrame();
             stopAnimation();
+        } else if (wasDisabled && isVisible && isCanvasVisible) {
+            startAnimation();
         }
     }
     
@@ -624,20 +632,13 @@ if (!canvas) {
     
     if (!disableContinuousAnimation) {
         canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
-        trackedListeners.push({ target: canvas, type: 'mousemove', handler: handleMouseMove, options: { passive: true } });
-    
         canvas.addEventListener('mouseleave', handleMouseLeave, { passive: true });
-        trackedListeners.push({ target: canvas, type: 'mouseleave', handler: handleMouseLeave, options: { passive: true } });
-    
         canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-        trackedListeners.push({ target: canvas, type: 'touchmove', handler: handleTouchMove, options: { passive: false } });
-    
         canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
-        trackedListeners.push({ target: canvas, type: 'touchend', handler: handleTouchEnd, options: { passive: true } });
     }
     
     function animate(timestamp = 0) {
-        if (isDestroyed || !isVisible || !isCanvasVisible) {
+        if (!isVisible || !isCanvasVisible) {
             stopAnimation();
             return;
         }
@@ -665,63 +666,26 @@ if (!canvas) {
     }
     
     window.addEventListener('resize', handleResize);
-    trackedListeners.push({ target: window, type: 'resize', handler: handleResize, options: undefined });
-    
+
     // Page Visibility API — pause when tab is hidden
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    trackedListeners.push({ target: document, type: 'visibilitychange', handler: handleVisibilityChange, options: undefined });
-    
+
     // Intersection Observer — pause when canvas is offscreen
     if ('IntersectionObserver' in window) {
-        intersectionObserver = new IntersectionObserver(handleIntersection, { threshold: 0 });
-        intersectionObserver.observe(canvas);
-    }
-    
-    // React to prefers-reduced-motion changes at runtime
-    motionQuery.addEventListener('change', handleMotionChange);
-    trackedListeners.push({ target: motionQuery, type: 'change', handler: handleMotionChange, options: undefined });
-    
-    // Ensure canvas is present before starting
-    if (canvas) {
-        init();
-        updateCalmZoneCache();
-        recomputeDeviceCapabilities();
-        if (disableContinuousAnimation) {
-            ctx.fillStyle = 'rgba(18, 18, 18, 1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((particle) => {
-                particle.draw();
-            });
-            connectParticles();
-        } else {
-            startAnimation();
-        }
-    } else {
-        console.error('Network animation canvas not found');
-    }
-    
-    /**
-     * Clean up all listeners, observers, and animation frames.
-     * Call this when the animation is no longer needed (e.g., component unmount).
-     */
-    function destroy() {
-        isDestroyed = true;
-        stopAnimation();
-    
-        // Remove all tracked event listeners
-        trackedListeners.forEach(({ target, type, handler, options }) => {
-            target.removeEventListener(type, handler, options);
-        });
-        trackedListeners.length = 0;
-    
-        // Disconnect Intersection Observer
-        if (intersectionObserver) {
-            intersectionObserver.disconnect();
-            intersectionObserver = null;
-        }
-    
-        // Remove matchMedia listener
-        motionQuery.removeEventListener('change', handleMotionChange);
+        new IntersectionObserver(handleIntersection, { threshold: 0 }).observe(canvas);
     }
 
+    // React to prefers-reduced-motion changes at runtime
+    motionQuery.addEventListener('change', handleMotionChange);
+    
+    // Ensure the static frame is drawn, or start the loop
+    init();
+    updateCalmZoneCache();
+    recomputeDeviceCapabilities();
+
+    if (disableContinuousAnimation) {
+        renderStaticFrame();
+    } else {
+        startAnimation();
+    }
 }
