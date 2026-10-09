@@ -64,13 +64,18 @@
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
         <link rel="preconnect" href="https://unpkg.com" crossorigin>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"></noscript>
+        <!-- Subresource Integrity is set on every third-party file whose bytes are
+             immutable: version-pinned CDN paths that serve an Access-Control-Allow-Origin
+             header. The Google Fonts stylesheet is deliberately left without one, because
+             fonts.googleapis.com returns different CSS per user agent and pinning the copy
+             a Chromium request receives would break the stylesheet in other browsers. -->
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"></noscript>
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
         <!-- Swiper.js CSS -->
-        <link rel="preload" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css"></noscript>
+        <link rel="preload" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css" as="style" integrity="sha384-IFb872aCXZQb6BKRUHmGn0YHKnFl4ylZjkgVRRyMTEQ5bjo/H6xFUiLJm6opOO66" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css" integrity="sha384-IFb872aCXZQb6BKRUHmGn0YHKnFl4ylZjkgVRRyMTEQ5bjo/H6xFUiLJm6opOO66" crossorigin="anonymous"></noscript>
         <link rel="stylesheet" href="css/main.css">
         <!-- Progressive enhancement: show Swiper slides when JS is disabled -->
         <noscript>
@@ -513,10 +518,10 @@
 
     </div> <!-- End of main-content -->
 
-    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js" integrity="sha384-+ijdq6iJAkohSQT/pKKYqjlEK1zFXER2QwIkHFe7WQmJrW3z/JVIZzGbkft2kY1M" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" integrity="sha384-NMn9+T8zIKnDUstqb5le7vdLNSyAgSU9DtEPT/b7ks9NJQpPk4Dc9b1tI8oyzimc" crossorigin="anonymous" defer></script>
     <!-- Swiper.js JS -->
-    <script src="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.js" defer></script>
+    <script src="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.js" integrity="sha384-JiF4eFN9V3I2Fry7TzFM3XKdq0P3abiVxpOeHjGz4cwvas+uNg6pFWVmuD6MKXqG" crossorigin="anonymous" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/networkAnimation.js" defer></script>
     <!-- Fallback for no-JS: static background for canvas -->

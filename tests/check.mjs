@@ -192,6 +192,33 @@ check(blankNoopener.length === 0, 'every target="_blank" link carries rel="noope
 const httpLinks = [...html.matchAll(/(?:href|src)="(http:\/\/[^"]+)"/g)].map(m => m[1]);
 check(httpLinks.length === 0, 'no plaintext http:// resource or link references', httpLinks.join(', '));
 
+// Subresource Integrity coverage. This can only check that the attributes are
+// present and well formed; proving the hashes still match the bytes a CDN serves
+// today needs a network fetch, which this script deliberately avoids.
+const UNPINNABLE_BY_DESIGN = ['fonts.googleapis.com'];
+const CANONICAL_HOSTNAME = canonical ? new URL(canonical).host : null;
+// Only cross-origin resources need SRI: it guards a third-party host, and every
+// absolute URL pointing back at this deployment is our own file.
+const thirdPartyTags = [...html.matchAll(/<(?:link|script)\b[^>]*>/g)].map(m => m[0])
+  .filter(t => !/rel="preconnect"/.test(t))
+  .filter(t => /(?:href|src)="https?:\/\//.test(t))
+  .filter(t => originOf((t.match(/(?:href|src)="([^"]+)"/) || [])[1] || '') !== CANONICAL_HOSTNAME);
+const unpinned = [], malformed = [];
+for (const tag of thirdPartyTags) {
+  const host = originOf((tag.match(/(?:href|src)="([^"]+)"/) || [])[1] || '');
+  if (UNPINNABLE_BY_DESIGN.includes(host)) continue;
+  if (!/\bintegrity="/.test(tag)) { unpinned.push(host); continue; }
+  const value = (tag.match(/integrity="([^"]+)"/) || [])[1];
+  if (!/^sha(256|384|512)-[A-Za-z0-9+/]+={0,2}$/.test(value)) malformed.push(host + ': malformed ' + value);
+  if (!/\bcrossorigin="/.test(tag)) malformed.push(host + ': integrity without crossorigin');
+}
+check(unpinned.length === 0, 'every pinnable third-party script and stylesheet carries integrity',
+  unpinned.length ? 'not pinned: ' + [...new Set(unpinned)].join(', ') : thirdPartyTags.length + ' external tags checked');
+check(malformed.length === 0, 'integrity values are well formed and paired with crossorigin',
+  malformed.length ? malformed.join('; ') : 'sha384 base64, crossorigin present');
+check(/fonts\.googleapis\.com/.test(html) && !/fonts\.googleapis\.com[^>]*integrity=/.test(html) && !/integrity="[^"]*"[^>]*href="https:\/\/fonts\.googleapis\.com/.test(html),
+  'the Google Fonts stylesheet is left unpinned on purpose (its bytes vary by user agent)');
+
 // ------------------------------------------------- release invariants (CSS)
 head('Release invariants preserved in CSS');
 const rootVars = (css.match(/:root\s*\{([\s\S]*?)\}/) || [])[1] || '';
