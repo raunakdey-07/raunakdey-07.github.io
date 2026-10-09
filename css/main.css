@@ -136,6 +136,25 @@ ul {
     contain-intrinsic-size: none;
 }
 
+/* Long single words are cut off, not wrapped, at enlarged text. Measured at
+   320-430px with the root font size at 150% and 200%: "Achievements" lost
+   29-170px because body sets overflow-x:hidden, so the missing glyphs could
+   not be scrolled to, and achievement and card headings lost up to 92px to
+   the carousel and card clips. `break-word` only engages when a word cannot
+   fit a line by itself, so ordinary text is unaffected at 100%.
+
+   h1 is deliberately not listed: the hero is a verified release with its own
+   tracking and text-wrap rules, and it does not overflow at any size tested. */
+h2,
+h3,
+.achievement-issuer,
+.achievement-detail,
+.achievement-date,
+.project-wrapper__text-title,
+.project-description {
+    overflow-wrap: break-word;
+}
+
 .section-title {
     text-align: center;
     font-size: clamp(2.4rem, 4vw, 3rem);
