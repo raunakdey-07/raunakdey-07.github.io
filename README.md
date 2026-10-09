@@ -67,12 +67,15 @@ raunakdey-07.github.io/
 ├── sitemap.xml             # SEO sitemap
 ├── assets/                 # Static assets
 │   ├── portfolio.jpg       # Profile image
+│   ├── og-image.png        # 1200x630 social preview image
 │   ├── Raunak Dey - 22F3002175 - IITM.pdf  # Resume download
-│   ├── favicon files       # Site icons
+│   ├── favicon files       # Site icons (also the Apple touch icon)
 │   ├── projects/           # Project screenshots
 │   └── achievements/       # Achievement images
 ├── css/                    # Stylesheets
 │   └── main.css            # Core styling + responsive breakpoints
+├── tests/                  # Checks
+│   └── check.mjs           # Dependency-free regression checks
 └── js/                     # JavaScript files
     ├── main.js             # Core functionality (loaded directly, served gzipped)
     └── networkAnimation.js # Background effects (loaded directly, served gzipped)
@@ -144,6 +147,42 @@ sitemap reference and JSON-LD all identify the Vercel host.
 GitHub Pages also serves this repository at `https://raunakdey-07.github.io/`. It
 serves identical markup, so its `<link rel="canonical">` points crawlers to the
 Vercel host rather than competing with it.
+
+## Checks
+
+A dependency-free regression script covers the invariants that are cheap to
+assert statically. No packages, no package manager, no network access by
+default. It only reads files; it never writes to the repository.
+
+```bash
+node tests/check.mjs                                # static source checks
+BASE_URL=https://raunak-dey.vercel.app/ node tests/check.mjs   # also compare the served page
+node tests/check.mjs --browser                      # also run browser checks over CDP
+```
+
+It exits non-zero on any failure and prints `PASS`, `FAIL`, `WARN` and `SKIP`
+per check, so failures name the exact file, selector or invariant.
+
+Covered statically: required documents exist; title and description length;
+canonical, `og:url`, `og:image` and `twitter:image` agreement; the referenced
+Open Graph image is really a 1200×630 PNG on disk; the apple touch icon
+resolves; both JSON-LD blocks parse and their `url` values match the canonical
+while other entities' URLs are left alone; sitemap and JSON-LD dates agree and
+are not in the future; element ids are unique; internal fragment links resolve;
+every local asset reference exists; unreferenced files under `assets/` are
+reported as a warning; external scripts and stylesheets are limited to a known
+allowlist; there are no inline executable scripts, no `innerHTML`/`eval`/
+`document.write`-class sinks, no `target="_blank"` without `rel="noopener"` and
+no plaintext `http://` references; and the invariants from the accessibility
+releases are still in place (the `--accent-text-color` token on every red text
+surface, no `outline: none` anywhere, a `:focus-visible` outline, the hero
+`min-height: 4lh` guard, and the reduced-motion rules).
+
+**Not covered, because static parsing cannot prove it:** computed colour
+contrast, focus-ring rendering, responsive overflow, runtime console errors and
+canvas frame rate. `--browser` adds those when a Chromium DevTools endpoint is
+reachable; otherwise the script prints `SKIP` with the manual procedure instead
+of claiming a pass.
 
 ## Contributing
 
