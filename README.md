@@ -142,6 +142,35 @@ Newest first.
 - `--browser` now measures 320px, the SC 1.4.10 reflow width, and re-measures
   320px and 1440px at 200% text for SC 1.4.4.
 
+### 9 October 2026 — measuring what the tests could not see
+
+- Focus rings are now checked by pixels rather than by computed style. Every tab
+  stop is screenshotted blurred and focused and the two are differenced, because
+  a computed `2px solid` is not evidence a ring exists — the project screenshot
+  links claimed one while Chrome painted nothing.
+- Horizontal overflow is detected by measuring the rightmost pixel each element
+  paints, instead of comparing `scrollWidth` with `clientWidth`, which
+  `overflow-x: hidden` on `body` pins together regardless of content. The
+  detector is self-tested against `tests/fixtures/overflow-cases.html`.
+- Long single words were being clipped rather than wrapped at enlarged text.
+  "Achievements" lost 29–170px at 320–430px with the root font at 150–200%, and
+  the missing glyphs were unreachable rather than merely off screen. Fixed with
+  `overflow-wrap: break-word`, which does nothing at 100%.
+- The canvas had a complete pointer-interaction system — glow, connection
+  lines, orbital motion, velocity field — that could never run. `#network-bg`
+  sets `pointer-events: none` and `z-index: -1` and no rule overrides either, so
+  zero pointer events reached it at any width. Removed, along with the four
+  particle fields left write-only afterwards.
+- `assets/projects/mind-palace.webp` is 1053×714 but was declared as 720×720.
+- Three test defects: the response-header check verified header values but not
+  the rule's scope, so a policy matching only `/assets/(.*)` passed; the
+  served-asset check skipped every relative URL, so the apple touch icon was
+  never actually requested; and the empty-cell pattern paired `(td|th)` with a
+  hardcoded `</td>`, so an empty header cell passed.
+- The Content-Security-Policy was left alone, deliberately. Four candidate
+  policies were served through a local harness and measured; the trade-offs are
+  set out under Response headers.
+
 ### Earlier work
 
 - Sitemap consolidated to the single canonical URL; fragments are not separate
@@ -205,28 +234,78 @@ Do not assume the Vercel configuration covers it.
 
 The Content-Security-Policy is deliberately narrow. It sets only directives
 that cannot conflict with anything on the page, because a wrong guess here
-breaks the site silently. The fuller policy is not shipped yet, and the reason
-is specific:
+breaks the site silently. Four candidate policies were served through a local
+harness that applies the real `vercel.json` headers, and each was measured in
+Chromium rather than reasoned about:
 
-- The three non-blocking stylesheet preloads use inline
-  `onload="this.onload=null;this.rel='stylesheet'"` handlers, so a
-  `script-src` would have to allow `'unsafe-inline'`, which removes most of the
-  protection. Moving the swap into `js/main.js` would remove the need, at the
-  cost of the third-party stylesheets then depending on that file loading.
-- `font-src` must include `https://cdnjs.cloudflare.com` and `data:`, or the
-  Font Awesome webfonts are blocked. This was verified by serving a draft policy
-  without them: Chromium blocked ten font files and the icons disappeared.
-- `style-src` needs the Google Fonts and the two CDN stylesheet origins, and
-  `'unsafe-inline'` for the two `<noscript>` style blocks that apply when
-  JavaScript is off.
+| Policy | Violations | Result |
+| --- | --- | --- |
+| Shipped: `frame-ancestors`, `base-uri`, `object-src` | 0 | baseline |
+| Full `default-src 'self'` plus `'unsafe-inline'` script, complete `font-src` | 0 | identical rendering, 3 cards, Swiper initialised, all fonts loaded |
+| Full policy with **no** `'unsafe-inline'` in `script-src` | 3 | all three `onload` handlers blocked, so **none** of the three CDN stylesheets applied: icons and both web fonts disappeared |
+| Full policy with `font-src 'self'` only | 40 | 9 Font Awesome fonts from `cdnjs.cloudflare.com`, 30 from `fonts.gstatic.com`, 1 `data:` font |
 
-A policy including all of that was tested and loads with a clean console, so the
-work is understood and bounded. It is left as a follow-up rather than shipped
-with the headers, because it needs the inline-handler decision first.
+So a strict policy is achievable, but it has two real costs and one blocker:
+
+- `script-src` must keep `'unsafe-inline'` for the three non-blocking stylesheet
+  preloads (`onload="this.onload=null;this.rel='stylesheet'"`). That is where most
+  of a CSP's value against injected script lies, so keeping it buys less than it
+  appears to. Removing the handlers removes the need, at the cost of the three
+  third-party stylesheets becoming render-blocking.
+- `style-src` still needs `'unsafe-inline'` for ten inline `style=` attributes and
+  the `<noscript>` style blocks.
+- `font-src` must name `cdnjs.cloudflare.com`, `fonts.gstatic.com` and `data:`.
+
+One fact worth recording because it changes the first trade-off: the inline
+handlers are **not** what makes the page work without JavaScript. Each preload
+already has a `<noscript>` sibling carrying a plain `rel="stylesheet"`, verified
+by loading the page with scripting disabled: Font Awesome, Fraunces, IBM Plex
+and Swiper all apply either way. The handlers are purely a non-render-blocking
+optimisation for JavaScript-enabled visitors.
+
+It is left as a follow-up rather than shipped. The site has no user input, no
+server-rendered content and no DOM sinks, so the realistic attack it would
+address — injected content — has no demonstrated entry point, and the
+third-party scripts it would protect are already pinned with Subresource
+Integrity. Paying `'unsafe-inline'` in two directives for that is a poor trade.
 
 Until a deployment happens, none of this is visible in production: the live
 response still returns only `strict-transport-security` and Vercel's defaults.
 Verify with `curl -I https://raunak-dey.vercel.app/` after deploying.
+
+### After deploying
+
+Local checks cannot prove a deployment. Run these against the live URLs.
+
+```bash
+# 1. the intended HTML and CSS are being served
+for f in index.html css/main.css js/networkAnimation.js sitemap.xml; do
+  printf '%-24s %s\n' "$f" \
+    "$(diff <(curl -sS https://raunak-dey.vercel.app/$f) <(cat $f) >/dev/null && echo MATCH || echo DIFF)"
+done
+
+# 2. the social image and favicon resolve
+curl -sS -o /dev/null -w 'og-image: HTTP %{http_code} %{content_type}\n' \
+  https://raunak-dey.vercel.app/assets/og-image.png          # expect 200 image/png
+curl -sS -o /dev/null -w 'favicon:  HTTP %{http_code} %{content_type}\n' \
+  https://raunak-dey.vercel.app/assets/favicon.png           # expect 200 image/png
+
+# 3. all five headers are present on / and on a deep route
+curl -sSI https://raunak-dey.vercel.app/ | tr -d '\r' \
+  | grep -iE 'content-security-policy|x-frame-options|referrer-policy|permissions-policy|x-content-type-options'
+
+# 4. the secondary publication is consistent
+diff <(curl -sS https://raunakdey-07.github.io/index.html) <(cat index.html) >/dev/null \
+  && echo 'GitHub Pages matches' || echo 'GitHub Pages DIFFERS (expected until the branch deploys)'
+```
+
+Then, in a browser on the live URL: Tab through every control at 1440px and at
+375px and confirm a visible ring on each, including the three project
+screenshots; confirm the mobile menu opens and closes; and confirm the
+background animation is still under `prefers-reduced-motion`.
+
+Note that `raunakdey-07.github.io` will not serve the security headers at all —
+GitHub Pages does not allow repositories to set them.
 
 ## Checks
 
@@ -249,7 +328,9 @@ Open Graph image is really a 1200×630 PNG on disk; the apple touch icon
 resolves; both JSON-LD blocks parse and their `url` values match the canonical
 while other entities' URLs are left alone; sitemap and JSON-LD dates agree and
 are not in the future; element ids are unique; internal fragment links resolve;
-every local asset reference exists; unreferenced files under `assets/` are
+every local asset reference exists and every declared image `width`/`height` and
+`srcset` width matches the file's real header dimensions; unreferenced files
+under `assets/` are
 reported as a warning; external scripts and stylesheets are limited to a known
 allowlist; there are no inline executable scripts, no `innerHTML`/`eval`/
 `document.write`-class sinks, no `target="_blank"` without `rel="noopener"` and
@@ -258,26 +339,50 @@ releases are still in place (the `--accent-text-color` token on every red text
 surface, no `outline: none` anywhere, a `:focus-visible` outline, the hero
 `min-height: 4lh` guard, and the reduced-motion rules).
 
+`--browser` measures 320, 360, 375, 430, 768 and 1440px, and re-measures 320px
+and 1440px at 150% and 200% of the root size, covering the SC 1.4.10 reflow
+width and the SC 1.4.4 resize-text requirement.
+
+Two browser checks go beyond computed style:
+
+- **Clipped content.** `scrollWidth` cannot detect it, because `overflow-x: hidden`
+  on `body` pins `scrollWidth` to `clientWidth` whatever the content does. The
+  check instead measures the rightmost pixel each element actually paints, using
+  a `Range` rather than `scrollWidth` so that invisible boxes are not counted,
+  and separately reports boxes that sit outside the viewport where nothing above
+  them clips on purpose. Fixed boxes are compared against `window.innerWidth`,
+  so the full-bleed canvas is not mistaken for overflow. The detector is
+  validated against `tests/fixtures/overflow-cases.html`, which seeds an
+  overflowing paragraph, an overflowing control, a fixed canvas, a clipped
+  carousel and a valid block, and asserts the first two are reported and the
+  rest are not.
+- **Painted focus indicators.** Every tab stop is screenshotted blurred and
+  focused and the two are differenced along the outline path, which is what
+  separates a focus ring from a border that was already there. A computed
+  `2px solid` is not evidence: the project screenshot links reported one while
+  Chrome painted nothing. Screenshots are decoded for both PNG colour types
+  Chrome emits (RGB and RGBA); assuming one misaligns every pixel and makes a
+  real ring look absent.
+
+Known limits, stated rather than hidden:
+
+- A focus stop whose position changes when focused — the skip link moves from
+  off-screen to the corner — has no comparable baseline. Those are counted and
+  reported, not silently passed.
+- The page must reach the state a reader sees first. ScrollReveal sections start
+  at `opacity: 0`, so the run steps down the page before measuring; a single fast
+  scroll leaves the last section hidden and every ring inside it reads as absent.
+- Controls with `transition: all` animate their outline in, so sampling waits for
+  the computed outline to stop changing.
+- Ring **colour** is not classified. The test proves pixels changed on the
+  outline path; it does not prove they are the intended colour.
+- Chromium only. Firefox, Safari and real devices are untested here.
+
 **Not covered, because static parsing cannot prove it:** computed colour
-contrast, focus-ring rendering, responsive overflow, runtime console errors and
-canvas frame rate. `--browser` adds those when a Chromium DevTools endpoint is
-reachable; otherwise the script prints `SKIP` with the manual procedure instead
-of claiming a pass.
-
-`--browser` measures 320, 375, 768 and 1440px, and re-measures 320px and 1440px
-with the root font size at 200%, covering the SC 1.4.10 reflow width and the
-SC 1.4.4 resize-text requirement.
-
-Two limitations are worth knowing before trusting a green run:
-
-- **Focus rings are checked by computed style, not by pixels.** A rule that
-  reports `2px solid` can still paint nothing — that is exactly what happened on
-  the project screenshot links, where an inline anchor box took no outline at all.
-  Confirm a ring by eye, or by sampling a screenshot.
-- **`no horizontal overflow` cannot fail.** It compares
-  `documentElement.scrollWidth` with `clientWidth`, and `overflow-x: hidden` on
-  `body` pins the first to the second regardless of content. A `PASS` means
-  nothing scrolls sideways; it does not mean nothing is clipped by `body`.
+contrast, canvas frame rate, and anything about a deployment. `--browser` adds
+the computed and pixel checks when a Chromium DevTools endpoint is reachable;
+otherwise the script prints `SKIP` with the manual procedure instead of claiming
+a pass.
 
 ## Contributing
 
