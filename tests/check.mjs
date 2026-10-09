@@ -89,6 +89,48 @@ if (ogImgPath && existsSync(join(ROOT, ogImgPath))) {
 }
 const appleIcon = grab(/<link rel="apple-touch-icon" href="([^"]*)"/);
 check(!!appleIcon && existsSync(join(ROOT, appleIcon)), 'apple-touch-icon declared and present on disk', appleIcon || '(missing)');
+
+// Intrinsic size of the raster formats this repository actually ships, read from
+// the file header rather than trusted from the markup.
+function imageSize(file) {
+  const b = readFileSync(join(ROOT, file));
+  if (b.subarray(0, 8).toString('hex') === '89504e470d0a1a0a') return { w: b.readUInt32BE(16), h: b.readUInt32BE(20), kind: 'PNG' };
+  if (b.subarray(0, 4).toString('latin1') === 'RIFF' && b.subarray(8, 12).toString('latin1') === 'WEBP') {
+    const fourcc = b.subarray(12, 16).toString('latin1');
+    if (fourcc === 'VP8 ') return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff, kind: 'WebP' };
+    if (fourcc === 'VP8L') { const n = b.readUInt32LE(21); return { w: (n & 0x3fff) + 1, h: ((n >> 14) & 0x3fff) + 1, kind: 'WebP' }; }
+    if (fourcc === 'VP8X') return { w: (b[24] | b[25] << 8 | b[26] << 16) + 1, h: (b[27] | b[28] << 8 | b[29] << 16) + 1, kind: 'WebP' };
+    return null;
+  }
+  if (b[0] === 0xff && b[1] === 0xd8) return { w: 0, h: 0, kind: 'JPEG' };
+  return null;
+}
+
+// A width/height pair that disagrees with the file is an aspect-ratio hint
+// browser will reserve space from. It was wrong for one project screenshot.
+const dimensionProblems = [];
+for (const tag of html.match(/<img\b[^>]*>/g) || []) {
+  const src = (tag.match(/\bsrc="([^"]+)"/) || [])[1];
+  const wAttr = (tag.match(/\bwidth="(\d+)"/) || [])[1];
+  const hAttr = (tag.match(/\bheight="(\d+)"/) || [])[1];
+  if (!src || !wAttr || !hAttr || /^https?:/.test(src)) continue;
+  if (!existsSync(join(ROOT, src))) continue;
+  const real = imageSize(src);
+  if (!real || !real.w) continue;
+  if (Number(wAttr) !== real.w || Number(hAttr) !== real.h) {
+    dimensionProblems.push(src + ' declared ' + wAttr + 'x' + hAttr + ' but is ' + real.w + 'x' + real.h);
+  }
+  const set = (tag.match(/\bsrcset="([^"]+)"/) || [])[1];
+  if (set && wAttr) {
+    for (const entry of set.split(',').map(s => s.trim())) {
+      const m = entry.match(/^(\S+)\s+(\d+)w$/);
+      if (m && Number(m[2]) > real.w) dimensionProblems.push(src + ' srcset offers ' + m[2] + 'w but the file is only ' + real.w + 'w');
+    }
+  }
+}
+check(dimensionProblems.length === 0, 'every declared image width/height and srcset width matches the file',
+  dimensionProblems.length ? dimensionProblems.join('; ') : 'checked ' + (html.match(/<img\b/g) || []).length + ' images');
+
 const sitemapNoComments = sitemap.replace(/<!--[\s\S]*?-->/g, '');
 if (sitemap) {
   const loc = grab(/<loc>([^<]*)<\/loc>/, sitemap);
