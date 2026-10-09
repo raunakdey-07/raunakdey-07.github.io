@@ -343,10 +343,6 @@ ul {
     font-size: inherit;
 }
 
-.hero-cta {
-    margin-top: 2rem;
-}
-
 .hero-actions {
     display: flex;
     align-items: center;
@@ -392,19 +388,6 @@ ul {
     padding: 0.95rem 2.2rem;
 }
 
-.cta-btn.text-color-main {
-    background-color: transparent;
-    color: var(--accent-color);
-    border: 2px solid var(--accent-color);
-    box-shadow: none;
-}
-
-.cta-btn.text-color-main:hover {
-    background-color: rgba(255, 0, 0, 0.1);
-    color: var(--accent-color-hover);
-    transform: translateY(-3px);
-}
-
 .about-section {
     background-color: var(--secondary-bg-color);
 }
@@ -438,12 +421,6 @@ ul {
 }
 
 /* Projects Section - Intentionally empty, styles are handled by Swiper/cards */
-
-.project-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-}
 
 .project-card {
     background-color: var(--secondary-bg-color);
@@ -588,21 +565,6 @@ ul {
     padding-top: 80px;
     padding-bottom: 80px;
     background-color: transparent; /* Ensure contrast if cards are secondary */
-}
-
-.skills-intro {
-    max-width: 760px;
-    margin: -1rem auto 2.5rem;
-    text-align: center;
-    font-size: 1.05rem;
-    line-height: 1.75;
-    color: var(--secondary-text-color);
-}
-
-.skills-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
 }
 
 .skill-category-card {
