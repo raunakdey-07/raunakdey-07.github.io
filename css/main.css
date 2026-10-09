@@ -425,12 +425,10 @@ ul {
 .project-card {
     background-color: var(--secondary-bg-color);
     border-radius: var(--border-radius);
+    /* Clips the screenshot to the card's rounded corners. Note that this also clips
+       an outset focus ring on the screenshot link, which is why that ring is drawn
+       inside the link instead. */
     overflow: hidden;
-    /* The card clips its rounded corners, and the focused project screenshot link
-       sits 1px inside it, so a 2px ring at 2px offset would be cut off on three
-       sides. A clip margin lets the ring render outside the card. Browsers without
-       overflow-clip-margin ignore it and keep the existing clipping. */
-    overflow-clip-margin: 6px;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     border: 1px solid var(--border-color);
@@ -439,6 +437,35 @@ ul {
 .project-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+}
+
+/* The screenshot link needs its own focus treatment. Two facts were measured in
+   Chrome 155, not assumed:
+   1. This anchor wraps a full-width image, so it is a block box. Left as
+      `display: inline`, Chrome painted no outline at all — the computed style still
+      reported `2px solid #E0E0E0`, so only a screenshot could tell. That alone
+      failed SC 2.4.7.
+   2. Both this card (overflow: hidden) and the carousel (overflow: hidden) clip an
+      outset ring, and Chrome does not apply `overflow-clip-margin` to outlines —
+      6px and 10px margins both measured identically to none. The ring is therefore
+      drawn inside the link, where no ancestor clip can reach it.
+
+   Two lines are used because no single colour reaches 3:1 here: the screenshots
+   contain both 250,250,250 and 18,18,18 regions, and #E0E0E0, #FFFFFF, #D60000 and
+   #EE4E45 all fall below 3:1 against one of them. A light line at 4px paired with a
+   dark line at 2px is visible on any of them (15.6:1 and 20.1:1 measured). */
+.project-wrapper__image a {
+    display: block;
+}
+
+.project-wrapper__image a:focus-visible {
+    outline: 2px solid var(--primary-text-color);
+    outline-offset: -4px;
+}
+
+.project-wrapper__image a:focus-visible img {
+    outline: 2px solid var(--primary-bg-color);
+    outline-offset: -2px;
 }
 
 .project-wrapper__image img {
@@ -1501,8 +1528,10 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
    existing --primary-text-color: 14.19:1 on the page background, 12.63:1 on card
    backgrounds and 4.12:1 against the #D60000 button fill, so it clears the 3:1
    of SC 1.4.11 everywhere the ring can land. The offset places the ring outside
-   the element, against the page background. :focus-visible keeps it off plain
-   mouse clicks, and nothing here removes the native indicator. */
+   the element, against the page background; the project screenshot link is the one
+   exception, because an outset ring there is clipped away by the card and the
+   carousel, so it draws its own inset ring instead. :focus-visible keeps it off
+   plain mouse clicks, and nothing here removes the native indicator. */
 :focus-visible {
   outline: 2px solid var(--primary-text-color);
   outline-offset: 2px;
