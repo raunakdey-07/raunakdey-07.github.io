@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- An empty data: icon stops the browser requesting /favicon.ico, which would
+     otherwise be a 404 and trip the suite's console-error check. -->
+<link rel="icon" href="data:,">
+<title>Clipping detector fixtures</title>
+<style>
+  /* Mirrors the portfolio: the scrollbar is hidden by clipping on body, which
+     is exactly what makes scrollWidth == clientWidth useless as a signal. */
+  html, body { overflow-x: hidden; }
+  body { margin: 0; background: #121212; color: #E0E0E0; font-family: sans-serif; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 8px; }
+  section { margin: 0 0 14px; }
+
+  /* MUST be reported: text too wide for its own box, cut off by the body clip. */
+  #case-overflow-text p { white-space: nowrap; margin: 0; }
+
+  /* MUST be reported: a shrink-to-fit control, so it has no self-overflow and
+     is only visible through the "box sits outside the viewport" signal. */
+  #case-overflow-control a { display: inline-block; white-space: nowrap; }
+
+  /* MUST NOT be reported: a fixed full-bleed background. It is wider than
+     clientWidth by the scrollbar but not wider than the viewport, and a fixed
+     box is contained by the viewport so it can never scroll. */
+  #case-fixed-canvas {
+    position: fixed; inset: 0; width: 100vw; height: 40px;
+    background: #1E1E1E; z-index: -1; pointer-events: none;
+  }
+
+  /* MUST NOT be reported: carousel slides sit outside the visible area on
+     purpose and are clipped by the track. */
+  #case-carousel-clip .track { display: flex; overflow: hidden; }
+  #case-carousel-clip .slide { flex: 0 0 100%; padding: 4px; box-sizing: border-box; }
+
+  /* MUST NOT be reported: ordinary content, including an inline link, which is
+     what a naive clientWidth-based rule gets wrong (clientWidth is 0 on inline
+     boxes, so every inline element looks like it overflows). */
+  #case-valid p { margin: 0 0 6px; }
+  #case-valid a { color: #EE4E45; }
+</style>
+</head>
+<body>
+<canvas id="case-fixed-canvas"></canvas>
+<div class="wrap">
+
+  <section id="case-overflow-text">
+    <p id="overflow-text">A sentence with a deliberately unbreakable run so that the line cannot wrap and is cut off at the right edge of the viewport.</p>
+  </section>
+
+  <section id="case-overflow-control">
+    <a id="overflow-control" href="#case-overflow-control">A control label long enough that it cannot fit on a narrow viewport</a>
+  </section>
+
+  <section id="case-carousel-clip">
+    <div class="track">
+      <div class="slide"><p id="slide-text">First slide of a carousel.</p></div>
+      <div class="slide"><p id="slide-text-offscreen">Second slide, positioned outside the visible area on purpose.</p></div>
+      <div class="slide"><p id="slide-text-offscreen-2">Third slide, also deliberately off screen.</p></div>
+    </div>
+  </section>
+
+  <section id="case-valid">
+    <p id="valid-text">Ordinary body copy that wraps normally and stays inside the container at every width under test.</p>
+    <a id="valid-link" href="#case-valid">An ordinary link</a>
+  </section>
+
+</div>
+</body>
+</html>

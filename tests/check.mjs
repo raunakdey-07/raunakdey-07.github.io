@@ -401,25 +401,125 @@ async function browserChecks(url) {
       if(cr<need) fails.push(el.tagName.toLowerCase()+"."+String(el.className).split(" ").filter(Boolean)[0]+" "+Math.round(cr*100)/100+":1 (needs "+need+")");
     }
     var de=document.documentElement;
-    // Limitation, measured rather than assumed: the site sets overflow-x:hidden on
-    // body to hide scrollbars, which pins documentElement.scrollWidth to
-    // clientWidth no matter what the content does. With a nowrap paragraph
-    // overflowing to right=410 at a 320px viewport, scrollWidth still reported
-    // 320, so this check cannot fail on an in-flow overflow. Fixed-position
-    // elements are excluded from any richer variant because the viewport, not
-    // body, contains them and they cannot scroll. Detecting content that body
-    // silently cuts off is not implemented here; treat a PASS below as "no
-    // scrollable overflow", not "nothing is clipped".
     return {checked:checked, fails:fails,
-      horizontalScroll: de.scrollWidth>de.clientWidth,
       scrollWidth:de.scrollWidth, clientWidth:de.clientWidth,
       focusable:document.querySelectorAll('a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])').length};
   })()`;
 
-  // 320px is the WCAG 2.2 reflow width (SC 1.4.10) and was missing. Text is also
-  // checked at 200% of the root size, which is the SC 1.4.4 requirement and is
-  // where long words and fixed heights are most likely to overflow.
-  for (const width of [320, 375, 768, 1440]) {
+  // Clipping detector.
+  //
+  // `scrollWidth > clientWidth` cannot be used here: body sets overflow-x:hidden
+  // to hide scrollbars, which pins the two together whatever the content does.
+  // Two independent signals are used instead.
+  //
+  //   1. Painted extent. Text is measured with a Range rather than scrollWidth,
+  //      because an invisible ::after used to extend a hit area made scrollWidth
+  //      report 4px of overflow with nothing cut off. Range covers glyphs;
+  //      replaced content is added separately. Only elements that establish a
+  //      box are considered, because clientWidth is 0 on inline boxes and every
+  //      inline element would otherwise look like an overflow.
+  //   2. Position. The box sits outside the viewport and nothing above it
+  //      clips on purpose. Carousel slides are off screen by design and are
+  //      clipped by .swiper, so they are not reported. Fixed boxes are compared
+  //      against window.innerWidth, not clientWidth: a 100vw canvas is wider
+  //      than clientWidth by the scrollbar but is contained by the viewport and
+  //      can never scroll.
+  const clippingProbe = `(function(){
+    var TOL=2, hits=[];
+    var vw=document.documentElement.clientWidth, inner=window.innerWidth;
+    function label(el){
+      var t=(el.textContent||"").replace(/\\s+/g," ").trim().slice(0,22);
+      var cls=String(el.className).split(" ").filter(Boolean).slice(0,2).join(".");
+      return el.tagName.toLowerCase()+(cls?"."+cls:"")+(el.id?"#"+el.id:"")+(t?' "'+t+'"':"");
+    }
+    function isContent(el){
+      if(el.matches('a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])')) return true;
+      if(!(el.textContent||"").trim().length) return false;
+      for(var i=0;i<el.children.length;i++) if((el.children[i].textContent||"").trim().length) return false;
+      return true;
+    }
+    function paintedRight(el){
+      var best=-Infinity;
+      try{
+        var rg=document.createRange(); rg.selectNodeContents(el);
+        var rects=rg.getClientRects();
+        for(var i=0;i<rects.length;i++){ if(rects[i].width>0) best=Math.max(best,rects[i].right); }
+      }catch(e){}
+      Array.prototype.forEach.call(el.querySelectorAll("img,svg,canvas,video,iframe"),function(m){
+        var r=m.getBoundingClientRect(); if(r.width>0) best=Math.max(best,r.right); });
+      return best;
+    }
+    function clipper(el,pos){
+      if(pos==="fixed") return "viewport";
+      var p=el.parentElement;
+      while(p){
+        var cs=getComputedStyle(p);
+        if(cs.overflowX!=="visible"||cs.overflowY!=="visible"){
+          if(p.tagName==="HTML"||p.tagName==="BODY") return "body";
+          if(pos==="absolute"&&cs.position==="static"){p=p.parentElement;continue;}
+          return p.tagName.toLowerCase()+"."+String(p.className).split(" ").filter(Boolean).slice(0,2).join(".");
+        }
+        p=p.parentElement;
+      }
+      return "none";
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("body *"),function(el){
+      if(el.tagName==="SCRIPT"||el.tagName==="STYLE"||el.tagName==="NOSCRIPT") return;
+      var cs=getComputedStyle(el);
+      if(cs.display==="none"||cs.visibility==="hidden") return;
+      if(!el.getClientRects().length) return;
+      if(!isContent(el)) return;
+      var br=el.getBoundingClientRect();
+      if(br.width<=0) return;
+      if(cs.display!=="inline"){
+        var padRight=br.left+el.clientLeft+el.clientWidth;
+        var pr=paintedRight(el);
+        if(pr>-Infinity && pr>padRight+TOL){
+          hits.push({el:label(el), why:"painted text runs "+Math.round(pr-padRight)+"px past its own box", cutBy:clipper(el,cs.position), id:el.id||""});
+          return;
+        }
+      }
+      if(cs.overflowX==="visible"&&cs.overflowY==="visible"){
+        var limit=cs.position==="fixed"?inner:vw;
+        if(br.right>limit+TOL){
+          var k=clipper(el,cs.position);
+          if(k==="body"||k==="none"){
+            hits.push({el:label(el), why:"box sits "+Math.round(br.right-limit)+"px outside the viewport", cutBy:k, id:el.id||""});
+          }
+        }
+      }
+    });
+    return {hits:hits, vw:vw, inner:inner};
+  })()`;
+
+  const describeHits = hits => hits.map(h => h.el + ' — ' + h.why + ' (clipped by ' + h.cutBy + ')').join('; ');
+
+  // Detector self-test first. Without it a future simplification could turn this
+  // into a rule that always passes, which is what the scrollWidth comparison was.
+  const fixtureUrl = new URL('tests/fixtures/overflow-cases.html', url).href;
+  try {
+    await send('Emulation.setDeviceMetricsOverride', { width: 375, height: 900, deviceScaleFactor: 1, mobile: true }, sid);
+    await send('Page.navigate', { url: fixtureUrl }, sid);
+    await new Promise(r => setTimeout(r, 900));
+    await evaluate('document.fonts.ready.then(function(){return 1})');
+    const f = await evaluate(clippingProbe);
+    const found = new Set(f.hits.map(h => h.id));
+    const mustFlag = ['overflow-text', 'overflow-control'];
+    const mustNot = ['case-fixed-canvas', 'slide-text-offscreen', 'slide-text-offscreen-2', 'valid-text', 'valid-link'];
+    const missing = mustFlag.filter(id => !found.has(id));
+    const spurious = mustNot.filter(id => found.has(id));
+    check(missing.length === 0 && spurious.length === 0,
+      'clipping detector: reports both seeded overflows and ignores the fixed canvas, carousel and valid content',
+      'reported ' + JSON.stringify([...found]) +
+      (missing.length ? ' | MISSED ' + missing.join(', ') : '') +
+      (spurious.length ? ' | WRONGLY REPORTED ' + spurious.join(', ') : ''));
+  } catch (e) {
+    SKIP('clipping detector self-test', 'could not load ' + fixtureUrl + ' from the served root (' + e.message + ')');
+  }
+
+  // 320px is the SC 1.4.10 reflow width; 150% and 200% are the SC 1.4.4 resize
+  // text requirement, where long words are most likely to be clipped.
+  for (const width of [320, 360, 375, 430, 768, 1440]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 800 }, sid);
     await send('Page.navigate', { url }, sid);
     await new Promise(r => setTimeout(r, 4500));
@@ -428,15 +528,16 @@ async function browserChecks(url) {
     const r = await evaluate(contrastProbe);
     check(r.fails.length === 0, width + 'px: every text node meets its WCAG AA threshold',
       r.checked + ' text nodes' + (r.fails.length ? ', failures: ' + r.fails.join('; ') : ''));
-    check(r.horizontalScroll === false, width + 'px: no horizontal overflow',
-      'scrollWidth ' + r.scrollWidth + ' vs clientWidth ' + r.clientWidth);
+    const clip = await evaluate(clippingProbe);
+    check(clip.hits.length === 0, width + 'px: no text or control clipped by the body, card or carousel',
+      clip.hits.length ? describeHits(clip.hits) : 'clientWidth ' + clip.vw + ', innerWidth ' + clip.inner);
     check(r.focusable > 0, width + 'px: focusable elements present', r.focusable + ' focusable');
-    if (width === 320 || width === 1440) {
-      await evaluate('(function(){document.documentElement.style.fontSize="200%";return 1})()');
+    for (const scale of (width === 320 || width === 1440 ? [150, 200] : [])) {
+      await evaluate(`(function(){document.documentElement.style.fontSize="${scale}%";return 1})()`);
       await new Promise(r => setTimeout(r, 900));
-      const z = await evaluate(contrastProbe);
-      check(z.horizontalScroll === false, width + 'px at 200% text: still no horizontal overflow',
-        'scrollWidth ' + z.scrollWidth + ' vs clientWidth ' + z.clientWidth);
+      const z = await evaluate(clippingProbe);
+      check(z.hits.length === 0, width + 'px at ' + scale + '% text: still nothing clipped',
+        z.hits.length ? describeHits(z.hits) : 'clientWidth ' + z.vw);
       await evaluate('(function(){document.documentElement.style.fontSize="";return 1})()');
       await new Promise(r => setTimeout(r, 300));
     }
