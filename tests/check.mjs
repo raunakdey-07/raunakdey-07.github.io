@@ -261,7 +261,17 @@ if (existsSync(vercelPath)) {
   try { cfg = JSON.parse(readFileSync(vercelPath, 'utf8')); PASS('vercel.json parses as JSON'); }
   catch (e) { FAIL('vercel.json parses as JSON', e.message); }
   if (cfg) {
-    const set = new Map((cfg.headers && cfg.headers[0] ? cfg.headers[0].headers : []).map(h => [h.key, h.value]));
+    const rules = cfg.headers || [];
+    // Reading only the first rule lets a narrowed `source` pass unnoticed: a rule
+    // scoped to /assets/(.*) still contains every expected header, but none of
+    // them would reach the page. Check the scope before trusting the values.
+    check(rules.length === 1, 'exactly one header rule, so its scope cannot shadow or narrow the others',
+      rules.length + ' rule(s)' + (rules.length > 1 ? ': ' + rules.map(r => r.source).join(' | ') : ''));
+    const rule = rules[0] || {};
+    const source = rule.source || '';
+    check(/^\/\(\.\*\)\/?$|^\/$|^\/\(\.\*\)$/.test(source), 'the header rule applies to every path',
+      'source=' + JSON.stringify(source) + ' (a narrower pattern would leave the page unprotected)');
+    const set = new Map((rule.headers || []).map(h => [h.key, h.value]));
     for (const [key, expected] of [['X-Content-Type-Options', 'nosniff'], ['Referrer-Policy', 'strict-origin-when-cross-origin'],
       ['X-Frame-Options', 'DENY'], ['Permissions-Policy', null], ['Content-Security-Policy', null]]) {
       if (expected === null) check(set.has(key), key + ' is declared', set.get(key) || '(missing)');
