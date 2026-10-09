@@ -170,6 +170,14 @@ Newest first.
 - The Content-Security-Policy was left alone, deliberately. Four candidate
   policies were served through a local harness and measured; the trade-offs are
   set out under Response headers.
+- The `#skills` section has been seen to measure 822px or 1060px between runs.
+  That is a measurement artefact, not a layout shift: `#about`, `#projects`,
+  `#achievements` and `#skills` all use `content-visibility: auto` with
+  `contain-intrinsic-size: 1px 900px`, so a section that is currently skipped
+  for rendering is laid out at the 900px placeholder and reports a height that is
+  not its own. Card, image and section geometry is otherwise identical run to
+  run, and scrolling normally brings all four sections to `opacity: 1` at both
+  375px and 1440px. Measure those sections while they are on screen.
 
 ### Earlier work
 
