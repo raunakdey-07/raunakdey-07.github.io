@@ -102,8 +102,7 @@ Newest first.
   the achievement headings. The red stays as the button and border accent.
 - Keyboard focus now has a deliberate `:focus-visible` outline, because the
   indicator otherwise depended on the user agent and measured 1.02:1 against the
-  dark background in Chromium. The project card clipping was relaxed so the ring
-  is not cut off.
+  dark background in Chromium.
 - The skip link got its own background, padding and accessible treatment, and
   the logo link is named rather than announced as "RD".
 - The three project cards now describe the projects they link to. The Finalysis
@@ -121,6 +120,27 @@ Newest first.
   JSON-LD, fragments, asset references, third-party origins, DOM sinks, focus
   suppression and the accessibility invariants, with an optional `--browser`
   mode for computed contrast, overflow and console errors.
+
+### 9 October 2026 — focus ring on the project screenshots
+
+- The keyboard focus ring on the three project screenshot links was never
+  visible, and computed style said otherwise the whole time. Two causes, both
+  found by sampling screenshots rather than by reading CSS:
+  the anchor was an inline box, and Chrome paints no outline on one; and even
+  once painted, the card and the carousel both clip an outset ring. The earlier
+  `overflow-clip-margin` on the card did not help — Chrome does not apply it to
+  outlines, so it was removed rather than left in place doing nothing. The ring
+  is now drawn inside the link, with a light and a dark line together so it
+  stays visible on the light and the dark screenshots alike.
+- The response-header check verified the header values but never the rule's
+  scope, so a configuration matching only `/assets/(.*)` passed while leaving
+  the page unprotected.
+- The served-asset check skipped any relative URL, so the apple touch icon was
+  never actually requested.
+- The empty-table-cell pattern paired `(td|th)` with a hardcoded `</td>`, so an
+  empty header cell passed.
+- `--browser` now measures 320px, the SC 1.4.10 reflow width, and re-measures
+  320px and 1440px at 200% text for SC 1.4.4.
 
 ### Earlier work
 
@@ -243,6 +263,21 @@ contrast, focus-ring rendering, responsive overflow, runtime console errors and
 canvas frame rate. `--browser` adds those when a Chromium DevTools endpoint is
 reachable; otherwise the script prints `SKIP` with the manual procedure instead
 of claiming a pass.
+
+`--browser` measures 320, 375, 768 and 1440px, and re-measures 320px and 1440px
+with the root font size at 200%, covering the SC 1.4.10 reflow width and the
+SC 1.4.4 resize-text requirement.
+
+Two limitations are worth knowing before trusting a green run:
+
+- **Focus rings are checked by computed style, not by pixels.** A rule that
+  reports `2px solid` can still paint nothing — that is exactly what happened on
+  the project screenshot links, where an inline anchor box took no outline at all.
+  Confirm a ring by eye, or by sampling a screenshot.
+- **`no horizontal overflow` cannot fail.** It compares
+  `documentElement.scrollWidth` with `clientWidth`, and `overflow-x: hidden` on
+  `body` pins the first to the second regardless of content. A `PASS` means
+  nothing scrolls sideways; it does not mean nothing is clipped by `body`.
 
 ## Contributing
 
