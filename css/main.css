@@ -5,6 +5,15 @@
         --secondary-text-color: #C7C7C7;
     --accent-color: #D60000;
     --accent-color-hover: #B30000;
+    /* Text-safe variant of the accent red, used only for the hero's red text.
+       #D60000 on #121212 measures 3.44:1, which meets the 3:1 large-text
+       threshold but fails the 4.5:1 required for the role while it is set
+       below 24px. Measured against the animated canvas (60 frames per width,
+       headline hidden) #E8453E still fell to 4.34:1 at 768px, where the role
+       is 23.2px; this tone holds 5.18:1 on the flat background and 4.72:1 in
+       the worst sampled frame at 768px. Buttons, navigation and the rest of
+       the site keep #D60000. */
+    --accent-text-color: #EE4E45;
     --border-color: #333333;
 
     --font-primary: 'IBM Plex Sans', sans-serif;
@@ -302,22 +311,31 @@ ul {
     margin-bottom: 1rem;
     line-height: 1.2;
     letter-spacing: -0.04em;
+    /* Balances the wrapped headline lines. Without it the corrected tracking
+       lets "Hi, my name is Raunak" fill the first line at some phone widths and
+       strands "Dey." on its own. Balancing is a no-op while each sentence fits
+       on one line, which is the case from 576px up. */
+    text-wrap: balance;
 }
 
+/* The role and the name inherit the hero's letter-spacing so every word on the
+   headline is tracked with the same value; overriding it per span set the red
+   runs 1px looser than the grey words next to them. Both use the text-safe red
+   because the role is set well under 24px on phones. The name is allowed to
+   wrap (text-wrap: balance on the heading keeps it whole where it can be);
+   forcing it onto one line clipped it at 150% and 200% browser text zoom. */
 .hero-title .role {
-    color: var(--accent-color);
+    color: var(--accent-text-color);
     font-weight: 600;
     font-family: var(--font-secondary);
-    letter-spacing: -0.02rem;
     display: inline-block;
     min-width: 16ch;
-    white-space: nowrap;
 }
 
 .hero-title .text-accent {
+    color: var(--accent-text-color);
     font-weight: 600;
     font-family: var(--font-secondary);
-    letter-spacing: -0.02rem;
 }
 
 .hero-title .typed-cursor {
@@ -1141,11 +1159,13 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
         vertical-align: baseline; 
     }
 
+    /* 1.5 was loose for a display headline that wraps to three lines on a
+       phone; 1.25 keeps the stacked lines reading as one block. */
     .hero-content h1,
     .hero-content .hero-title .role,
     .hero-content .typed-cursor {
         font-size: 2.25rem;
-        line-height: 1.5;
+        line-height: 1.25;
     }
 
     .about-wrapper {
@@ -1250,6 +1270,22 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .hero-content .hero-title .typed-cursor {
         font-size: 1.45rem;
     }
+
+    /* Bounding the role to the column on the phones that need it: width
+       max-content keeps the phrase one unbreakable unit at normal text sizes
+       (it still hops to its own line below ~360px), while max-width clamps it
+       when a whole line is too narrow, so at 150% and 200% text zoom the tail
+       wraps instead of being clipped. Above 768px the column is far wider than
+       the phrase even at 200% zoom, and making the role a box there only
+       disturbed the line box, so the treatment stops at this breakpoint. This
+       rule out-specifies the display:inline rules above it; min-width stays
+       auto here, so the 16ch floor below 768px stays inactive. */
+    .hero-content .hero-title .role {
+        display: inline-block;
+        width: max-content;
+        max-width: 100%;
+    }
+
     .about-wrapper__info-text {
         font-size: 1rem;
         line-height: 1.8;
@@ -1414,6 +1450,18 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .about-wrapper__image img.profile-img {
         width: 150px;
         height: 150px;
+    }
+}
+
+/* Measured at 320-350px: "I am a [role]" is forced onto a second line once the
+   role grows, so the headline gained a line and the whole centred hero moved
+   20px on every typing cycle (CLS 0.295 from .hero-content alone). Above 360px
+   the role fits and nothing moves, so the space is reserved only where it is
+   needed. 4lh follows the computed line-height, so it scales with the reader's
+   font size, and min-height can never clip text. */
+@media (max-width: 359px) {
+    .hero-title {
+        min-height: 4lh;
     }
 }
 
