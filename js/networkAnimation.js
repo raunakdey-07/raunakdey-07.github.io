@@ -15,15 +15,7 @@ if (!canvas) {
     let timeScale = motionMultiplier > 0 ? 1 / motionMultiplier : 1;
     
     let particles = [];
-    let mouse = {
-        x: null,
-        y: null,
-        radius: 200,
-        lastX: null,
-        lastY: null,
-        velocity: { x: 0, y: 0 }
-    };
-    
+
     // Expanded color palette for artistic effects
     const particleColors = [
         '#ff003c', '#ff4d6d', '#ff809b', '#ff1a47', '#ff6680',
@@ -41,7 +33,6 @@ if (!canvas) {
     let cssWidth = window.innerWidth;
     let cssHeight = window.innerHeight;
     let dprScale = 1;
-    let canvasRect = canvas.getBoundingClientRect();
     
     // Animation timing
     let animationTime = 0;
@@ -98,121 +89,41 @@ if (!canvas) {
             this.baseSize = this.size;
             this.speedX = Math.random() * 2 - 1;
             this.speedY = Math.random() * 2 - 1;
-            this.density = Math.random() * 40 + 10;
             this.opacity = Math.random() * 0.8 + 0.2;
             this.baseOpacity = this.opacity;
-    
+
             this.angle = Math.random() * Math.PI * 2;
             this.angleSpeed = (Math.random() - 0.5) * 0.02;
             this.pulsePhase = Math.random() * Math.PI * 2;
             this.colorIndex = Math.floor(Math.random() * particleColors.length);
             this.trail = [];
             this.maxTrailLength = 5;
-            this.magneticForce = { x: 0, y: 0 };
-            this.orbitalRadius = Math.random() * 100 + 50;
-            this.isOrbiting = false;
             this.energy = Math.random() * 100;
         }
-    
+
         update() {
             animationTime += 0.003 * motionMultiplier;
-    
-            // Update mouse velocity for fluid interactions
-            if (mouse.x !== null && mouse.y !== null) {
-                if (mouse.lastX !== null && mouse.lastY !== null) {
-                    mouse.velocity.x = mouse.x - mouse.lastX;
-                    mouse.velocity.y = mouse.y - mouse.lastY;
-                }
-                mouse.lastX = mouse.x;
-                mouse.lastY = mouse.y;
-            }
-    
+
             // Store previous position for trail effect
             this.trail.unshift({ x: this.x, y: this.y, opacity: this.opacity });
             if (this.trail.length > this.maxTrailLength) {
                 this.trail.pop();
             }
-    
-            // Enhanced mouse interaction with artistic effects
-            if (mouse.x !== null && mouse.y !== null) {
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDistance = mouse.radius;
-    
-                if (distance < maxDistance) {
-                    // Dynamic interaction based on mouse velocity
-                    const velocityMagnitude = Math.sqrt(mouse.velocity.x ** 2 + mouse.velocity.y ** 2);
-                    const interactionStrength = Math.max(0.3, velocityMagnitude * 0.1);
-    
-                    // Orbital motion for close particles
-                    if (distance < maxDistance * 0.3) {
-                        this.isOrbiting = true;
-                        const orbitalAngle = Math.atan2(dy, dx) + this.angleSpeed * 1.5 * motionMultiplier;
-                        this.x = mouse.x + Math.cos(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
-                        this.y = mouse.y + Math.sin(orbitalAngle) * this.orbitalRadius * (distance / maxDistance);
-                    } else {
-                        this.isOrbiting = false;
-    
-                        // Fluid magnetic field effect
-                        const forceDirectionX = dx / distance;
-                        const forceDirectionY = dy / distance;
-                        const force = (maxDistance - distance) / maxDistance;
-    
-                        // Wave-like distortion
-                        const wave = Math.sin(animationTime + distance * 0.01) * 0.18; // Reduced wave amplitude
-                        const perpX = -forceDirectionY * wave * force;
-                        const perpY = forceDirectionX * wave * force;
-                        this.magneticForce.x = forceDirectionX * force * this.density * interactionStrength * 0.5 + perpX; // Reduce force
-                        this.magneticForce.y = forceDirectionY * force * this.density * interactionStrength * 0.5 + perpY;
-                        this.x += this.magneticForce.x * 0.15 * motionMultiplier;
-                        this.y += this.magneticForce.y * 0.15;
-                    }
-    
-                    // Dynamic size and opacity based on proximity
-                    const proximityFactor = 1 - (distance / maxDistance);
-                    this.size = this.baseSize * (1 + proximityFactor * 2);
-                    this.opacity = this.baseOpacity * (1 + proximityFactor);
-                    this.energy = Math.min(100, this.energy + proximityFactor * 10);
-    
-                } else {
-                    // Return to natural state
-                    this.isOrbiting = false;
-                    this.magneticForce.x *= 0.95;
-                    this.magneticForce.y *= 0.95;
-    
-                    // Smooth return to base position with sine wave motion
-                    const returnForceX = (this.baseX - this.x) * 0.012 * motionMultiplier;
-                    const returnForceY = (this.baseY - this.y) * 0.012 * motionMultiplier;
-                    this.x += returnForceX;
-                    this.y += returnForceY;
-    
-                    // Return to base size and opacity
-                    this.size += (this.baseSize - this.size) * 0.05;
-                    this.opacity += (this.baseOpacity - this.opacity) * 0.05;
-                    this.energy *= 0.99;
-                }
-            } else {
-                // Natural floating motion with sine waves
-                this.isOrbiting = false;
-                this.magneticForce.x *= 0.9;
-                this.magneticForce.y *= 0.9;
-    
-                // Organic sine wave movement
-                const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22 * motionMultiplier;
-                const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22 * motionMultiplier;
-    
-                this.baseX += (this.speedX + sineX) * 0.25 * motionMultiplier;
-                this.baseY += (this.speedY + sineY) * 0.25;
-    
-                // Smooth return to base position
-                this.x += (this.baseX - this.x) * 0.01 * motionMultiplier;
-                this.y += (this.baseY - this.y) * 0.01;
-    
-                this.size += (this.baseSize - this.size) * 0.05;
-                this.opacity += (this.baseOpacity - this.opacity) * 0.05;
-                this.energy *= 0.99;
-            }
+
+            // Natural floating motion with sine waves
+            const sineX = Math.sin(animationTime + this.baseX * 0.001) * 0.22 * motionMultiplier;
+            const sineY = Math.cos(animationTime + this.baseY * 0.001) * 0.22 * motionMultiplier;
+
+            this.baseX += (this.speedX + sineX) * 0.25 * motionMultiplier;
+            this.baseY += (this.speedY + sineY) * 0.25;
+
+            // Smooth return to base position
+            this.x += (this.baseX - this.x) * 0.01 * motionMultiplier;
+            this.y += (this.baseY - this.y) * 0.01;
+
+            this.size += (this.baseSize - this.size) * 0.05;
+            this.opacity += (this.baseOpacity - this.opacity) * 0.05;
+            this.energy *= 0.99;
     
             // Boundary reflection with smooth transitions
             if (this.baseX < 0 || this.baseX > cssWidth) {
@@ -329,86 +240,8 @@ if (!canvas) {
                 }
             }
         }
-    
-        if (mouse.x !== null && mouse.y !== null) {
-            const mouseGlow = ctx.createRadialGradient(
-                mouse.x, mouse.y, 0,
-                mouse.x, mouse.y, mouse.radius
-            );
-            mouseGlow.addColorStop(0, 'rgba(255, 0, 60, 0.1)');
-            mouseGlow.addColorStop(0.7, 'rgba(255, 0, 60, 0.05)');
-            mouseGlow.addColorStop(1, 'rgba(255, 0, 60, 0)');
-    
-            ctx.fillStyle = mouseGlow;
-            ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, mouse.radius, 0, Math.PI * 2);
-            ctx.fill();
-    
-            particles.forEach(particle => {
-                const dx = mouse.x - particle.x;
-                const dy = mouse.y - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-    
-                if (distance < mouse.radius) {
-                    const opacity = (1 - (distance / mouse.radius)) * 0.8;
-                    const energyBonus = particle.energy / 100;
-    
-                    const connectionGradient = ctx.createLinearGradient(
-                        mouse.x, mouse.y,
-                        particle.x, particle.y
-                    );
-                    connectionGradient.addColorStop(0, `rgba(255, 80, 120, ${opacity})`);
-                    connectionGradient.addColorStop(0.6, `rgba(255, 0, 60, ${opacity * 0.8})`);
-                    connectionGradient.addColorStop(1, `rgba(255, 40, 80, ${opacity * 0.6})`);
-    
-                    ctx.strokeStyle = connectionGradient;
-                    ctx.lineWidth = 1.5 + energyBonus;
-                    ctx.beginPath();
-                    ctx.moveTo(mouse.x, mouse.y);
-                    ctx.lineTo(particle.x, particle.y);
-                    ctx.stroke();
-    
-                    if (energyBonus > 0.5 && Math.random() > 0.7) {
-                        const midX = (mouse.x + particle.x) / 2;
-                        const midY = (mouse.y + particle.y) / 2;
-                        const offsetX = (Math.random() - 0.5) * 40;
-                        const offsetY = (Math.random() - 0.5) * 40;
-    
-                        ctx.strokeStyle = `rgba(255, 200, 220, ${opacity * 0.4})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(mouse.x, mouse.y);
-                        ctx.quadraticCurveTo(midX + offsetX, midY + offsetY, particle.x, particle.y);
-                        ctx.stroke();
-                    }
-    
-                    if (energyBonus > 0.7) {
-                        const rippleRadius = 20 + Math.sin(animationTime * 3) * 10;
-                        ctx.strokeStyle = `rgba(255, 0, 60, ${opacity * 0.2})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.arc(particle.x, particle.y, rippleRadius, 0, Math.PI * 2);
-                        ctx.stroke();
-                    }
-                }
-            });
-    
-            const velocityMagnitude = Math.sqrt(mouse.velocity.x ** 2 + mouse.velocity.y ** 2);
-            if (velocityMagnitude > 2) {
-                for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
-                    const fieldRadius = mouse.radius * 0.7;
-                    const fieldX = mouse.x + Math.cos(angle + animationTime * 2) * fieldRadius;
-                    const fieldY = mouse.y + Math.sin(angle + animationTime * 2) * fieldRadius;
-    
-                    ctx.fillStyle = `rgba(255, 0, 60, ${velocityMagnitude * 0.02})`;
-                    ctx.beginPath();
-                    ctx.arc(fieldX, fieldY, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-        }
     }
-    
+
     function drawMotifNetworks() {
         const motifs = [
             {
@@ -617,7 +450,6 @@ if (!canvas) {
         resizeCanvas();
         init();
         updateCalmZoneCache();
-        canvasRect = canvas.getBoundingClientRect();
 
         if (disableContinuousAnimation) {
             // resizeCanvas() cleared the backing store above, so repaint rather
@@ -627,55 +459,6 @@ if (!canvas) {
         } else if (wasDisabled && isVisible && isCanvasVisible) {
             startAnimation();
         }
-    }
-    
-    function handleMouseMove(event) {
-        const newX = event.clientX - canvasRect.left;
-        const newY = event.clientY - canvasRect.top;
-    
-        if (mouse.x !== null && mouse.y !== null) {
-            mouse.velocity.x = newX - mouse.x;
-            mouse.velocity.y = newY - mouse.y;
-        }
-    
-        mouse.x = newX;
-        mouse.y = newY;
-    }
-    
-    function handleMouseLeave() {
-        mouse.x = null;
-        mouse.y = null;
-        mouse.velocity = { x: 0, y: 0 };
-    }
-    
-    function handleTouchMove(event) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        const newX = touch.clientX - canvasRect.left;
-        const newY = touch.clientY - canvasRect.top;
-    
-        if (mouse.x !== null && mouse.y !== null) {
-            mouse.velocity.x = newX - mouse.x;
-            mouse.velocity.y = newY - mouse.y;
-        }
-    
-        mouse.x = newX;
-        mouse.y = newY;
-    }
-    
-    function handleTouchEnd() {
-        mouse.x = null;
-        mouse.y = null;
-        mouse.velocity = { x: 0, y: 0 };
-    }
-    
-    // --- Event listener setup ---
-    
-    if (!disableContinuousAnimation) {
-        canvas.addEventListener('mousemove', handleMouseMove, { passive: true });
-        canvas.addEventListener('mouseleave', handleMouseLeave, { passive: true });
-        canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-        canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
     
     function animate(timestamp = 0) {
