@@ -251,6 +251,31 @@ const logicalCanvasUse = [...animJs.matchAll(/canvas\.(width|height)/g)]
 check(logicalCanvasUse.length === 0, 'no coordinate maths reads canvas.width/height directly',
   logicalCanvasUse.length + ' occurrence(s) outside the backing-store assignment');
 
+head('Response headers');
+const vercelPath = join(ROOT, 'vercel.json');
+if (existsSync(vercelPath)) {
+  let cfg = null;
+  try { cfg = JSON.parse(readFileSync(vercelPath, 'utf8')); PASS('vercel.json parses as JSON'); }
+  catch (e) { FAIL('vercel.json parses as JSON', e.message); }
+  if (cfg) {
+    const set = new Map((cfg.headers && cfg.headers[0] ? cfg.headers[0].headers : []).map(h => [h.key, h.value]));
+    for (const [key, expected] of [['X-Content-Type-Options', 'nosniff'], ['Referrer-Policy', 'strict-origin-when-cross-origin'],
+      ['X-Frame-Options', 'DENY'], ['Permissions-Policy', null], ['Content-Security-Policy', null]]) {
+      if (expected === null) check(set.has(key), key + ' is declared', set.get(key) || '(missing)');
+      else check(set.get(key) === expected, key + ' is ' + expected, set.get(key) || '(missing)');
+    }
+    const csp = set.get('Content-Security-Policy') || '';
+    check(/frame-ancestors 'none'/.test(csp), 'CSP denies framing (frame-ancestors none)', csp);
+    check(!/script-src/.test(csp) || !/'unsafe-inline'/.test(csp.match(/script-src[^;]*/)[0]),
+      'CSP does not allow unsafe inline script',
+      /script-src/.test(csp) ? csp.match(/script-src[^;]*/)[0] : 'no script-src directive yet, so nothing is loosened');
+    check(!/'unsafe-eval'/.test(csp), 'CSP never allows unsafe-eval');
+    check(!/\*/.test(csp), 'CSP contains no wildcard host');
+  }
+} else {
+  WARN('vercel.json present', 'no response headers are configured for the Vercel deployment');
+}
+
 head('Repository hygiene');
 const dotfiles = readdirSync(ROOT).filter(f => f.startsWith('.'));
 check(!dotfiles.includes('.DS_Store'), 'no .DS_Store committed', dotfiles.length ? dotfiles.join(', ') : 'no dotfiles');

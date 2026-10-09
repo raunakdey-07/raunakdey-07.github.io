@@ -166,6 +166,48 @@ GitHub Pages also serves this repository at `https://raunakdey-07.github.io/`. I
 serves identical markup, so its `<link rel="canonical">` points crawlers to the
 Vercel host rather than competing with it.
 
+### Response headers
+
+`vercel.json` sets these on every path of the Vercel deployment:
+
+| Header | Value | Why |
+| --- | --- | --- |
+| `X-Content-Type-Options` | `nosniff` | stops a browser re-interpreting a served file as another type |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | keeps the full URL out of cross-origin requests while still referring to this origin internally |
+| `X-Frame-Options` | `DENY` | clickjacking protection for older user agents |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), usb=()` | the page uses none of these |
+| `Content-Security-Policy` | `frame-ancestors 'none'; base-uri 'self'; object-src 'none'` | framing, `<base>` injection and plugin content, none of which the page needs |
+
+**These apply to Vercel only.** GitHub Pages does not let a repository set
+custom response headers, so `raunakdey-07.github.io` serves none of them. That
+copy remains fully functional; it simply is not hardened at the header level.
+Do not assume the Vercel configuration covers it.
+
+The Content-Security-Policy is deliberately narrow. It sets only directives
+that cannot conflict with anything on the page, because a wrong guess here
+breaks the site silently. The fuller policy is not shipped yet, and the reason
+is specific:
+
+- The three non-blocking stylesheet preloads use inline
+  `onload="this.onload=null;this.rel='stylesheet'"` handlers, so a
+  `script-src` would have to allow `'unsafe-inline'`, which removes most of the
+  protection. Moving the swap into `js/main.js` would remove the need, at the
+  cost of the third-party stylesheets then depending on that file loading.
+- `font-src` must include `https://cdnjs.cloudflare.com` and `data:`, or the
+  Font Awesome webfonts are blocked. This was verified by serving a draft policy
+  without them: Chromium blocked ten font files and the icons disappeared.
+- `style-src` needs the Google Fonts and the two CDN stylesheet origins, and
+  `'unsafe-inline'` for the two `<noscript>` style blocks that apply when
+  JavaScript is off.
+
+A policy including all of that was tested and loads with a clean console, so the
+work is understood and bounded. It is left as a follow-up rather than shipped
+with the headers, because it needs the inline-handler decision first.
+
+Until a deployment happens, none of this is visible in production: the live
+response still returns only `strict-transport-security` and Vercel's defaults.
+Verify with `curl -I https://raunak-dey.vercel.app/` after deploying.
+
 ## Checks
 
 A dependency-free regression script covers the invariants that are cheap to
