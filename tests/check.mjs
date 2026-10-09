@@ -242,6 +242,9 @@ check(/animation-duration:\s*0\.01ms\s*!important/.test(css), 'reduced-motion cl
 check(/#network-bg\s*\{[^}]*display:\s*none/.test(css), 'canvas hidden under reduced motion');
 check(/prefers-reduced-motion/.test(mainJs), 'main.js reacts to prefers-reduced-motion');
 check(/prefers-reduced-motion/.test(animJs), 'networkAnimation.js reacts to prefers-reduced-motion');
+check(/isCanvasVisibleInLayout/.test(animJs) && /renderStaticFrameIfVisible/.test(animJs),
+  'a hidden canvas is not painted a static frame it can never show');
+check(/function\s+renderStaticFrame\s*\(/.test(animJs), 'renderStaticFrame itself still exists and is reachable');
 check(/visibilitychange/.test(animJs), 'canvas animation pauses on tab hide');
 check(/devicePixelRatio|canvas\.width\s*=/.test(animJs), 'canvas sizing code present');
 check(/Math\.min\(window\.devicePixelRatio \|\| 1, 2\)/.test(animJs), 'canvas backing store is capped at 2x devicePixelRatio');

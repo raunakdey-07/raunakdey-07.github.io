@@ -584,9 +584,22 @@ if (!canvas) {
         }
     }
     
+    // Under prefers-reduced-motion the stylesheet hides the canvas entirely
+    // (#network-bg { display: none }), so painting a frame would cost a
+    // full-viewport fill and a pass over every particle for pixels the user
+    // cannot see. Check before painting rather than after.
+    function isCanvasVisibleInLayout() {
+        return getComputedStyle(canvas).display !== 'none';
+    }
+
+    function renderStaticFrameIfVisible() {
+        if (!isCanvasVisibleInLayout()) return;
+        renderStaticFrame();
+    }
+
     // Paint a single static frame. Used when continuous animation is off (mobile
-    // viewports, reduced motion, low-power devices). resizeCanvas() clears the
-    // backing store, so this must follow every re-init.
+    // viewports, low-power devices). resizeCanvas() clears the backing store,
+    // so this must follow every re-init.
     function renderStaticFrame() {
         ctx.fillStyle = 'rgba(18, 18, 18, 1)';
         ctx.fillRect(0, 0, cssWidth, cssHeight);
@@ -609,7 +622,7 @@ if (!canvas) {
         if (disableContinuousAnimation) {
             // resizeCanvas() cleared the backing store above, so repaint rather
             // than leave a blank canvas whenever continuous animation stays off.
-            renderStaticFrame();
+            renderStaticFrameIfVisible();
             stopAnimation();
         } else if (wasDisabled && isVisible && isCanvasVisible) {
             startAnimation();
@@ -715,7 +728,7 @@ if (!canvas) {
     updateCalmZoneCache();
 
     if (disableContinuousAnimation) {
-        renderStaticFrame();
+        renderStaticFrameIfVisible();
     } else {
         startAnimation();
     }
