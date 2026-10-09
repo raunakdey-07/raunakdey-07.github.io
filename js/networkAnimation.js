@@ -34,8 +34,13 @@ if (!canvas) {
         { x: 0.82, y: 0.18, radius: 170 }
     ];
     
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // CSS-pixel size of the canvas, kept separate from the backing store. Every
+    // coordinate below is in CSS pixels and is scaled by ctx.setTransform, so
+    // raising the backing resolution must never move a particle, a calm zone or
+    // a motif anchor.
+    let cssWidth = window.innerWidth;
+    let cssHeight = window.innerHeight;
+    let dprScale = 1;
     let canvasRect = canvas.getBoundingClientRect();
     
     // Animation timing
@@ -69,8 +74,8 @@ if (!canvas) {
     
     function updateCalmZoneCache() {
         calmZoneCache = calmZones.map((zone) => ({
-            x: canvas.width * zone.x,
-            y: canvas.height * zone.y,
+            x: cssWidth * zone.x,
+            y: cssHeight * zone.y,
             radius: zone.radius
         }));
     }
@@ -210,13 +215,13 @@ if (!canvas) {
             }
     
             // Boundary reflection with smooth transitions
-            if (this.baseX < 0 || this.baseX > canvas.width) {
+            if (this.baseX < 0 || this.baseX > cssWidth) {
                 this.speedX *= -0.8;
-                this.baseX = Math.max(0, Math.min(canvas.width, this.baseX));
+                this.baseX = Math.max(0, Math.min(cssWidth, this.baseX));
             }
-            if (this.baseY < 0 || this.baseY > canvas.height) {
+            if (this.baseY < 0 || this.baseY > cssHeight) {
                 this.speedY *= -0.8;
-                this.baseY = Math.max(0, Math.min(canvas.height, this.baseY));
+                this.baseY = Math.max(0, Math.min(cssHeight, this.baseY));
             }
     
             this.pulsePhase += 0.008 * motionMultiplier;
@@ -408,9 +413,9 @@ if (!canvas) {
         const motifs = [
             {
                 name: 'scorpio',
-                anchorX: canvas.width * 0.82,
-                anchorY: canvas.height * 0.18,
-                scale: Math.min(canvas.width, canvas.height) * 0.12,
+                anchorX: cssWidth * 0.82,
+                anchorY: cssHeight * 0.18,
+                scale: Math.min(cssWidth, cssHeight) * 0.12,
                 nodes: [
                     [-0.48, -0.02], [-0.30, -0.16], [-0.10, -0.08], [0.10, 0.00],
                     [0.28, 0.12], [0.46, 0.24], [0.62, 0.38], [0.74, 0.54],
@@ -497,17 +502,37 @@ if (!canvas) {
         ctx.restore();
     }
     
+    // Match the backing store to the display, up to 2x. Capped at 2 because the
+    // fill cost of a full-screen canvas grows with the square of this factor and
+    // 90 particles are already the desktop budget. When continuous animation is
+    // off the canvas is painted once per resize, so it stays at 1x and does not
+    // pay for resolution nobody sees moving.
+    function computeScale() {
+        if (disableContinuousAnimation) return 1;
+        return Math.min(window.devicePixelRatio || 1, 2);
+    }
+
+    // Resize the backing store and reset the transform so that all drawing code
+    // can keep working in CSS pixels. Assigning width or height resets the
+    // context state, so the transform has to be reapplied every time.
+    function resizeCanvas() {
+        cssWidth = window.innerWidth;
+        cssHeight = window.innerHeight;
+        dprScale = computeScale();
+        canvas.width = Math.round(cssWidth * dprScale);
+        canvas.height = Math.round(cssHeight * dprScale);
+        ctx.setTransform(dprScale, 0, 0, dprScale, 0, 0);
+    }
+
     function init() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
         particles = [];
         const currentParticleCount = isLowPowerDevice
             ? (window.innerWidth < 768 ? 28 : 48)
             : (window.innerWidth < 768 ? 44 : 90);
     
         for (let i = 0; i < currentParticleCount; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
+            const x = Math.random() * cssWidth;
+            const y = Math.random() * cssHeight;
             particles.push(new Particle(x, y));
         }
     }
@@ -560,11 +585,11 @@ if (!canvas) {
     }
     
     // Paint a single static frame. Used when continuous animation is off (mobile
-    // viewports, reduced motion, low-power devices). init() resizes the canvas
-    // backing store, which clears it, so this must follow every re-init.
+    // viewports, reduced motion, low-power devices). resizeCanvas() clears the
+    // backing store, so this must follow every re-init.
     function renderStaticFrame() {
         ctx.fillStyle = 'rgba(18, 18, 18, 1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, cssWidth, cssHeight);
         particles.forEach((particle) => {
             particle.draw();
         });
@@ -573,14 +598,17 @@ if (!canvas) {
 
     function handleResize() {
         const wasDisabled = disableContinuousAnimation;
-        init();
+        // Capabilities first: computeScale() depends on them, and the backing
+        // store has to be sized before any coordinate work happens.
         recomputeDeviceCapabilities();
+        resizeCanvas();
+        init();
         updateCalmZoneCache();
         canvasRect = canvas.getBoundingClientRect();
 
         if (disableContinuousAnimation) {
-            // init() cleared the backing store above, so repaint rather than leave
-            // a blank canvas whenever continuous animation stays off.
+            // resizeCanvas() cleared the backing store above, so repaint rather
+            // than leave a blank canvas whenever continuous animation stays off.
             renderStaticFrame();
             stopAnimation();
         } else if (wasDisabled && isVisible && isCanvasVisible) {
@@ -650,7 +678,7 @@ if (!canvas) {
         lastFrameTime = timestamp;
     
         ctx.fillStyle = 'rgba(18, 18, 18, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, cssWidth, cssHeight);
     
         particles.forEach((particle) => {
             particle.update();
@@ -678,10 +706,13 @@ if (!canvas) {
     // React to prefers-reduced-motion changes at runtime
     motionQuery.addEventListener('change', handleMotionChange);
     
-    // Ensure the static frame is drawn, or start the loop
+    // Ensure the static frame is drawn, or start the loop.
+    // recomputeDeviceCapabilities() runs first because computeScale() depends on
+    // it, then the backing store is sized before any particles exist.
+    recomputeDeviceCapabilities();
+    resizeCanvas();
     init();
     updateCalmZoneCache();
-    recomputeDeviceCapabilities();
 
     if (disableContinuousAnimation) {
         renderStaticFrame();

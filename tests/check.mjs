@@ -217,6 +217,12 @@ check(/prefers-reduced-motion/.test(mainJs), 'main.js reacts to prefers-reduced-
 check(/prefers-reduced-motion/.test(animJs), 'networkAnimation.js reacts to prefers-reduced-motion');
 check(/visibilitychange/.test(animJs), 'canvas animation pauses on tab hide');
 check(/devicePixelRatio|canvas\.width\s*=/.test(animJs), 'canvas sizing code present');
+check(/Math\.min\(window\.devicePixelRatio \|\| 1, 2\)/.test(animJs), 'canvas backing store is capped at 2x devicePixelRatio');
+check(/ctx\.setTransform\(dprScale, 0, 0, dprScale, 0, 0\)/.test(animJs), 'canvas transform reapplied so drawing stays in CSS pixels');
+const logicalCanvasUse = [...animJs.matchAll(/canvas\.(width|height)/g)]
+  .filter(m => !/Math\.round\(css/.test(animJs.slice(Math.max(0, m.index - 60), m.index + 60)));
+check(logicalCanvasUse.length === 0, 'no coordinate maths reads canvas.width/height directly',
+  logicalCanvasUse.length + ' occurrence(s) outside the backing-store assignment');
 
 head('Repository hygiene');
 const dotfiles = readdirSync(ROOT).filter(f => f.startsWith('.'));
