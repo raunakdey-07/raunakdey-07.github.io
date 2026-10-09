@@ -11,27 +11,27 @@ A modern, responsive portfolio website showcasing skills, projects, and achievem
 ### Design & Animation
 
 - **Modern Dark Theme** with red accent colors
-- **Network Particle Background** animating on the hero canvas
+- **Network Particle Background** animating on the hero canvas, paused when the tab is hidden or the canvas scrolls out of view
 - **Smooth Scroll Animations** with ScrollReveal.js
-- **Enhanced Section Headers** with gradient backgrounds and glowing effects
+- **Section Headers** marked by a short red hairline rule; there are no glows or text shadows
 - **Interactive Hover Effects** on cards and buttons
-- **Responsive Design** optimized for all devices
+- **Responsive Design** that reflows from 320px upwards without horizontal scrolling
 
 ### User Experience
 
-- **Fast Section Transitions** (200ms animations)
+- **Scroll Reveal** at 420ms, scaled down on Android phones and skipped entirely under `prefers-reduced-motion`
 - **Centered Navigation Elements** for better visual balance
-- **Swiper.js Integration** for smooth project/achievement carousels
+- **Swiper.js Integration** for the project, achievement and skills carousels, with autoplay that pauses on hover, on keyboard focus, when less than 45% of the carousel is visible, and under reduced motion
 - **Back-to-Top Button** for easy navigation
-- **Custom Scrollbar** styling
+- **Custom Scrollbar** styling that only appears while scrolling
 - **Mobile-Optimized** navigation and layouts
 
 ### Technical Features
 
-- **SEO Optimized** with comprehensive meta tags and structured data
-- **Performance Optimized** with efficient animations and loading
-- **Accessibility Focused** with proper ARIA labels and keyboard navigation
-- **Cross-Browser Compatible** with modern web standards
+- **SEO Optimized** with a canonical URL, Open Graph and Twitter cards, JSON-LD `Person` and `WebSite` entities, `robots.txt` and a sitemap
+- **Performance Optimized**: the animated canvas drops to a single static frame on mobile viewports, under reduced motion and on low-power devices, and its backing store is capped at 2x `devicePixelRatio`
+- **Accessibility Focused**: a skip link, labelled controls, list semantics for the skills, a visible `:focus-visible` ring, text that meets WCAG AA contrast, and full content under `prefers-reduced-motion`, with JavaScript disabled, and with every CDN blocked
+- **Chromium-tested**: verified in Chrome 155 at 320, 375, 768, 1024 and 1440px. Firefox, Safari and mobile browsers are untested here, so no cross-browser claim is made
 - **GitHub Pages Ready** for seamless deployment
 
 ## Technologies Used
@@ -92,26 +92,44 @@ raunakdey-07.github.io/
 
 ## Recent Updates
 
-### Design Enhancements
+Newest first.
 
-- Enhanced section headers with gradient backgrounds and animations
-- Implemented ultra-fast 200ms section transitions
-- Centered project buttons for better visual balance
-- Changed project names to red accent color for consistency
-- Added glowing effects and hover animations throughout
+### 9 October 2026 — readability, semantics and regression checks
 
-### Performance Improvements
+- Hero text contrast: the accent red used for the name and the typed role was
+  3.44:1 on the page background, below the 4.5:1 required below 24px. Added a
+  text-safe accent for red text and applied it to the hero, the header links and
+  the achievement headings. The red stays as the button and border accent.
+- Keyboard focus now has a deliberate `:focus-visible` outline, because the
+  indicator otherwise depended on the user agent and measured 1.02:1 against the
+  dark background in Chromium. The project card clipping was relaxed so the ring
+  is not cut off.
+- The skip link got its own background, padding and accessible treatment, and
+  the logo link is named rather than announced as "RD".
+- The three project cards now describe the projects they link to. The Finalysis
+  card pointed at a repository that calls itself redundant while its screenshot
+  and demo show a different one; it now points at `finalysis_2.0`, the
+  repository that declares that deployment.
+- Skills are a list rather than a table with a hidden empty second column.
+- Open Graph and Twitter cards use a 1200x630 image instead of a portrait
+  photograph, the meta description was shortened from 195 to 138 characters, an
+  Apple touch icon was declared, and the sitemap and JSON-LD dates were brought
+  up to date.
+- The animated canvas now renders at up to 2x `devicePixelRatio` on screens that
+  animate it, and stays at 1x where only a static frame is drawn.
+- `node tests/check.mjs` was added: a dependency-free suite covering metadata,
+  JSON-LD, fragments, asset references, third-party origins, DOM sinks, focus
+  suppression and the accessibility invariants, with an optional `--browser`
+  mode for computed contrast, overflow and console errors.
 
-- Optimized animation timing for instant responsiveness
-- Reduced ScrollReveal delays for immediate section appearance
-- Improved mobile responsiveness across all devices
+### Earlier work
 
-### SEO & Technical
-
-- Sitemap optimized for single-page architecture
-- Enhanced meta tags and structured data
-- Optimized for search engine discoverability
-- Cross-browser compatibility improvements
+- Sitemap consolidated to the single canonical URL; fragments are not separate
+  crawlable resources
+- Carousel pagination spacing widened so the dots satisfy the WCAG 2.2 target
+  size spacing exception
+- Section transitions and ScrollReveal delays retuned
+- Custom scrollbar that appears only while scrolling
 
 ## Setup & Development
 
