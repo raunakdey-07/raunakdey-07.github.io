@@ -128,7 +128,10 @@ const fragments = [...new Set([...html.matchAll(/href="#([^"]*)"/g)].map(m => m[
 const badFragments = fragments.filter(f => f && !ids.includes(f));
 check(badFragments.length === 0, 'every internal fragment link resolves to an existing id', badFragments.length ? 'unresolved: ' + badFragments.join(', ') : fragments.join(', '));
 
-const blanks = [...html.matchAll(/<(td|th)[^>]*>\s*<\/td>/g)];
+// The closing tag has to be matched against the opening one: the old pattern
+// hardcoded </td>, so an empty <th></th> — the exact regression this guards
+// against, since the removed table had an empty header cell — was not matched.
+const blanks = [...html.matchAll(/<(td|th)([^>]*)>\s*<\/\1\s*>/gi)];
 check(blanks.length === 0, 'no empty table cells left in the markup',
   blanks.length ? blanks.length + ' empty cell(s) still present' : 'skills are a list, not a table with an empty column');
 const skillLists = count(/<ul class="skills-list">/g);
