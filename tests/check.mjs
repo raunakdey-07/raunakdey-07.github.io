@@ -128,6 +128,14 @@ const fragments = [...new Set([...html.matchAll(/href="#([^"]*)"/g)].map(m => m[
 const badFragments = fragments.filter(f => f && !ids.includes(f));
 check(badFragments.length === 0, 'every internal fragment link resolves to an existing id', badFragments.length ? 'unresolved: ' + badFragments.join(', ') : fragments.join(', '));
 
+const blanks = [...html.matchAll(/<(td|th)[^>]*>\s*<\/td>/g)];
+check(blanks.length === 0, 'no empty table cells left in the markup',
+  blanks.length ? blanks.length + ' empty cell(s) still present' : 'skills are a list, not a table with an empty column');
+const skillLists = count(/<ul class="skills-list">/g);
+const skillItems = count(/<li><i class="fab |<li><i class="fas |<li><img /g);
+check(skillLists === 5 && skillItems === 35, 'all five skill slides are lists of items',
+  skillLists + ' lists, ' + skillItems + ' items');
+
 const localRefs = new Set();
 for (const m of html.matchAll(/(?:src|href)="((?!https?:|mailto:|#|data:|tel:)[^"]+)"/g)) localRefs.add(m[1]);
 for (const m of css.matchAll(/url\((["']?)([^)"']+)\1\)/g)) if (!/^(https?:|data:)/.test(m[2])) localRefs.add(m[2]);

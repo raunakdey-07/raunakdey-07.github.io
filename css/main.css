@@ -632,60 +632,55 @@ ul {
     font-weight: 700;
 }
 
-.skills-table {
+/* The skills were a two-column table whose second cell was empty in every row
+   and hidden with display:none, so assistive technology was handed a table with
+   a phantom column. A list carries the same content with the correct semantics;
+   the rules below keep the original row rhythm, icons and divider lines. */
+.skills-list {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 0.75rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
 }
 
-.skills-table tr + tr {
+.skills-list li + li {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.skills-table th,
-.skills-table td {
+.skills-list li {
     text-align: left;
     vertical-align: top;
     padding: 0.85rem 0.35rem;
     font-size: 0.92rem;
     line-height: 1.55;
-}
-
-.skills-table th {
-    width: 100%;
     color: var(--primary-text-color);
     font-weight: 600;
     white-space: normal;
 }
 
-.skills-table td {
-    display: none;
-}
-
-.skills-table .skill-icon {
+.skills-list .skill-icon {
     margin-right: 0.55rem;
     color: var(--accent-color);
     width: 1rem;
     text-align: center;
 }
 
-.skills-table .fa-java,
-.skills-table .fa-react,
-.skills-table .fa-node-js {
+.skills-list .fa-java,
+.skills-list .fa-react,
+.skills-list .fa-node-js {
     font-size: 1.08rem;
 }
 
-.skills-table img.skill-icon {
+.skills-list img.skill-icon {
     display: inline-block;
     vertical-align: middle;
 }
 
-.skills-table .nextjs-icon {
+.skills-list .nextjs-icon {
     filter: invert(13%) sepia(95%) saturate(6899%) hue-rotate(355deg) brightness(96%) contrast(118%);
 }
 
-.skills-table th:hover,
-.skills-table td:hover {
+.skills-list li:hover {
     color: inherit;
     background: transparent;
     transform: none;
