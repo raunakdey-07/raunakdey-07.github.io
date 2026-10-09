@@ -14,6 +14,7 @@
 // never as PASS.
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { inflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
@@ -584,6 +585,175 @@ async function browserChecks(url) {
       await new Promise(r => setTimeout(r, 300));
     }
   }
+
+  // ---- painted focus indicators -------------------------------------------
+  //
+  // Everything above reads computed style, and computed style lies: the project
+  // screenshot links reported `outline: 2px solid #E0E0E0` while Chrome painted
+  // nothing at all. So this compares pixels: a screenshot with the element
+  // blurred against the same screenshot with it focused, differenced along the
+  // outline path. Differencing is what separates a focus ring from a border or a
+  // card background that was already there.
+  //
+  // Two things this cannot do, reported rather than hidden: an element whose
+  // position changes when focused (the skip link moves from off-screen to the
+  // corner) has no comparable baseline, and an element whose ring animates in
+  // has to be sampled after the transition settles or it reads as a failure.
+  const decodePNG = buf => {
+    if (buf.readUInt32BE(0) !== 0x89504e47) throw new Error('screenshot is not a PNG');
+    const w = buf.readUInt32BE(16), h = buf.readUInt32BE(20), depth = buf[24], ct = buf[25];
+    // Chrome emits colour type 2 (RGB, 3 bytes) or 6 (RGBA, 4). Assuming 4 when
+    // it is 3 shifts every pixel and makes a real ring look absent.
+    if (depth !== 8 || (ct !== 2 && ct !== 6)) throw new Error('unsupported PNG depth ' + depth + ' colour type ' + ct);
+    const bpp = ct === 2 ? 3 : 4;
+    const parts = [];
+    let off = 8;
+    while (off < buf.length) {
+      const len = buf.readUInt32BE(off);
+      if (buf.toString('latin1', off + 4, off + 8) === 'IDAT') parts.push(buf.subarray(off + 8, off + 8 + len));
+      off += 12 + len;
+    }
+    const raw = inflateSync(Buffer.concat(parts));
+    const stride = w * bpp + 1, px = Buffer.alloc(w * h * bpp);
+    let prev = Buffer.alloc(w * bpp);
+    for (let y = 0; y < h; y++) {
+      const ft = raw[y * stride];
+      const row = Buffer.from(raw.subarray(y * stride + 1, y * stride + 1 + w * bpp));
+      for (let i = 0; i < w * bpp; i++) {
+        const a = i >= bpp ? row[i - bpp] : 0, b = prev[i], c = i >= bpp ? prev[i - bpp] : 0;
+        if (ft === 1) row[i] = (row[i] + a) & 255;
+        else if (ft === 2) row[i] = (row[i] + b) & 255;
+        else if (ft === 3) row[i] = (row[i] + ((a + b) >> 1)) & 255;
+        else if (ft === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); row[i] = (row[i] + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c)) & 255; }
+      }
+      row.copy(px, y * w * bpp);
+      prev = row;
+    }
+    return { w, h, bpp, px };
+  };
+  const bandChanged = (a, b, g) => {
+    const w = Math.round(parseFloat(g.ow) || 0), off = parseFloat(g.oo) || 0;
+    if (!w) return 0;
+    const L = Math.round(g.l), T = Math.round(g.t), R = Math.round(g.r), B = Math.round(g.bt);
+    const midY = Math.round((T + B) / 2), midX = Math.round((L + R) / 2);
+    const differs = (x, y) => {
+      if (x < 0 || y < 0 || x >= a.w || y >= a.h) return false;
+      const i = (y * a.w + x) * a.bpp, j = (y * b.w + x) * b.bpp;
+      return Math.abs(a.px[i] - b.px[j]) > 24 || Math.abs(a.px[i + 1] - b.px[j + 1]) > 24 || Math.abs(a.px[i + 2] - b.px[j + 2]) > 24;
+    };
+    let changed = 0;
+    // Offsets follow measured Chrome behaviour: a positive outline-offset puts
+    // the ring outside the border box, a negative one inside it.
+    for (let d = Math.ceil(-off - w); d <= Math.floor(-off); d++) {
+      for (let x = L + d; x < R - d; x++) if (differs(x, midY)) changed++;
+      for (let y = T + d; y < B - d; y++) if (differs(midX, y)) changed++;
+    }
+    return changed;
+  };
+  const waitScrollStable = async () => {
+    let last = -1, stable = 0;
+    for (let i = 0; i < 30 && stable < 3; i++) {
+      const y = await evaluate('Math.round(window.scrollY)');
+      if (y === last) stable++; else { stable = 0; last = y; }
+      await new Promise(r => setTimeout(r, 100));
+    }
+  };
+  const shoot = async () => {
+    const r = await send('Page.captureScreenshot', { format: 'png' }, sid);
+    return decodePNG(Buffer.from(r.data, 'base64'));
+  };
+
+  // ScrollReveal sections start at opacity 0 and only become visible once the
+  // reader reaches them. A single fast pass outruns its observer, which leaves
+  // the last section hidden -- and then every focus indicator inside it measures
+  // as unpainted, a harness artefact rather than a site defect. Step down the
+  // page at roughly reading speed so the page reaches the state a visitor sees.
+  const scrollThroughPage = async () => {
+    const total = await evaluate('Math.round(document.documentElement.scrollHeight)');
+    for (let y = 0; y < total; y += 400) {
+      await evaluate(`(function(){window.scrollTo({top:${y},behavior:"instant"});return 1})()`);
+      await new Promise(r => setTimeout(r, 420));
+    }
+    await evaluate('window.scrollTo(0,0)');
+    await new Promise(r => setTimeout(r, 500));
+  };
+
+  for (const width of [375, 1440]) {
+    await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 800 }, sid);
+    await send('Page.navigate', { url }, sid);
+    await new Promise(r => setTimeout(r, 4500));
+    await evaluate('document.fonts.ready.then(function(){return 1})');
+    await evaluate('(function(){document.querySelectorAll(".swiper").forEach(function(s){if(s.swiper&&s.swiper.autoplay)s.swiper.autoplay.stop();});return 1})()');
+    await evaluate('(function(){var h=document.body.scrollHeight,y=0;return new Promise(function(r){var i=setInterval(function(){y+=600;window.scrollTo(0,y);if(y>=h){clearInterval(i);window.scrollTo(0,0);setTimeout(function(){r(1);},1400);}},110);});})()');
+    // ScrollReveal sections start at opacity 0 and only become visible once the
+    // reader reaches them; see scrollThroughPage below.
+    await scrollThroughPage();
+    const unrevealed = await evaluate('Array.prototype.filter.call(document.querySelectorAll(".scroll-reveal-section"),function(s){return getComputedStyle(s).opacity<0.9;}).map(function(s){return s.id;}).join(",")');
+    check(!unrevealed, width + 'px: every scroll-reveal section is visible before focus is measured',
+      unrevealed ? 'still at low opacity: ' + unrevealed : 'all sections revealed');
+    await evaluate('(function(){document.body.setAttribute("tabindex","-1");document.body.focus();document.body.removeAttribute("tabindex");return 1})()');
+    await new Promise(r => setTimeout(r, 400));
+    let measured = 0, painted = 0, moved = 0, obscuredStops = 0;
+    const unpainted = [], obscured = [];
+    for (let i = 0; i < 30; i++) {
+      for (const type of ['keyDown', 'keyUp']) {
+        await send('Input.dispatchKeyEvent', { type, windowsVirtualKeyCode: 9, nativeVirtualKeyCode: 9, key: 'Tab', code: 'Tab', text: type === 'keyDown' ? '\t' : undefined }, sid);
+      }
+      await new Promise(r => setTimeout(r, 190));
+      const meta = await evaluate(`(function(){
+        var e=document.activeElement;
+        if(!e||e===document.body||!e.matches(":focus-visible")) return null;
+        var b=e.getBoundingClientRect(); if(b.width<1||b.height<1) return null;
+        var s=getComputedStyle(e);
+        if(s.outlineStyle==="none"||parseFloat(s.outlineWidth)===0) return null;
+        document.querySelectorAll("[data-fp]").forEach(function(n){n.removeAttribute("data-fp")});
+        e.setAttribute("data-fp","1");
+        var cx=b.left+b.width/2, cy=b.top+b.height/2;
+        var top=document.elementFromPoint(cx,cy);
+        var occl=!!(top && top!==e && !e.contains(top) && !top.contains(e));
+        return {label:e.tagName.toLowerCase()+"."+String(e.className).split(" ").filter(Boolean).slice(0,2).join(".")+
+                  ' "'+(e.getAttribute("aria-label")||e.textContent||"").replace(/\\s+/g," ").trim().slice(0,22)+'"',
+                obscured:occl, by:top?top.tagName+"."+String(top.className).split(" ").filter(Boolean)[0]:""};})()`);
+      if (!meta) continue;
+      await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(e){e.blur(); e.scrollIntoView({block:"center",behavior:"instant"});} return 1})()');
+      await new Promise(r => setTimeout(r, 240));
+      await waitScrollStable();
+      const geo = 'var e=document.querySelector("[data-fp]"); if(!e) return null;' +
+        'var b=e.getBoundingClientRect(), s=getComputedStyle(e);' +
+        'return {l:b.left,t:b.top,r:b.right,bt:b.bottom,ow:s.outlineWidth,oo:s.outlineOffset,scrollY:Math.round(window.scrollY)};';
+      const beforeGeo = await evaluate('(function(){' + geo + '})()');
+      if (!beforeGeo) continue;
+      const before = await shoot();
+      await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(e) e.focus(); return 1})()');
+      // Some controls carry `transition: all`, which animates the outline itself.
+      // Wait for the computed outline to stop changing before sampling.
+      for (let k = 0; k < 12; k++) {
+        const now = await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(!e) return ""; var s=getComputedStyle(e); return s.outlineWidth+"/"+s.outlineOffset+"/"+s.outlineColor;})()');
+        await new Promise(r => setTimeout(r, 110));
+        const again = await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(!e) return ""; var s=getComputedStyle(e); return s.outlineWidth+"/"+s.outlineOffset+"/"+s.outlineColor;})()');
+        if (now && now === again) break;
+      }
+      const afterGeo = await evaluate('(function(){' + geo + '})()');
+      if (!afterGeo) continue;
+      const drift = Math.max(Math.abs(beforeGeo.l - afterGeo.l), Math.abs(beforeGeo.t - afterGeo.t), Math.abs(beforeGeo.r - afterGeo.r), Math.abs(beforeGeo.bt - afterGeo.bt));
+      if (drift > 2 || beforeGeo.scrollY !== afterGeo.scrollY) { moved++; await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(e){e.blur();e.removeAttribute("data-fp");} return 1})()'); continue; }
+      measured++;
+      if (meta.obscured) { obscuredStops++; obscured.push(meta.label + ' covered by ' + meta.by); }
+      const after = await shoot();
+      const changed = bandChanged(before, after, afterGeo);
+      if (changed >= 8) painted++;
+      else unpainted.push(meta.label + ' outline=' + afterGeo.ow + ' off ' + afterGeo.oo + ' changed=' + changed + 'px');
+      await evaluate('(function(){var e=document.querySelector("[data-fp]"); if(e){e.blur();e.removeAttribute("data-fp");} return 1})()');
+    }
+    check(measured > 0 && unpainted.length === 0,
+      width + 'px: every focus indicator is painted, not merely declared',
+      unpainted.length
+        ? measured + ' stops compared, ' + unpainted.length + ' with no visible ring: ' + unpainted.join('; ')
+        : measured + ' stops compared, all painted (' + moved + ' not pixel-comparable: focused state moves the element, e.g. the skip link)');
+    check(obscuredStops === 0, width + 'px: no focused control is hidden behind another element',
+      obscuredStops ? obscured.join('; ') : measured + ' stops compared');
+  }
+
   const consoleErrors = [...new Set(events.filter(e => e.method === 'Log.entryAdded' && e.params.entry.level === 'error').map(e => e.params.entry.text))];
   check(consoleErrors.length === 0, 'no console errors', consoleErrors.join(' | ') || 'clean');
   const failures = [...new Set(events.filter(e => e.method === 'Network.loadingFailed').map(e => e.params.errorText + ' ' + (e.params.type || '')))];
