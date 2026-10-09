@@ -307,10 +307,22 @@ if (BASE_URL) {
     const servedLd = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
     check(servedLd.length === ldBlocks.length, 'served JSON-LD block count matches source', servedLd.length + ' vs ' + ldBlocks.length);
     for (const p of [canonical, ogImage, appleIcon].filter(Boolean)) {
-      const local = p.startsWith(CANONICAL_HOST) ? p.replace(CANONICAL_HOST, '') : null;
-      if (!local) continue;
-      const r = await fetch(new URL(local, BASE_URL), { method: 'HEAD' });
-      check(r.ok, 'served ' + local, 'HTTP ' + r.status + ', ' + (r.headers.get('content-type') || 'no content-type'));
+      // Resolve against BASE_URL: rewrite our own canonical host so the served
+      // page is what gets tested, and resolve relative values instead of
+      // skipping them — skipping is what silently dropped the apple-touch-icon.
+      let target = null, label = null;
+      if (/^https?:\/\//.test(p)) {
+        if (p.startsWith(CANONICAL_HOST)) {
+          label = p.replace(CANONICAL_HOST, '') || '/';
+          target = new URL(label, BASE_URL);
+        }
+      } else {
+        label = p;
+        target = new URL(p, BASE_URL);
+      }
+      if (!target) continue;
+      const r = await fetch(target, { method: 'HEAD' });
+      check(r.ok, 'served ' + label, 'HTTP ' + r.status + ', ' + (r.headers.get('content-type') || 'no content-type'));
     }
     if (sitemap) {
       const s = await (await fetch(new URL('sitemap.xml', BASE_URL))).text();
