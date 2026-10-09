@@ -401,13 +401,25 @@ async function browserChecks(url) {
       if(cr<need) fails.push(el.tagName.toLowerCase()+"."+String(el.className).split(" ").filter(Boolean)[0]+" "+Math.round(cr*100)/100+":1 (needs "+need+")");
     }
     var de=document.documentElement;
+    // Limitation, measured rather than assumed: the site sets overflow-x:hidden on
+    // body to hide scrollbars, which pins documentElement.scrollWidth to
+    // clientWidth no matter what the content does. With a nowrap paragraph
+    // overflowing to right=410 at a 320px viewport, scrollWidth still reported
+    // 320, so this check cannot fail on an in-flow overflow. Fixed-position
+    // elements are excluded from any richer variant because the viewport, not
+    // body, contains them and they cannot scroll. Detecting content that body
+    // silently cuts off is not implemented here; treat a PASS below as "no
+    // scrollable overflow", not "nothing is clipped".
     return {checked:checked, fails:fails,
       horizontalScroll: de.scrollWidth>de.clientWidth,
       scrollWidth:de.scrollWidth, clientWidth:de.clientWidth,
       focusable:document.querySelectorAll('a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])').length};
   })()`;
 
-  for (const width of [375, 768, 1440]) {
+  // 320px is the WCAG 2.2 reflow width (SC 1.4.10) and was missing. Text is also
+  // checked at 200% of the root size, which is the SC 1.4.4 requirement and is
+  // where long words and fixed heights are most likely to overflow.
+  for (const width of [320, 375, 768, 1440]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 800 }, sid);
     await send('Page.navigate', { url }, sid);
     await new Promise(r => setTimeout(r, 4500));
@@ -419,6 +431,15 @@ async function browserChecks(url) {
     check(r.horizontalScroll === false, width + 'px: no horizontal overflow',
       'scrollWidth ' + r.scrollWidth + ' vs clientWidth ' + r.clientWidth);
     check(r.focusable > 0, width + 'px: focusable elements present', r.focusable + ' focusable');
+    if (width === 320 || width === 1440) {
+      await evaluate('(function(){document.documentElement.style.fontSize="200%";return 1})()');
+      await new Promise(r => setTimeout(r, 900));
+      const z = await evaluate(contrastProbe);
+      check(z.horizontalScroll === false, width + 'px at 200% text: still no horizontal overflow',
+        'scrollWidth ' + z.scrollWidth + ' vs clientWidth ' + z.clientWidth);
+      await evaluate('(function(){document.documentElement.style.fontSize="";return 1})()');
+      await new Promise(r => setTimeout(r, 300));
+    }
   }
   const consoleErrors = [...new Set(events.filter(e => e.method === 'Log.entryAdded' && e.params.entry.level === 'error').map(e => e.params.entry.text))];
   check(consoleErrors.length === 0, 'no console errors', consoleErrors.join(' | ') || 'clean');
