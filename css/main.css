@@ -258,7 +258,7 @@ ul {
 
 .nav-links li a:hover,
 .nav-links li a.active-link {
-    color: var(--accent-color);
+    color: var(--accent-text-color);
 }
 
 .nav-links li a:hover::after,
@@ -267,7 +267,7 @@ ul {
 }
 
 .nav-link-resume {
-    color: var(--accent-color) !important;
+    color: var(--accent-text-color) !important;
     font-weight: 600 !important;
     padding: 0.5rem 0.25rem !important;
     border: 1px solid transparent;
@@ -275,7 +275,7 @@ ul {
 }
 
 .nav-link-resume:hover {
-    color: var(--accent-color-hover) !important;
+    color: var(--accent-text-color) !important;
     background-color: rgba(255, 0, 0, 0.1);
 }
 
@@ -526,7 +526,7 @@ ul {
 
 .achievement-title {
     font-size: 1.3rem;
-    color: var(--accent-color);
+    color: var(--accent-text-color);
     margin-bottom: 0.5rem;
 }
 
@@ -1093,7 +1093,7 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     .nav-links li a:hover,
     .nav-links li a.active-link {
         background-color: rgba(255, 0, 0, 0.1);
-        color: var(--accent-color);
+        color: var(--accent-text-color);
     }
     
     .mobile-menu-btn {
@@ -1513,10 +1513,19 @@ html.scrolling-active::-webkit-scrollbar-thumb:hover {
     }
 }
 
+/* The skip link sits above the fixed header, which is translucent and backed by
+   the animated canvas, so it carries its own opaque plate and padding instead of
+   relying on whatever it happens to overlap. --accent-text-color measures 5.18:1
+   on --primary-bg-color; the accent red measured 3.44:1. */
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
+  color: var(--accent-text-color);
+  background-color: var(--primary-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem 0.75rem;
 }
 .skip-link:focus {
   left: 1rem;
