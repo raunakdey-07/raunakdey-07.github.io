@@ -94,6 +94,20 @@ raunakdey-07.github.io/
 
 Newest first.
 
+### 12 November 2026 — Mind Palace renamed to Verilore
+
+- The three project cards are now Finalysis, CV-Embed and Verilore. The third
+  was Mind Palace; it is Verilore, the repository is `raunakdey-07/verilore`
+  and it has a live demo at `verilore.vercel.app`, so its button reads
+  "Live Demo" like the other two instead of "Source".
+- The screenshot is now `assets/projects/verilore.webp` (936x606) with a
+  576x373 variant; `mind-palace.webp` and `mind-palace-sm.webp` are gone. It
+  is a left-aligned README capture, and the centred crop took 56px off each
+  side at 1440px and 94px at 390px, which removed the wordmark and the first
+  characters of every line. It is anchored left and top now, checked at both
+  widths.
+- The sitemap `lastmod` and the JSON-LD `dateModified` are both 2026-11-12.
+
 ### 9 October 2026 — readability, semantics and regression checks
 
 - Hero text contrast: the accent red used for the name and the typed role was

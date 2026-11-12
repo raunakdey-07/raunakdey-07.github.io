@@ -494,6 +494,19 @@ h3,
     border-bottom: 1px solid var(--border-color);
 }
 
+/* The Verilore screenshot is a README capture: left-aligned text and taller
+   than the other two (1.55:1 against 1.84:1), so the card crops it far less
+   than it crops them, but always from both sides. Centred, that crop removed
+   the wordmark and the first characters of every line. Measured on the 936px
+   original, 56px came off each side at 1440px and 94px at 390px.
+
+   Anchoring it left keeps the title and the start of every line visible. The
+   top anchor matters too: when the card reaches its 400px maximum width the
+   box is 1.6:1, the crop becomes vertical and 9px comes off the top. */
+.project-wrapper__image img[src*="verilore"] {
+    object-position: left top;
+}
+
 .project-wrapper__text {
     padding: 1.5rem;
 }
