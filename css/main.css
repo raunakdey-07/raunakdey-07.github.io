@@ -138,6 +138,16 @@ h3 .meta{display:inline-flex;align-items:center;gap:.3rem;font-variation-setting
 #email:hover{text-decoration:underline}
 footer{margin-top:4rem;padding-block:1.4rem 3rem;border-top:1px solid var(--rule-2);text-align:center;text-wrap:balance}
 
+/* back to top: fixed bottom-right, styled like the Resume box; shown once Contact is in view */
+.totop{position:fixed;z-index:3;right:max(16px,env(safe-area-inset-right,0px),calc(50% - var(--col) / 2));bottom:max(16px,calc(env(safe-area-inset-bottom,0px) + .5rem));
+  width:2.75rem;height:2.75rem;display:grid;place-items:center;padding:0;cursor:pointer;
+  background:var(--paper);color:var(--ink);border:1px solid var(--ink);border-radius:2px;
+  opacity:0;visibility:hidden;transform:translateY(.5rem);transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s}
+.totop.show{opacity:1;visibility:visible;transform:none;transition:opacity .2s ease,transform .2s ease}
+.totop:hover{background:var(--ink);color:var(--paper)}
+.totop .ico{width:1.15rem;height:1.15rem;vertical-align:0}
+@media (prefers-reduced-motion:reduce){.totop,.totop.show{transition:none;transform:none}}
+
 /* tablet: the aside drops under the body */
 @media (max-width:1100px){
   .pair,.e{grid-template-columns:minmax(0,1fr)}
@@ -158,6 +168,7 @@ footer{margin-top:4rem;padding-block:1.4rem 3rem;border-top:1px solid var(--rule
   .side{margin-bottom:1.2rem}
   section{margin-top:3rem}
   #readout{white-space:normal}
+  footer{padding-bottom:calc(3rem + 2.75rem)}
   .rank{grid-template-columns:minmax(0,1fr) 7.5rem;row-gap:.35rem}
   .rank .bar{grid-column:1 / -1;grid-row:2}
 }
