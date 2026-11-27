@@ -136,7 +136,7 @@ h3 .meta{display:inline-flex;align-items:center;gap:.3rem;font-variation-setting
 .copy:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 #email{overflow-wrap:anywhere;text-decoration:none;justify-self:start}
 #email:hover{text-decoration:underline}
-footer{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);column-gap:var(--gap);margin-top:4rem;padding-block:1.4rem 3rem;border-top:1px solid var(--rule-2)}
+footer{margin-top:4rem;padding-block:1.4rem 3rem;border-top:1px solid var(--rule-2);text-align:center;text-wrap:balance}
 
 /* tablet: the aside drops under the body */
 @media (max-width:1100px){
@@ -149,7 +149,7 @@ footer{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);column-gap:v
 }
 /* phone: the rail stacks on top */
 @media (max-width:720px){
-  .mast,section,footer{grid-template-columns:minmax(0,1fr)}
+  .mast,section{grid-template-columns:minmax(0,1fr)}
   .mast{padding-top:3.5rem}
   .mast > .meta{padding:0 0 .8rem}
   br.wide{display:none}
