@@ -19,6 +19,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:creator" content="@the_stoic_coder">
 
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon.webp" type="image/webp">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="assets/favicon.png">
@@ -66,11 +67,13 @@
 
 <main class="wrap" id="content">
   <header class="mast">
-    <div class="meta">BS Data Science<br>IIT Madras, 2022–27<span class="open">Open to ML,<br class="wide"> data science and<br class="wide"> AI engineering roles</span></div>
-    <div>
-      <h1>Raunak Dey</h1>
-      <p class="intro prose">I build <b>Verilore</b>, a memory engine for AI that cites its sources, and I compete on Kaggle, where I'm a <b>Notebooks Master</b>.</p>
-      <nav class="out meta" aria-label="Profiles">
+    <div class="meta">BS, Data Science<br>IIT Madras, 2022–27<span class="open">Open to ML,<br class="wide"> Data Science and<br class="wide"> AI engineering roles</span></div>
+    <div class="pair">
+      <div class="body">
+        <h1>Raunak Dey</h1>
+        <p class="intro prose">I build <b>Verilore</b>, a memory engine for AI that cites its sources, and I compete on Kaggle, where I'm a <b>Notebooks Master</b>.</p>
+      </div>
+      <nav class="out meta aside" aria-label="Profiles">
         <a href="https://github.com/raunakdey-07" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-code"/></svg><span>GitHub</span></a>
         <a href="https://www.kaggle.com/raunakdey07" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-k"/></svg><span>Kaggle</span></a>
         <a href="https://www.linkedin.com/in/raunak-dey" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-in"/></svg><span>LinkedIn</span></a>
@@ -85,6 +88,7 @@
       <h2 class="label meta" id="h-act"><svg class="ico"><use href="#i-grid"/></svg>Activity</h2>
       <p class="meta" id="asof"></p>
     </div>
+    <div class="act">
     <div class="act-top">
       <div class="figures" aria-live="polite">
         <div><div class="figure" id="f-days">–</div><div class="meta">active days</div></div>
@@ -97,41 +101,48 @@
         <button type="button" id="src-kg" data-src="kg" aria-pressed="false">Kaggle</button>
       </div>
     </div>
-    <div class="cal-scroll full" id="cal-scroll">
+    <div class="cal-scroll" id="cal-scroll">
       <svg id="cal" role="img" aria-labelledby="cal-d"><desc id="cal-d">Daily GitHub and Kaggle activity over the last 12 months.</desc></svg>
     </div>
-    <div class="cal-note meta full">
+    <div class="cal-note meta">
       <div class="legend"><span>GitHub <span class="sw"><i class="key" style="background:color-mix(in srgb,var(--gh) 30%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 52%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 76%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 100%,var(--cell))"></i></span></span><span>Kaggle <span class="sw"><i class="dot" style="--d:4px"></i><i class="dot" style="--d:6px"></i><i class="dot" style="--d:8px"></i><i class="dot" style="--d:9px"></i></span></span><span>less → more</span></div>
       <span id="readout">Hover or tap a day</span>
+    </div>
     </div>
   </section>
 
   <section id="building" aria-labelledby="h-build">
     <h2 class="label meta" id="h-build"><svg class="ico"><use href="#i-build"/></svg>Building</h2>
-    <div class="entries full">
+    <div class="entries">
       <article class="e">
-        <div class="meta">Aug 2026 – now</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Aug 2026 – now</p>
           <h3>Verilore <span class="meta"><svg class="ico"><use href="#i-tag"/></svg>v0.12.2 · PyPI</span></h3>
           <p class="prose">Gives a model only the current, approved lines a task needs, names the document behind each, and checks the draft against them. In a 500-token brief it keeps 94% of the rules a task needs and leaks none of the lines that must stay out.</p>
+        </div>
+        <div class="aside">
           <div class="stack meta"><span>Python</span><span>PostgreSQL</span><span>pgvector</span><span>ONNX Runtime</span><span>FastAPI</span><span>MCP</span></div>
           <div class="links meta"><a href="https://verilore.vercel.app/" target="_blank" rel="noopener noreferrer">Website <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/verilore" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
         </div>
       </article>
       <article class="e">
-        <div class="meta">May 2025 – Oct 2026</div>
-        <div>
+        <div class="body">
+          <p class="meta when">May 2025 – Oct 2026</p>
           <h3>Fin-alysis</h3>
           <p class="prose">Research platform for 2,300+ NSE stocks: fundamentals, momentum and news sentiment, with pipelines that fall back between sources when one fails.</p>
+        </div>
+        <div class="aside">
           <div class="stack meta"><span>Next.js</span><span>TypeScript</span><span>Kubernetes</span><span>Terraform</span><span>Prometheus</span></div>
           <div class="links meta"><a href="https://fin-alysis.vercel.app/" target="_blank" rel="noopener noreferrer">Live <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/finalysis_2.0" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
         </div>
       </article>
       <article class="e">
-        <div class="meta">Feb – Oct 2026</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Feb – Oct 2026</p>
           <h3>CV-Embed</h3>
           <p class="prose">Resume builder other sites can embed through a 20&nbsp;kB SDK, covered by 165 end-to-end tests in Chromium and Firefox.</p>
+        </div>
+        <div class="aside">
           <div class="stack meta"><span>React</span><span>TypeScript</span><span>Vite</span><span>Playwright</span><span>Zod</span></div>
           <div class="links meta"><a href="https://cv-embed.vercel.app/" target="_blank" rel="noopener noreferrer">Live <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/cv-embed" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
         </div>
@@ -141,32 +152,34 @@
 
   <section id="competing" aria-labelledby="h-comp">
     <h2 class="label meta" id="h-comp"><svg class="ico"><use href="#i-trophy"/></svg>Competing</h2>
-    <div class="entries full">
+    <div class="entries">
       <article class="e">
-        <div class="meta">Aug 2025 – now</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Aug 2025 – now</p>
           <h3>Kaggle</h3>
           <div class="medals" aria-label="3 gold, 8 silver and 8 bronze medals across 20+ competitions">
-            <span class="tally"><i class="m g"></i><i class="m g"></i><i class="m g"></i></span>
-            <span class="tally"><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i></span>
-            <span class="tally"><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><span class="meta">20+ competitions</span></span>
+          <span class="tally"><i class="m g"></i><i class="m g"></i><i class="m g"></i></span>
+          <span class="tally"><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i></span>
+          <span class="tally"><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><span class="meta">20+ competitions</span></span>
           </div>
           <div class="ranks">
-            <div class="rank"><p class="prose">Notebooks Master</p><span class="bar" style="--p:.12%"></span><p class="meta">Top 0.1%<span>75 of 60,358</span></p></div>
-            <div class="rank"><p class="prose">BirdCLEF+ 2026</p><span class="bar" style="--p:19.4%"></span><p class="meta">Top 19%<span>795 of 4,094</span></p></div>
-            <div class="rank"><p class="prose">Biohub cell tracking</p><span class="bar" style="--p:19.9%"></span><p class="meta">Top 20%<span>784 of 3,947</span></p></div>
+          <div class="rank"><p class="prose">Notebooks Master</p><span class="bar" style="--p:.12%"></span><p class="meta">Top 0.1%<span>75 of 60,358</span></p></div>
+          <div class="rank"><p class="prose">BirdCLEF+ 2026</p><span class="bar" style="--p:19.4%"></span><p class="meta">Top 19%<span>795 of 4,094</span></p></div>
+          <div class="rank"><p class="prose">Biohub cell tracking</p><span class="bar" style="--p:19.9%"></span><p class="meta">Top 20%<span>784 of 3,947</span></p></div>
           </div>
+        </div>
+        <div class="aside">
           <div class="stack meta"><span>PyTorch</span><span>Scikit-learn</span><span>Sentence Transformers</span></div>
           <div class="links meta"><a href="https://www.kaggle.com/raunakdey07" target="_blank" rel="noopener noreferrer">Profile <svg class="ico"><use href="#i-out"/></svg></a></div>
         </div>
       </article>
       <article class="e">
-        <div class="meta">Mar 2026 – now</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Mar 2026 – now</p>
           <h3>Project Eris <span class="meta">Shipd.ai</span></h3>
           <div class="medals" aria-label="2 gold and 2 bronze">
-            <span class="tally"><i class="m g"></i><i class="m g"></i></span>
-            <span class="tally"><i class="m b"></i><i class="m b"></i></span>
+          <span class="tally"><i class="m g"></i><i class="m g"></i></span>
+          <span class="tally"><i class="m b"></i><i class="m b"></i></span>
           </div>
           <p class="prose">Applied machine learning challenges, scored on hidden test sets.</p>
         </div>
@@ -176,26 +189,30 @@
 
   <section id="quant" aria-labelledby="h-quant">
     <h2 class="label meta" id="h-quant"><svg class="ico"><use href="#i-chart"/></svg>Quant</h2>
-    <div class="entries full">
+    <div class="entries">
       <article class="e">
-        <div class="meta">Apr 2024 – Mar 2025</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Apr 2024 – Mar 2025</p>
           <h3>WorldQuant <span class="meta">Research Consultant</span></h3>
           <p class="prose">15 alphas across price-volume, news, options and social-media data. Combined alpha performance 0.82, Power Pool 1.12.</p>
+        </div>
+        <div class="aside">
           <div class="links meta"><a href="assets/achievements/worldquant-gold.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div>
         </div>
       </article>
       <article class="e">
-        <div class="meta">Mar – Jun 2024</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Mar – Jun 2024</p>
           <h3>International Quant Championship</h3>
           <p class="prose">Ranked 165 globally in Stage 1 and 184 in Stage 2, in a team of two.</p>
+        </div>
+        <div class="aside">
           <div class="links meta"><a href="assets/achievements/iqc2024-linkedin.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div>
         </div>
       </article>
       <article class="e">
-        <div class="meta">Sep 2026 – now</div>
-        <div>
+        <div class="body">
+          <p class="meta when">Sep 2026 – now</p>
           <h3>AlphaNova signal forecasting</h3>
           <p class="prose">Biweekly cross-sectional forecasting, scored live on Sharpe, IC and novelty. Best Season 1 rank: 141.</p>
         </div>
@@ -205,21 +222,33 @@
 
   <section id="more" aria-labelledby="h-more">
     <h2 class="label meta" id="h-more"><svg class="ico"><use href="#i-badge"/></svg>Also</h2>
-    <div class="entries full">
-      <div class="e"><div class="meta">Certified</div><div><p class="prose">Oracle Cloud Infrastructure Foundations Associate · OCI AI Foundations Associate</p><div class="links meta"><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=B9D352B1CB54FBCA020A33F1114C713745FDDD8EA8447AC9478BCFE466BD56CE" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Foundations</a><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=78A74140E2A54FE45EEF525146E626B6CF84D3D8D3C6667D269D33D7F0141AF6" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>AI Foundations</a></div></div></div>
-      <div class="e"><div class="meta">2025</div><div><p class="prose">Event Head, Model United Nations, Margazhi 2025</p><div class="links meta"><a href="assets/achievements/margazhi2025-linkedin.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div></div>
-      <div class="e"><div class="meta">Mar 2024 – Aug 2025</div><div><p class="prose">Deputy Secretary, Diplomacia, the IIT Madras soft skills society</p><div class="links meta"><a href="assets/achievements/SA%20Contribution.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div></div>
-      <div class="e"><div class="meta">Aug – Dec 2024</div><div><p class="prose">Marketing volunteer, Student Placement Council, IIT Madras BS</p><div class="links meta"><a href="https://docs.google.com/document/d/1vPgdQDONzcgIef9Exov5AQY7wlfPmJT1Y18QKcJBfAI/" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-file"/></svg>Impact report</a></div></div></div>
+    <div class="entries">
+      <div class="e">
+        <div class="body"><p class="meta when">Certified</p><p class="prose">Oracle Cloud Infrastructure Foundations Associate · OCI AI Foundations Associate</p></div>
+        <div class="aside"><div class="links meta"><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=B9D352B1CB54FBCA020A33F1114C713745FDDD8EA8447AC9478BCFE466BD56CE" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Foundations</a><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=78A74140E2A54FE45EEF525146E626B6CF84D3D8D3C6667D269D33D7F0141AF6" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>AI Foundations</a></div></div>
+      </div>
+      <div class="e">
+        <div class="body"><p class="meta when">January 2025</p><p class="prose">Event Head, Model United Nations, Margazhi</p></div>
+        <div class="aside"><div class="links meta"><a href="assets/achievements/margazhi2025-linkedin.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div>
+      </div>
+      <div class="e">
+        <div class="body"><p class="meta when">Mar 2024 – Aug 2025</p><p class="prose">Deputy Secretary, Diplomacia, the IIT Madras soft skills society</p></div>
+        <div class="aside"><div class="links meta"><a href="assets/achievements/SA%20Contribution.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div>
+      </div>
+      <div class="e">
+        <div class="body"><p class="meta when">Aug – Dec 2024</p><p class="prose">Marketing volunteer, Student Placement Council, IIT Madras BS</p></div>
+        <div class="aside"><div class="links meta"><a href="https://docs.google.com/document/d/1vPgdQDONzcgIef9Exov5AQY7wlfPmJT1Y18QKcJBfAI/" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-file"/></svg>Impact report</a></div></div>
+      </div>
     </div>
   </section>
 
   <section id="about" aria-labelledby="h-about">
     <h2 class="label meta" id="h-about"><svg class="ico"><use href="#i-pen"/></svg>About</h2>
     <div class="about">
-      <p class="prose">The art of bringing clarity from noise is what drew me towards machine learning and competitive data science in the first place.</p>
-      <p class="prose">I am currently focused on various Kaggle competitions — experimenting with models, exploring datasets, and iterating on the small decisions that separate decent solutions from strong ones. I enjoy the iterative process: understanding why something works, where it fails, and how to push it further.</p>
-      <p class="prose">Along the way, experiences as a Data Science Student at IIT Madras and as a Research Consultant at WorldQuant helped shape the analytical mindset I bring to problems today.</p>
-      <p class="prose">Beyond this, my world includes watching a lot of football matches (LFC fan, btw), reading books, and binge-watching TV shows.</p>
+      <p class="prose">The art of finding signal in noise is what first drew me to machine learning and competitive data science. A result is rarely interesting to me on its own. I want to know what led to it, where it falls short, and what might make it better.</p>
+      <p class="prose">I am pursuing BS in Data Science and Applications at IIT Madras and work as a Research Consultant at WorldQuant. My interests have since grown beyond modelling into quantitative research and software development. I like exploring ideas, questioning assumptions, and occasionally disappearing down a rabbit hole just to understand how something works.</p>
+      <p class="prose">I also enjoy the process of turning ideas into things people can actually use. Not everything needs to be a research problem; sometimes building something is the best way to understand it.</p>
+      <p class="prose">Away from all that, I am usually watching football (Liverpool, of course), reading a book, or getting absorbed in a good TV series.</p>
     </div>
   </section>
 
