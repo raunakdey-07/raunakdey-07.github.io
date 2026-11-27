@@ -44,42 +44,58 @@ def github(since: dt.date, until: dt.date) -> dict[str, int]:
 
 
 def kaggle() -> dict[str, int]:
-    """Competition submissions and notebook runs per day, from the official Kaggle API."""
+    """Kaggle activity per day from the official API (kaggle 1.8+): competition
+    submissions, notebook runs and dataset updates."""
     from kaggle.api.kaggle_api_extended import KaggleApi
 
     api = KaggleApi()
     api.authenticate()
     days: dict[str, int] = {}
+    seen = {"competitions": 0, "submissions": 0, "notebooks": 0, "datasets": 0}
 
-    def field(obj, *names):
-        # Attribute names differ across kaggle package versions (lastRunTime vs last_run_time).
-        for name in names:
-            value = getattr(obj, name, None)
-            if value:
-                return value
-        return None
+    def items(response, attr: str) -> list:
+        # 1.8 returns response objects for some calls and plain lists for others.
+        if response is None:
+            return []
+        if isinstance(response, list):
+            return response
+        return list(getattr(response, attr, None) or [])
 
-    def add(timestamp) -> None:
+    def add(timestamp, kind: str) -> None:
         if timestamp:
             day = str(timestamp)[:10]
             days[day] = days.get(day, 0) + 1
+            seen[kind] += 1
+
+    token = ""
+    for _ in range(MAX_PAGES):
+        response = api.competitions_list(group="entered", page=-1, page_token=token, page_size=100)
+        for comp in items(response, "competitions"):
+            seen["competitions"] += 1
+            slug = str(getattr(comp, "ref", "") or getattr(comp, "url", "")).rstrip("/").split("/")[-1]
+            if not slug:
+                continue
+            for sub in api.competition_submissions(slug, page_size=100) or []:
+                add(getattr(sub, "date", None), "submissions")
+        token = getattr(response, "next_page_token", "") if not isinstance(response, list) else ""
+        if not token:
+            break
 
     for page in range(1, MAX_PAGES + 1):
-        competitions = api.competitions_list(group="entered", page=page)
-        if not competitions:
-            break
-        for comp in competitions:
-            slug = str(field(comp, "ref", "url")).rstrip("/").split("/")[-1]
-            for sub in api.competition_submissions(slug) or []:
-                add(field(sub, "date", "date_submitted"))
-
-    for page in range(1, MAX_PAGES + 1):
-        kernels = api.kernels_list(user=KAGGLE_USER, page=page, page_size=100)
-        if not kernels:
-            break
+        kernels = items(api.kernels_list(user=KAGGLE_USER, page=page, page_size=100), "kernels")
         for kernel in kernels:
-            add(field(kernel, "lastRunTime", "last_run_time"))
+            add(getattr(kernel, "last_run_time", None), "notebooks")
+        if len(kernels) < 100:
+            break
 
+    for page in range(1, MAX_PAGES + 1):
+        datasets = items(api.dataset_list(user=KAGGLE_USER, page=page), "datasets")
+        for dataset in datasets:
+            add(getattr(dataset, "last_updated", None), "datasets")
+        if len(datasets) < 20:
+            break
+
+    print("kaggle: " + ", ".join(f"{v} {k}" for k, v in seen.items()))
     return days
 
 
@@ -93,8 +109,8 @@ def main() -> None:
     for name, fetch in sources.items():
         try:
             fresh = fetch()
-        except Exception as exc:  # keep the previous data for this source
-            print(f"::warning::{name} fetch failed, keeping previous data: {exc}")
+        except (Exception, SystemExit) as exc:  # keep the previous data for this source
+            print(f"::warning::{name} fetch failed, keeping previous data: {type(exc).__name__}: {exc}")
             continue
         succeeded += 1
         old = data.get(name, {})

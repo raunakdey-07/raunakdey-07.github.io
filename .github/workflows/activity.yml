@@ -23,8 +23,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      # 1.8+ reads the new Kaggle API tokens from KAGGLE_API_TOKEN.
-      - run: pip install "kaggle>=1.8,<2"
+      # kaggle 1.8+ reads new API tokens from KAGGLE_API_TOKEN. It imports six without declaring it.
+      - run: pip install "kaggle>=1.8,<2" six
 
       - name: Fetch GitHub and Kaggle activity
         run: python scripts/fetch_activity.py
@@ -32,7 +32,9 @@ jobs:
           # A fine-grained token with no extra permissions works if GITHUB_TOKEN is refused.
           GITHUB_TOKEN: ${{ secrets.ACTIVITY_TOKEN || secrets.GITHUB_TOKEN }}
           KAGGLE_USERNAME: raunakdey07
+          # A new-style token is used as KAGGLE_API_TOKEN; a legacy key falls back to KAGGLE_KEY.
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_API }}
 
       - name: Commit if the data changed
         run: |
