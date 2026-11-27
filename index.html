@@ -1,536 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--
-      Third-Party Attribution & Licenses:
-      - Font Awesome Free 5.15.4 by @fontawesome (Icons: CC BY 4.0, Font: SIL OFL 1.1, Code: MIT)
-        https://fontawesome.com/v5/license/free
-      - Fonts: Fraunces & IBM Plex Sans via Google Fonts (SIL OFL 1.1)
-        https://openfontlicense.org/
-      - Vendor Libraries: Swiper.js 11.1.14 (MIT), Typed.js 2.0.12 (MIT), ScrollReveal 4.0.0 (GPL-3.0)
-        https://github.com/nolimits4web/swiper/blob/v11.1.14/LICENSE
-        https://www.gnu.org/licenses/gpl-3.0.html
-      This attribution summary does not replace the vendors' full license terms.
-    -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-        <!-- SEO Meta Tags -->
-        <meta name="description" content="Raunak Dey — competitive data science and machine learning portfolio: Kaggle work, analytical systems, and research-style experimentation.">
-        <meta name="keywords" content="Raunak Dey, Competitive Data Science, Kaggle, Machine Learning, Experimentation, Analytical Systems, IIT Madras, WorldQuant, Portfolio">
-        <meta name="author" content="Raunak Dey">
-        <meta name="robots" content="index, follow">
-        <meta name="google-site-verification" content="LJ-tpQGY-3I2OzFJNjLlKrk1Z7D3GqpGALhf3PMjdlI" />
-        <meta name="theme-color" content="#D60000">
-        <meta name="msapplication-TileColor" content="#D60000">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Raunak Dey</title>
+  <meta name="description" content="Raunak Dey builds Verilore, a memory engine for AI that cites its sources, and competes on Kaggle as a Notebooks Master. Open to ML, data science and AI engineering roles.">
+  <meta name="author" content="Raunak Dey">
+  <meta name="robots" content="index, follow">
+  <meta name="google-site-verification" content="LJ-tpQGY-3I2OzFJNjLlKrk1Z7D3GqpGALhf3PMjdlI">
+  <meta name="theme-color" content="#F2F3F1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101214" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://raunak-dey.vercel.app/">
 
-        <!-- Open Graph Meta Tags for Social Media -->
-        <meta property="og:title" content="Raunak Dey | Competitive Data Science & Machine Learning Portfolio">
-        <meta property="og:type" content="website">
-        <meta property="og:description" content="Raunak Dey's portfolio covering Kaggle competitions, experimental modeling, analytical systems, and applied machine learning.">
-        <meta property="og:image" content="https://raunak-dey.vercel.app/assets/og-image.png">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-        <meta property="og:image:alt" content="Raunak Dey — Quant Researcher. Competitive data science, Kaggle, machine learning.">
-        <meta property="og:url" content="https://raunak-dey.vercel.app/">
-        <meta property="og:site_name" content="Raunak Dey's Portfolio">
-        <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://raunak-dey.vercel.app/">
+  <meta property="og:title" content="Raunak Dey">
+  <meta property="og:description" content="Builds Verilore, a memory engine for AI that cites its sources. Kaggle Notebooks Master. Open to ML, data science and AI engineering roles.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:creator" content="@the_stoic_coder">
 
-        <!-- Twitter Card Meta Tags -->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:site" content="@the_stoic_coder">
-        <meta name="twitter:creator" content="@the_stoic_coder">
-        <meta name="twitter:title" content="Raunak Dey | Competitive Data Science & Machine Learning Portfolio">
-        <meta name="twitter:description" content="Raunak Dey's portfolio covering Kaggle notebooks, experimental ML, and analytical problem solving.">
-        <meta name="twitter:image" content="https://raunak-dey.vercel.app/assets/og-image.png">
-        <meta name="twitter:image:alt" content="Raunak Dey — Quant Researcher. Competitive data science, Kaggle, machine learning.">
+  <link rel="icon" href="assets/favicon.webp" type="image/webp">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
 
-        <!-- Additional SEO Meta Tags -->
-        <meta name="application-name" content="Raunak Dey Portfolio">
-        <meta name="apple-mobile-web-app-title" content="Raunak Dey">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <link rel="canonical" href="https://raunak-dey.vercel.app/">
-        <link rel="alternate" type="application/xml" title="Sitemap" href="sitemap.xml">
-    
-        <title>Raunak Dey | Competitive Data Science and Machine Learning Portfolio</title>
-        <!-- Favicon Links -->
-        <link rel="icon" href="assets/favicon.webp" type="image/webp">
-        <link rel="icon" href="assets/favicon.ico" sizes="any">
-        <link rel="apple-touch-icon" href="assets/favicon.png">
-        <!-- End Favicon Links -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-        <link rel="preconnect" href="https://unpkg.com" crossorigin>
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-        <!-- Subresource Integrity is set on every third-party file whose bytes are
-             immutable: version-pinned CDN paths that serve an Access-Control-Allow-Origin
-             header. The Google Fonts stylesheet is deliberately left without one, because
-             fonts.googleapis.com returns different CSS per user agent and pinning the copy
-             a Chromium request receives would break the stylesheet in other browsers. -->
-        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"></noscript>
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-        <!-- Swiper.js CSS -->
-        <link rel="preload" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css" as="style" integrity="sha384-IFb872aCXZQb6BKRUHmGn0YHKnFl4ylZjkgVRRyMTEQ5bjo/H6xFUiLJm6opOO66" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.css" integrity="sha384-IFb872aCXZQb6BKRUHmGn0YHKnFl4ylZjkgVRRyMTEQ5bjo/H6xFUiLJm6opOO66" crossorigin="anonymous"></noscript>
-        <link rel="stylesheet" href="css/main.css">
-        <!-- Progressive enhancement: show Swiper slides when JS is disabled -->
-        <noscript>
-            <style>
-                .swiper-wrapper { display: flex; flex-wrap: wrap; }
-                .swiper-slide { flex: 0 0 100%; max-width: 100%; }
-                @media (min-width: 768px) {
-                    .swiper-slide { flex: 0 0 50%; max-width: 50%; }
-                }
-                @media (min-width: 1024px) {
-                    .swiper-slide { flex: 0 0 33.333%; max-width: 33.333%; }
-                }
-                .swiper-pagination, .swiper-button-prev, .swiper-button-next { display: none; }
-            </style>
-        </noscript>
-        <!-- Enhanced JSON-LD Structured Data -->
-        <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Raunak Dey",
-      "url": "https://raunak-dey.vercel.app/",
-      "image": "https://raunak-dey.vercel.app/assets/portfolio.jpg",
-        "description": "Raunak Dey's portfolio focused on competitive data science, Kaggle competitions, experimental modeling, and analytical systems.",
-      "sameAs": [
-        "https://www.linkedin.com/in/raunak-dey-3b413a256/",
-        "https://github.com/raunakdey-07",
-        "https://x.com/the_stoic_coder",
-        "https://instagram.com/the.mild.mayhem"
-      ],
-    "jobTitle": "Competitive Data Science Practitioner & Research Consultant",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "WorldQuant",
-        "url": "https://www.worldquant.com"
-      },
-      "alumniOf": {
-        "@type": "CollegeOrUniversity",
-        "name": "Indian Institute of Technology Madras",
-        "alternateName": "IIT Madras",
-        "url": "https://study.iitm.ac.in/ds/"
-      },
-            "knowsAbout": [
-                "Competitive Data Science",
-                "Kaggle",
-                "Machine Learning",
-                "Feature Engineering",
-                "Python",
-                "Statistical Analysis",
-                "Web Development"
-            ],
-      "hasCredential": [
-        {
-          "@type": "EducationalOccupationalCredential",
-          "name": "International Quant Challenge 2024",
-          "credentialCategory": "certificate"
-        }
-      ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-    "name": "Raunak Dey | Competitive Data Science & Machine Learning Portfolio",
-    "alternateName": "Raunak Dey Portfolio",
-      "url": "https://raunak-dey.vercel.app/",
-        "description": "Raunak Dey's notebook-driven portfolio showcasing Kaggle competitions, experimental machine learning, and analytical systems.",
-      "author": {
-        "@type": "Person",
-        "name": "Raunak Dey"
-      },
-      "publisher": {
-        "@type": "Person",
-        "name": "Raunak Dey"
-      },
-      "inLanguage": "en-US",
-            "copyrightYear": 2026,
-            "dateModified": "2026-11-12",
-      "audience": {
-        "@type": "Audience",
-        "audienceType": "Recruiters, Data Science Professionals, Academic Researchers"
-      },
-      "mainEntity": {
-        "@type": "Person",
-        "name": "Raunak Dey"
-      },      "potentialAction": {
-        "@type": "ContactAction",
-        "target": "https://raunak-dey.vercel.app/#contact"
-      },
-      "keywords": "Data Science, Kaggle, WorldQuant, Portfolio, Raunak Dey, Machine Learning, IIT Madras, Web Development"
-    }
-    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Fragment+Mono&display=swap">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/main.js" defer></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Raunak Dey",
+    "url": "https://raunak-dey.vercel.app/",
+    "alumniOf": {"@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Madras"},
+    "sameAs": [
+      "https://github.com/raunakdey-07",
+      "https://www.kaggle.com/raunakdey07",
+      "https://www.linkedin.com/in/raunak-dey"
+    ]
+  }
+  </script>
 </head>
 <body>
-    <a class="skip-link" href="#about">Skip to content</a>
-    <!-- Main Content -->
-    <div id="main-content" class="main-content">
-        <div id="top"></div> <!-- For "Back to Top" functionality -->
-    <header class="header">
-        <nav class="navbar container">
-            <a href="#top" class="logo" aria-label="Raunak Dey — home"><span class="k-left">R</span><span class="k-right">D</span></a>
-            <ul id="nav-links" class="nav-links">
-                <li><a href="#about"><i class="fas fa-user" aria-hidden="true"></i> About</a></li>
-                <li><a href="#projects"><i class="fas fa-briefcase" aria-hidden="true"></i> Projects</a></li>
-                <li><a href="#achievements"><i class="fas fa-trophy" aria-hidden="true"></i> Achievements</a></li>
-                <li><a href="#skills"><i class="fas fa-cogs" aria-hidden="true"></i> Skills</a></li>
-                <li><a href="#contact"><i class="fas fa-envelope" aria-hidden="true"></i> Contact</a></li>
-                <li><a href="assets/Raunak Dey - 22F3002175 - IITM.pdf" target="_blank" rel="noopener noreferrer" class="nav-link-resume"><i class="fas fa-file-alt" aria-hidden="true"></i> Resume</a></li>
-            </ul>
-            <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-times" style="display: none;"></i>
-            </button>
-        </nav>
-    </header>
-    
-    <main>
-        <section id="hero" class="jumbotron text-center hero-section">
-            <canvas id="network-bg" aria-hidden="true"></canvas>
-          <div class="container hero-content">
-            <h1 class="hero-title">
-              Hi, my name is <span class="text-accent">Raunak Dey.</span>
-              <br />
-                            I am a <span id="typed-role" class="role">Quant Researcher.</span>
-            </h1>
-                        <div class="hero-actions" aria-label="Primary links">
-                            <a class="cta-btn hero-btn-secondary" href="https://www.kaggle.com/raunakdey07" target="_blank" rel="noopener noreferrer">Kaggle</a>
-                            <a class="cta-btn cta-btn--hero" href="#about">Know more</a>
-                            <a class="cta-btn hero-btn-secondary" href="https://github.com/raunakdey-07" target="_blank" rel="noopener noreferrer">GitHub</a>
-                        </div>
-          </div>
-        </section>
+<a class="skip" href="#content">Skip to content</a>
 
-        <section id="about" class="section about-section">
-          <div class="container glassmorphism">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-wrapper">
-              <div class="about-wrapper__image">
-                <img
-                  alt="Raunak Dey Profile Image"
-                  class="img-fluid rounded-circle profile-img"
-                                    src="assets/portfolio-600.webp"
-                                    srcset="assets/portfolio-320.webp 320w, assets/portfolio-480.webp 480w, assets/portfolio-600.webp 600w"
-                                    sizes="(max-width: 480px) 150px, (max-width: 992px) 200px, 300px"
-                                    width="600"
-                                    height="705"
-                  loading="lazy"
-                                    decoding="async"
-                />
-              </div>
-              <div class="about-wrapper__info">
-                                <p class="about-wrapper__info-text">
-                                    The art of bringing clarity from noise is what drew me towards machine learning and competitive data science in the first place.
-                                </p>
-                                <p class="about-wrapper__info-text">
-                                    I am currently focused on various Kaggle competitions — experimenting with models, exploring datasets, and iterating on the small decisions that separate decent solutions from strong ones. I enjoy the iterative process: understanding why something works, where it fails, and how to push it further.
-                                </p>
-                                <p class="about-wrapper__info-text">
-                                    Along the way, experiences as a Data Science Student at IIT Madras and as a Research Consultant at WorldQuant helped shape the analytical mindset I bring to problems today.
-                                </p>
-                                <p class="about-wrapper__info-text">
-                                    Beyond this, my world includes watching a lot of football matches (LFC fan, btw), reading books, and binge-watching TV shows.
-                                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-build" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 3 3 5-7"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></symbol>
+  <symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M9 14.2L7.5 22 12 19.5 16.5 22 15 14.2"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17L17 7M8 7h9v9"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7l-4-4zM14 3v4h4M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l-2 3 2 3M15 9l2 3-2 3"/></symbol>
+  <symbol id="i-k" viewBox="0 0 24 24"><path d="M7 3v18M17 4l-8 8 8 8M11 10l6 6"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+</svg>
 
-        <section id="projects" class="projects-section section">
-            <div class="container">
-                <h2 class="section-title">Projects</h2>
-                <!-- Swiper -->
-                <div class="swiper project-swiper">
-                    <div class="swiper-wrapper">
+<main class="wrap" id="content">
+  <header class="mast">
+    <div class="meta">BS Data Science<br>IIT Madras, 2022–27<span class="open">Open to ML,<br class="wide"> data science and<br class="wide"> AI engineering roles</span></div>
+    <div>
+      <h1>Raunak Dey</h1>
+      <p class="intro prose">I build <b>Verilore</b>, a memory engine for AI that cites its sources, and I compete on Kaggle, where I'm a <b>Notebooks Master</b>.</p>
+      <nav class="out meta" aria-label="Profiles">
+        <a href="https://github.com/raunakdey-07" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-code"/></svg><span>GitHub</span></a>
+        <a href="https://www.kaggle.com/raunakdey07" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-k"/></svg><span>Kaggle</span></a>
+        <a href="https://www.linkedin.com/in/raunak-dey" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-in"/></svg><span>LinkedIn</span></a>
+        <a class="primary" href="assets/Raunak%20Dey%20-%2022F3002175%20-%20IITM.pdf" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-file"/></svg><span>Resume</span></a>
+        <a href="#contact"><svg class="ico"><use href="#i-mail"/></svg><span>Email</span></a>
+      </nav>
+    </div>
+  </header>
 
-                        <!-- Project Slide 1: Finalysis -->
-                        <div class="swiper-slide">
-                            <div class="project-card">
-                                <div class="project-wrapper__image">
-                                    <a href="https://github.com/raunakdey-07/finalysis_2.0" target="_blank" rel="noopener noreferrer">
-                                        <img src="assets/projects/finalysis.webp" srcset="assets/projects/finalysis-sm.webp 768w, assets/projects/finalysis.webp 1366w" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 30vw" alt="Fin-alysis app screenshot" class="img-fluid" loading="lazy" decoding="async" width="1366" height="742">
-                                    </a>
-                                </div>
-                                <div class="project-wrapper__text">
-                                    <h3 class="project-wrapper__text-title">Finalysis</h3>
-                                    <p class="project-description">
-                                        Published NSE figures scored against sector bands. Next.js, TypeScript.
-                                    </p>
-                                    <div class="project-buttons mt-3"> 
-                                        <a href="https://fin-alysis.vercel.app/" target="_blank" class="cta-btn" rel="noopener noreferrer">Live Demo</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Project Slide 2: CV-Embed -->
-                        <div class="swiper-slide">
-                            <div class="project-card">
-                                <div class="project-wrapper__image">
-                                    <a href="https://github.com/raunakdey-07/cv-embed" target="_blank" rel="noopener noreferrer">
-                                        <img src="assets/projects/cv-embed.webp" srcset="assets/projects/cv-embed-sm.webp 768w, assets/projects/cv-embed.webp 1366w" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 30vw" alt="CV-Embed App Screenshot" class="img-fluid" loading="lazy" decoding="async" width="1366" height="742">
-                                    </a>
-                                </div>
-                                <div class="project-wrapper__text">
-                                    <h3 class="project-wrapper__text-title">CV-Embed</h3>
-                                    <p class="project-description">
-                                        Resume builder with an embeddable SDK bridge. React + TypeScript.
-                                    </p>
-                                    <div class="project-buttons mt-3"> 
-                                        <a href="https://cv-embed.vercel.app/" target="_blank" class="cta-btn" rel="noopener noreferrer">Live Demo</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Project Slide 3: Verilore -->
-                        <div class="swiper-slide">
-                            <div class="project-card">
-                                <div class="project-wrapper__image">
-                                    <a href="https://github.com/raunakdey-07/verilore" target="_blank" rel="noopener noreferrer">
-                                        <img src="assets/projects/verilore.webp" srcset="assets/projects/verilore-sm.webp 576w, assets/projects/verilore.webp 936w" sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 30vw" alt="Verilore README screenshot" class="img-fluid" loading="lazy" decoding="async" width="936" height="606">
-                                    </a>
-                                </div>
-                                <div class="project-wrapper__text">
-                                    <h3 class="project-wrapper__text-title">Verilore</h3>
-                                    <p class="project-description">
-                                        Memory your AI can cite, with receipts verified offline. Python + CLI/MCP/SDK.
-                                    </p>
-                                    <div class="project-buttons mt-3"> 
-                                        <a href="https://verilore.vercel.app/" target="_blank" class="cta-btn" rel="noopener noreferrer">Live Demo</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Add Pagination -->
-                    <div class="swiper-pagination project-swiper-pagination"></div>
-                </div>
-            </div>
-        </section>
+  <section id="activity" aria-labelledby="h-act">
+    <div class="side">
+      <h2 class="label meta" id="h-act"><svg class="ico"><use href="#i-grid"/></svg>Activity</h2>
+      <p class="meta" id="asof"></p>
+    </div>
+    <div class="act-top">
+      <div class="figures" aria-live="polite">
+        <div><div class="figure" id="f-days">–</div><div class="meta">active days</div></div>
+        <div><div class="figure" id="f-streak">–</div><div class="meta">longest streak, days</div></div>
+        <div><div class="figure" id="f-both">–</div><div class="meta">days with both</div></div>
+      </div>
+      <div class="src" role="group" aria-label="Activity source">
+        <button type="button" id="src-both" data-src="both" aria-pressed="true">Both</button>
+        <button type="button" id="src-gh" data-src="gh" aria-pressed="false">GitHub</button>
+        <button type="button" id="src-kg" data-src="kg" aria-pressed="false">Kaggle</button>
+      </div>
+    </div>
+    <div class="cal-scroll full" id="cal-scroll">
+      <svg id="cal" role="img" aria-labelledby="cal-d"><desc id="cal-d">Daily GitHub and Kaggle activity over the last 12 months.</desc></svg>
+    </div>
+    <div class="cal-note meta full">
+      <div class="legend"><span>GitHub <span class="sw"><i class="key" style="background:color-mix(in srgb,var(--gh) 30%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 52%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 76%,var(--cell))"></i><i class="key" style="background:color-mix(in srgb,var(--gh) 100%,var(--cell))"></i></span></span><span>Kaggle <span class="sw"><i class="dot" style="--d:4px"></i><i class="dot" style="--d:6px"></i><i class="dot" style="--d:8px"></i><i class="dot" style="--d:9px"></i></span></span><span>less → more</span></div>
+      <span id="readout">Hover or tap a day</span>
+    </div>
+  </section>
 
-        <section id="achievements" class="achievements-section section">
-            <div class="container glassmorphism">
-                <h2 class="section-title">Achievements</h2>
-                <!-- Swiper -->
-                <div class="swiper achievement-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- Achievement Slide 1: IQC 2024 -->
-                        <div class="swiper-slide">
-                            <div class="achievement-card">
-                                <div class="achievement-link-wrapper">
-                                    <a href="https://www.linkedin.com/feed/update/urn:li:share:7209515363951104001" target="_blank" class="achievement-post-link" rel="noopener noreferrer" aria-label="View IQC 2024 LinkedIn post"><i class="fab fa-linkedin"></i></a>
-                                </div>
-                                <h3 class="achievement-title"><i class="fas fa-trophy" aria-hidden="true"></i> IQC 2024</h3>
-                                <p class="achievement-issuer">WorldQuant</p>
-                                <p class="achievement-detail">Stage 1 International Rank: 165</p> <!-- Changed from date -->
-                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
-                                    <img src="assets/achievements/iqc2024-linkedin.webp" alt="IQC 2024 LinkedIn Post Screenshot" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);" loading="lazy" decoding="async" width="800" height="449">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Achievement Slide 2: Gold Level Consultant -->
-                        <div class="swiper-slide">
-                            <div class="achievement-card">
-                                <h3 class="achievement-title"><i class="fas fa-medal" aria-hidden="true"></i> WorldQuant Challenge</h3>
-                                <p class="achievement-issuer">Achieved Gold Level</p>
-                                <p class="achievement-date">April 2024</p>
-                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
-                                    <img src="assets/achievements/worldquant-gold.webp" alt="Gold Level Certificate WorldQuant" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);" loading="lazy" decoding="async" width="661" height="468">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Achievement Slide 3: Margazhi 2025 -->
-                        <div class="swiper-slide">
-                            <div class="achievement-card">
-                                <div class="achievement-link-wrapper">
-                                    <a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:7304107105911717888" target="_blank" class="achievement-post-link" rel="noopener noreferrer" aria-label="View Margazhi 2025 LinkedIn post"><i class="fab fa-linkedin"></i></a>
-                                </div>
-                                <h3 class="achievement-title"><i class="fas fa-award" aria-hidden="true"></i> Margazhi 2025</h3>
-                                <p class="achievement-issuer">Event Head, MUN</p> 
-                                <p class="achievement-date">January 2025</p> 
-                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
-                                    <img src="assets/achievements/margazhi2025-linkedin.webp" alt="Margazhi 2025 LinkedIn Post Screenshot" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);" loading="lazy" decoding="async" width="1092" height="767">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Achievement Slide 4:  SA Contribution Certificate -->
-                        <div class="swiper-slide">
-                            <div class="achievement-card">
-                                <h3 class="achievement-title"><i class="fas fa-certificate" aria-hidden="true"></i> SA Contribution Certificate</h3>
-                                <p class="achievement-issuer">IIT Madras</p>
-                                <p class="achievement-date">April 2024</p>
-                                <div class="achievement-image-container" style="margin: 1rem auto; max-width: 100%;">
-                                    <img src="assets/achievements/SA Contribution.webp" alt="Student Affairs Contribution Certificate IIT Madras" style="width: 100%; height: auto; border-radius: var(--border-radius); border: 1px solid var(--border-color);" loading="lazy" decoding="async" width="797" height="565">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Achievement Slide 5: LeetCode Profile -->
-                        <!-- <div class="swiper-slide">
-                            <div class="achievement-card">
-                                <div class="achievement-link-wrapper">
-                                     <a href="https://leetcode.com/u/jAYkZImBhu/" target="_blank" class="achievement-post-link" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i></a>
-                                </div>
-                                <h3 class="achievement-title"><i class="fas fa-code"></i> LeetCode Profile</h3>
-                                <p class="achievement-issuer">Coding Challenges & Problem Solving</p>
-                                <a href="https://leetcode.com/u/jAYkZImBhu/" target="_blank" class="cta-btn--secondary profile-link" rel="noopener noreferrer">View Profile</a>
-                            </div>
-                        </div>                     -->
-                    </div>
-                    <!-- Add Pagination -->
-                    <div class="swiper-pagination achievement-swiper-pagination"></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="skills" class="skills-section section">
-            <div class="container">
-                <h2 class="section-title">Skills</h2>
-
-            <div class="swiper skill-swiper">
-                <div class="swiper-wrapper">
-
-                    <!-- Slide 1 -->
-                    <div class="swiper-slide">
-                        <div class="skill-category-card">
-                            <h3>Languages</h3>
-                            <ul class="skills-list">
-                                <li><i class="fab fa-python skill-icon" aria-hidden="true"></i> Python</li>
-                                <li><i class="fab fa-java skill-icon" aria-hidden="true"></i> Java</li>
-                                <li><i class="fab fa-js-square skill-icon" aria-hidden="true"></i> JavaScript</li>
-                                <li><i class="fab fa-react skill-icon" aria-hidden="true"></i> React</li>
-                                <li><i class="fab fa-node-js skill-icon" aria-hidden="true"></i> Node.js</li>
-                                <li><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/nextdotjs.svg" alt="" class="skill-icon nextjs-icon" style="height:1em;vertical-align:middle;" width="16" height="16" loading="lazy" decoding="async"> Next.js</li>
-                                <li><i class="fab fa-vuejs skill-icon" aria-hidden="true"></i> Vue 3</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Slide 2 -->
-                    <div class="swiper-slide">
-                        <div class="skill-category-card">
-                            <h3>Data</h3>
-                            <ul class="skills-list">
-                                <li><i class="fas fa-table skill-icon" aria-hidden="true"></i> Pandas</li>
-                                <li><i class="fas fa-th skill-icon" aria-hidden="true"></i> NumPy</li>
-                                <li><i class="fas fa-database skill-icon" aria-hidden="true"></i> SQL</li>
-                                <li><i class="fas fa-server skill-icon" aria-hidden="true"></i> PostgreSQL</li>
-                                <li><i class="fas fa-database skill-icon" aria-hidden="true"></i> MySQL</li>
-                                <li><i class="fas fa-broom skill-icon" aria-hidden="true"></i> Data Cleaning</li>
-                                <li><i class="fas fa-chart-bar skill-icon" aria-hidden="true"></i> Data Visualization</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Slide 3 -->
-                    <div class="swiper-slide">
-                        <div class="skill-category-card">
-                            <h3>ML</h3>
-                            <ul class="skills-list">
-                                <li><i class="fas fa-brain skill-icon" aria-hidden="true"></i> Machine Learning</li>
-                                <li><i class="fas fa-network-wired skill-icon" aria-hidden="true"></i> Deep Learning</li>
-                                <li><i class="fas fa-cogs skill-icon" aria-hidden="true"></i> TensorFlow</li>
-                                <li><i class="fas fa-flask skill-icon" aria-hidden="true"></i> Scikit-Learn</li>
-                                <li><i class="fas fa-chart-line skill-icon" aria-hidden="true"></i> XGBoost</li>
-                                <li><i class="fas fa-chart-area skill-icon" aria-hidden="true"></i> LightGBM</li>
-                                <li><i class="fas fa-sliders-h skill-icon" aria-hidden="true"></i> Model Tuning</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Slide 4 -->
-                    <div class="swiper-slide">
-                        <div class="skill-category-card">
-                            <h3>Engineering</h3>
-                            <ul class="skills-list">
-                                <li><i class="fab fa-git-alt skill-icon" aria-hidden="true"></i> Git & GitHub</li>
-                                <li><i class="fab fa-docker skill-icon" aria-hidden="true"></i> Docker</li>
-                                <li><i class="fas fa-cloud skill-icon" aria-hidden="true"></i> REST APIs</li>
-                                <li><i class="fab fa-linux skill-icon" aria-hidden="true"></i> Linux</li>
-                                <li><i class="fab fa-aws skill-icon" aria-hidden="true"></i> AWS</li>
-                                <li><i class="fas fa-database skill-icon" aria-hidden="true"></i> Supabase</li>
-                                <li><i class="fas fa-rocket skill-icon" aria-hidden="true"></i> Deployment</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Slide 5 -->
-                    <div class="swiper-slide">
-                        <div class="skill-category-card">
-                            <h3>Approach</h3>
-                            <ul class="skills-list">
-                                <li><i class="fas fa-layer-group skill-icon" aria-hidden="true"></i> Feature Engineering</li>
-                                <li><i class="fas fa-search skill-icon" aria-hidden="true"></i> Exploratory Analysis</li>
-                                <li><i class="fas fa-vial skill-icon" aria-hidden="true"></i> Model Evaluation</li>
-                                <li><i class="fas fa-lightbulb skill-icon" aria-hidden="true"></i> Problem Solving</li>
-                                <li><i class="fas fa-sync-alt skill-icon" aria-hidden="true"></i> Iterative Thinking</li>
-                                <li><i class="fas fa-chess-knight skill-icon" aria-hidden="true"></i> Strategic Thinking</li>
-                                <li><i class="fas fa-eye skill-icon" aria-hidden="true"></i> Attention to Detail</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="swiper-pagination skill-swiper-pagination"></div>
-            </div>
+  <section id="building" aria-labelledby="h-build">
+    <h2 class="label meta" id="h-build"><svg class="ico"><use href="#i-build"/></svg>Building</h2>
+    <div class="entries full">
+      <article class="e">
+        <div class="meta">Aug 2026 – now</div>
+        <div>
+          <h3>Verilore <span class="meta"><svg class="ico"><use href="#i-tag"/></svg>v0.12.2 · PyPI</span></h3>
+          <p class="prose">Gives a model only the current, approved lines a task needs, names the document behind each, and checks the draft against them. In a 500-token brief it keeps 94% of the rules a task needs and leaks none of the lines that must stay out.</p>
+          <div class="stack meta"><span>Python</span><span>PostgreSQL</span><span>pgvector</span><span>ONNX Runtime</span><span>FastAPI</span><span>MCP</span></div>
+          <div class="links meta"><a href="https://verilore.vercel.app/" target="_blank" rel="noopener noreferrer">Website <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/verilore" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
         </div>
-        </section>
+      </article>
+      <article class="e">
+        <div class="meta">May 2025 – Oct 2026</div>
+        <div>
+          <h3>Fin-alysis</h3>
+          <p class="prose">Research platform for 2,300+ NSE stocks: fundamentals, momentum and news sentiment, with pipelines that fall back between sources when one fails.</p>
+          <div class="stack meta"><span>Next.js</span><span>TypeScript</span><span>Kubernetes</span><span>Terraform</span><span>Prometheus</span></div>
+          <div class="links meta"><a href="https://fin-alysis.vercel.app/" target="_blank" rel="noopener noreferrer">Live <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/finalysis_2.0" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
+        </div>
+      </article>
+      <article class="e">
+        <div class="meta">Feb – Oct 2026</div>
+        <div>
+          <h3>CV-Embed</h3>
+          <p class="prose">Resume builder other sites can embed through a 20&nbsp;kB SDK, covered by 165 end-to-end tests in Chromium and Firefox.</p>
+          <div class="stack meta"><span>React</span><span>TypeScript</span><span>Vite</span><span>Playwright</span><span>Zod</span></div>
+          <div class="links meta"><a href="https://cv-embed.vercel.app/" target="_blank" rel="noopener noreferrer">Live <svg class="ico"><use href="#i-out"/></svg></a><a href="https://github.com/raunakdey-07/cv-embed" target="_blank" rel="noopener noreferrer">Source <svg class="ico"><use href="#i-out"/></svg></a></div>
+        </div>
+      </article>
+    </div>
+  </section>
 
+  <section id="competing" aria-labelledby="h-comp">
+    <h2 class="label meta" id="h-comp"><svg class="ico"><use href="#i-trophy"/></svg>Competing</h2>
+    <div class="entries full">
+      <article class="e">
+        <div class="meta">Aug 2025 – now</div>
+        <div>
+          <h3>Kaggle</h3>
+          <div class="medals" aria-label="3 gold, 8 silver and 8 bronze medals across 20+ competitions">
+            <span class="tally"><i class="m g"></i><i class="m g"></i><i class="m g"></i></span>
+            <span class="tally"><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i><i class="m s"></i></span>
+            <span class="tally"><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><i class="m b"></i><span class="meta">20+ competitions</span></span>
+          </div>
+          <div class="ranks">
+            <div class="rank"><p class="prose">Notebooks Master</p><span class="bar" style="--p:.12%"></span><p class="meta">Top 0.1%<span>75 of 60,358</span></p></div>
+            <div class="rank"><p class="prose">BirdCLEF+ 2026</p><span class="bar" style="--p:19.4%"></span><p class="meta">Top 19%<span>795 of 4,094</span></p></div>
+            <div class="rank"><p class="prose">Biohub cell tracking</p><span class="bar" style="--p:19.9%"></span><p class="meta">Top 20%<span>784 of 3,947</span></p></div>
+          </div>
+          <div class="stack meta"><span>PyTorch</span><span>Scikit-learn</span><span>Sentence Transformers</span></div>
+          <div class="links meta"><a href="https://www.kaggle.com/raunakdey07" target="_blank" rel="noopener noreferrer">Profile <svg class="ico"><use href="#i-out"/></svg></a></div>
+        </div>
+      </article>
+      <article class="e">
+        <div class="meta">Mar 2026 – now</div>
+        <div>
+          <h3>Project Eris <span class="meta">Shipd.ai</span></h3>
+          <div class="medals" aria-label="2 gold and 2 bronze">
+            <span class="tally"><i class="m g"></i><i class="m g"></i></span>
+            <span class="tally"><i class="m b"></i><i class="m b"></i></span>
+          </div>
+          <p class="prose">Applied machine learning challenges, scored on hidden test sets.</p>
+        </div>
+      </article>
+    </div>
+  </section>
 
-        <section id="contact" class="contact-section section">
-            <div class="container glassmorphism">
-                <h2 class="section-title">Contact Me</h2>
-                <div class="contact-wrapper">
-                    <p class="contact-wrapper__text">
-                        I am always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
-                    </p>
-                    <a href="mailto:raunakdey.07@gmail.com" class="cta-btn cta-btn--resume">Get in Touch</a> 
-                </div>
-                <div class="social-links">
-                    <a href="https://www.linkedin.com/in/raunak-dey-3b413a256/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://x.com/the_stoic_coder" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="https://instagram.com/raun_dey_view" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://api.whatsapp.com/send?phone=916291570503" target="_blank" rel="noopener noreferrer" aria-label="Whatsapp"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
-        </section>
-    </main>
+  <section id="quant" aria-labelledby="h-quant">
+    <h2 class="label meta" id="h-quant"><svg class="ico"><use href="#i-chart"/></svg>Quant</h2>
+    <div class="entries full">
+      <article class="e">
+        <div class="meta">Apr 2024 – Mar 2025</div>
+        <div>
+          <h3>WorldQuant <span class="meta">Research Consultant</span></h3>
+          <p class="prose">15 alphas across price-volume, news, options and social-media data. Combined alpha performance 0.82, Power Pool 1.12.</p>
+          <div class="links meta"><a href="assets/achievements/worldquant-gold.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div>
+        </div>
+      </article>
+      <article class="e">
+        <div class="meta">Mar – Jun 2024</div>
+        <div>
+          <h3>International Quant Championship</h3>
+          <p class="prose">Ranked 165 globally in Stage 1 and 184 in Stage 2, in a team of two.</p>
+          <div class="links meta"><a href="assets/achievements/iqc2024-linkedin.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div>
+        </div>
+      </article>
+      <article class="e">
+        <div class="meta">Sep 2026 – now</div>
+        <div>
+          <h3>AlphaNova signal forecasting</h3>
+          <p class="prose">Biweekly cross-sectional forecasting, scored live on Sharpe, IC and novelty. Best Season 1 rank: 141.</p>
+        </div>
+      </article>
+    </div>
+  </section>
 
-    <footer class="footer">
-        <div class="container">
-            <a href="#top" class="back-to-top" aria-label="Back to top">
-                <i class="fas fa-angle-up"></i>
-            </a>
-            <p class="footer__text">
-                &copy; <span id="current-year"></span> Raunak Dey. All rights reserved.
-            </p>
-        </div>    
-    </footer>
+  <section id="more" aria-labelledby="h-more">
+    <h2 class="label meta" id="h-more"><svg class="ico"><use href="#i-badge"/></svg>Also</h2>
+    <div class="entries full">
+      <div class="e"><div class="meta">Certified</div><div><p class="prose">Oracle Cloud Infrastructure Foundations Associate · OCI AI Foundations Associate</p><div class="links meta"><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=B9D352B1CB54FBCA020A33F1114C713745FDDD8EA8447AC9478BCFE466BD56CE" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Foundations</a><a href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=78A74140E2A54FE45EEF525146E626B6CF84D3D8D3C6667D269D33D7F0141AF6" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>AI Foundations</a></div></div></div>
+      <div class="e"><div class="meta">2025</div><div><p class="prose">Event Head, Model United Nations, Margazhi 2025</p><div class="links meta"><a href="assets/achievements/margazhi2025-linkedin.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div></div>
+      <div class="e"><div class="meta">Mar 2024 – Aug 2025</div><div><p class="prose">Deputy Secretary, Diplomacia, the IIT Madras soft skills society</p><div class="links meta"><a href="assets/achievements/SA%20Contribution.webp" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-badge"/></svg>Certificate</a></div></div></div>
+      <div class="e"><div class="meta">Aug – Dec 2024</div><div><p class="prose">Marketing volunteer, Student Placement Council, IIT Madras BS</p><div class="links meta"><a href="https://docs.google.com/document/d/1vPgdQDONzcgIef9Exov5AQY7wlfPmJT1Y18QKcJBfAI/" target="_blank" rel="noopener noreferrer"><svg class="ico"><use href="#i-file"/></svg>Impact report</a></div></div></div>
+    </div>
+  </section>
 
-    </div> <!-- End of main-content -->
+  <section id="about" aria-labelledby="h-about">
+    <h2 class="label meta" id="h-about"><svg class="ico"><use href="#i-pen"/></svg>About</h2>
+    <div class="about">
+      <p class="prose">The art of bringing clarity from noise is what drew me towards machine learning and competitive data science in the first place.</p>
+      <p class="prose">I am currently focused on various Kaggle competitions — experimenting with models, exploring datasets, and iterating on the small decisions that separate decent solutions from strong ones. I enjoy the iterative process: understanding why something works, where it fails, and how to push it further.</p>
+      <p class="prose">Along the way, experiences as a Data Science Student at IIT Madras and as a Research Consultant at WorldQuant helped shape the analytical mindset I bring to problems today.</p>
+      <p class="prose">Beyond this, my world includes watching a lot of football matches (LFC fan, btw), reading books, and binge-watching TV shows.</p>
+    </div>
+  </section>
 
-    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js" integrity="sha384-+ijdq6iJAkohSQT/pKKYqjlEK1zFXER2QwIkHFe7WQmJrW3z/JVIZzGbkft2kY1M" crossorigin="anonymous" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" integrity="sha384-NMn9+T8zIKnDUstqb5le7vdLNSyAgSU9DtEPT/b7ks9NJQpPk4Dc9b1tI8oyzimc" crossorigin="anonymous" defer></script>
-    <!-- Swiper.js JS -->
-    <script src="https://unpkg.com/swiper@11.1.14/swiper-bundle.min.js" integrity="sha384-JiF4eFN9V3I2Fry7TzFM3XKdq0P3abiVxpOeHjGz4cwvas+uNg6pFWVmuD6MKXqG" crossorigin="anonymous" defer></script>
-    <script src="js/main.js" defer></script>
-    <script src="js/networkAnimation.js" defer></script>
-    <!-- Fallback for no-JS: static background for canvas -->
-    <noscript>
-        <style>
-            #network-bg {
-                background: #121212;
-                display: block;
-            }
-        </style>
-    </noscript>
+  <section id="contact" aria-labelledby="h-contact">
+    <h2 class="label meta" id="h-contact"><svg class="ico"><use href="#i-mail"/></svg>Contact</h2>
+    <div class="about">
+      <a class="title" id="email" href="mailto:raunakdey.07@gmail.com">raunakdey.07@gmail.com</a>
+      <button type="button" class="copy meta" id="copy"><svg class="ico"><use href="#i-copy"/></svg><span id="copy-l">Copy address</span></button>
+    </div>
+  </section>
+
+  <footer class="meta">© 2026 Raunak Dey. All rights reserved.</footer>
+</main>
 </body>
 </html>

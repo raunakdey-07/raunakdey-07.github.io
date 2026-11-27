@@ -1,433 +1,145 @@
-(function () {
-    'use strict';
+// Activity calendar and the copy-email button.
+// The calendar reads assets/activity.json, which a nightly GitHub Action refreshes.
+(() => {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const NS = "http://www.w3.org/2000/svg";
+  const DAY = 864e5;
+  const P = 15, C = 12, X0 = 26, Y0 = 14;
+  const LEVEL_NAMES = ["none", "light", "medium", "high", "very high"];
 
-    // ── Feature: Device & Motion State ──────────────────────────
-    const header = document.querySelector('.header');
-    const getHeaderOffset = () => (header ? header.offsetHeight : 70);
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const isAndroidPhone = /Android/i.test(navigator.userAgent) && window.innerWidth <= 900;
-    const motionScale = prefersReducedMotion.matches ? 0 : (isAndroidPhone ? 0.55 : 1);
-    const rootElement = document.documentElement;
-    let scrollbarHideTimer = null;
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  };
+  const fmt = (d, opts) => d.toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
 
-    // ── Feature: Scrollbar Visibility ───────────────────────────
-    let scrollbarTicking = false;
-    
-    function showScrollbarDuringActivity() {
-        if (scrollbarTicking) return;
-    
-        scrollbarTicking = true;
-    
-        requestAnimationFrame(() => {
-            rootElement.classList.add('scrolling-active');
-    
-            clearTimeout(scrollbarHideTimer);
-            scrollbarHideTimer = setTimeout(() => {
-                rootElement.classList.remove('scrolling-active');
-            }, 800);
-    
-            scrollbarTicking = false;
-        });
+  // Counts become 0-4 levels by quartile of the active days, the way GitHub shades its graph.
+  function levels(counts) {
+    const active = counts.filter((c) => c > 0).sort((a, b) => a - b);
+    if (!active.length) return counts.map(() => 0);
+    const q = (f) => active[Math.min(active.length - 1, Math.floor(f * active.length))];
+    const cuts = [q(0.25), q(0.5), q(0.75)];
+    return counts.map((c) => (c > 0 ? 1 + cuts.filter((t) => c > t).length : 0));
+  }
+
+  function drawCalendar(data) {
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const start = new Date(today.getTime() - (52 * 7 + today.getUTCDay()) * DAY);
+    const n = Math.round((today - start) / DAY) + 1;
+    const day = (i) => new Date(start.getTime() + i * DAY);
+    const g = levels(Array.from({ length: n }, (_, i) => (data.github && data.github[iso(day(i))]) || 0));
+    const k = levels(Array.from({ length: n }, (_, i) => (data.kaggle && data.kaggle[iso(day(i))]) || 0));
+
+    const cal = $("#cal");
+    const cells = [];
+    const shade = (lv) => (lv ? `color-mix(in srgb, var(--gh) ${[0, 30, 52, 76, 100][lv]}%, var(--cell))` : "var(--cell)");
+
+    ["Mon", "Wed", "Fri"].forEach((t, j) => {
+      cal.appendChild(el("text", { x: 0, y: Y0 + (2 * j + 1) * P + 9 })).textContent = t;
+    });
+    let lastMonth = -1;
+    for (let w = 0; w * 7 < n; w++) {
+      const d = day(w * 7);
+      if (d.getUTCMonth() !== lastMonth && d.getUTCDate() <= 7) {
+        lastMonth = d.getUTCMonth();
+        cal.appendChild(el("text", { x: X0 + w * P, y: Y0 - 6 })).textContent = d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short" });
+      }
     }
+    for (let i = 0; i < n; i++) {
+      const w = Math.floor(i / 7), x = X0 + w * P, y = Y0 + (i % 7) * P;
+      const grp = el("g", { class: "cell", style: `animation-delay:${w * 12}ms` });
+      grp.dataset.i = i;
+      const sq = el("rect", { x, y, width: C, height: C, rx: 2, fill: shade(g[i]) });
+      const dot = el("circle", { cx: x + C / 2, cy: y + C / 2, r: 0, fill: "var(--kg)", stroke: "var(--paper)", "stroke-width": 0.8 });
+      grp.append(sq, dot);
+      cal.appendChild(grp);
+      cells.push({ sq, dot });
+    }
+    cal.setAttribute("viewBox", `0 0 ${X0 + Math.ceil(n / 7) * P} ${Y0 + 7 * P + 2}`);
 
-    window.addEventListener('scroll', showScrollbarDuringActivity, { passive: true });
-    window.addEventListener('wheel', showScrollbarDuringActivity, { passive: true });
-    window.addEventListener('touchmove', showScrollbarDuringActivity, { passive: true });
-    window.addEventListener('keydown', (event) => {
-        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Space'].includes(event.code)) {
-            showScrollbarDuringActivity();
-        }
+    function stats(src) {
+      const on = (i) => (src === "gh" ? g[i] > 0 : src === "kg" ? k[i] > 0 : g[i] > 0 || k[i] > 0);
+      let days = 0, run = 0, best = 0, both = 0;
+      for (let i = 0; i < n; i++) {
+        if (on(i)) { days++; run++; best = Math.max(best, run); } else run = 0;
+        if (g[i] && k[i]) both++;
+      }
+      return { days, best, both };
+    }
+    function paint(src) {
+      cells.forEach((c, i) => {
+        c.sq.setAttribute("fill", src === "kg" ? "var(--cell)" : shade(g[i]));
+        c.dot.setAttribute("r", src === "gh" || !k[i] ? 0 : [0, 2.2, 3.1, 4, 4.6][k[i]]);
+      });
+      const s = stats(src);
+      $("#f-days").textContent = s.days;
+      $("#f-streak").textContent = s.best;
+      $("#f-both").textContent = src === "both" ? s.both : "–";
+    }
+    paint("both");
+
+    document.querySelectorAll("[data-src]").forEach((b) =>
+      b.addEventListener("click", () => {
+        document.querySelectorAll("[data-src]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        paint(b.dataset.src);
+      })
+    );
+
+    const updated = [data.updated && data.updated.github, data.updated && data.updated.kaggle].filter(Boolean).sort().pop();
+    if (updated) $("#asof").textContent = "Updated " + fmt(new Date(updated + "T00:00:00Z"), { day: "numeric", month: "short", year: "numeric" });
+
+    // Hover with a mouse to inspect; tap or click to pin a day.
+    let active = null, pinned = false;
+    const readout = $("#readout");
+    const inspect = (e) => {
+      const c = e.target.closest("g.cell");
+      if (!c) return;
+      const i = +c.dataset.i;
+      pinned = e.type === "pointerdown";
+      if (active) active.classList.remove("on");
+      active = c;
+      c.classList.add("on");
+      readout.textContent = `${fmt(day(i), { day: "numeric", month: "short", year: "numeric" })} · GitHub ${LEVEL_NAMES[g[i]]} · Kaggle ${LEVEL_NAMES[k[i]]}`;
+    };
+    cal.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") inspect(e); });
+    cal.addEventListener("pointerdown", inspect);
+    cal.addEventListener("pointerleave", () => {
+      if (pinned || !active) return;
+      active.classList.remove("on");
+      active = null;
+      readout.textContent = "Hover or tap a day";
     });
 
-    // ── Feature: Typed Role Text ────────────────────────────────
-    function initTypedRole() {
-        const typedRoleElement = document.getElementById('typed-role');
-        if (!typedRoleElement) return;
-    
-        const roleStrings = [
-            'Quant Researcher.',
-            'Kaggle Competitor.',
-            'Web Developer.'
-        ];
-    
-        if (prefersReducedMotion.matches) {
-            typedRoleElement.textContent = roleStrings.join(' • ');
-            return;
-        }
-    
-        if (typeof Typed !== 'undefined') {
-            typedRoleElement.textContent = '';
-            new Typed(typedRoleElement, {
-                strings: roleStrings,
-                typeSpeed: Math.max(18, Math.round(40 * motionScale)),
-                backSpeed: Math.max(14, Math.round(28 * motionScale)),
-                backDelay: Math.round(800 * motionScale),
-                startDelay: Math.round(150 * motionScale),
-                loop: true,
-                showCursor: true,
-                cursorChar: '|',
-                smartBackspace: true
-            });
-            return;
-        }
-    
-        // Fallback without Typed.js
-        let roleIndex = 0;
-        typedRoleElement.textContent = roleStrings[roleIndex];
-    
-        setInterval(() => {
-            roleIndex = (roleIndex + 1) % roleStrings.length;
-            typedRoleElement.textContent = roleStrings[roleIndex];
-        }, 2400);
-    }
-    
-    initTypedRole();
+    // Show the latest weeks first on narrow screens, and fade the left edge once scrolled.
+    const sc = $("#cal-scroll");
+    sc.scrollLeft = sc.scrollWidth;
+    const fade = () => sc.classList.toggle("faded", sc.scrollLeft > 8);
+    sc.addEventListener("scroll", fade, { passive: true });
+    fade();
+  }
 
-    // ── Feature: Active Nav Link Highlighting ───────────────────
-    const sections = document.querySelectorAll('section[id]');
-    const navLinksForHighlight = document.querySelectorAll('.nav-links li a');
-    let sectionPositions = [];
+  fetch("assets/activity.json", { cache: "no-cache" })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+    .then(drawCalendar)
+    .catch(() => { $("#readout").textContent = "Activity data is unavailable right now."; });
 
-    function cacheSectionPositions() {
-        sectionPositions = Array.from(sections)
-            .map((section) => ({ id: section.id, top: section.offsetTop }))
-            .sort((a, b) => a.top - b.top);
-    }
-
-    function setActiveLink() {
-        let scrollY = window.scrollY;
-        let currentSectionId = '';
-
-        for (let i = sectionPositions.length - 1; i >= 0; i--) {
-            const section = sectionPositions[i];
-            if (scrollY + getHeaderOffset() >= section.top) {
-                currentSectionId = section.id;
-                break;
-            }
-        }
-
-        navLinksForHighlight.forEach((link) => {
-            const linkHref = link.getAttribute('href');
-            const isActive = Boolean(linkHref) && linkHref === `#${currentSectionId}`;
-            link.classList.toggle('active-link', isActive);
-            // Mirror the highlighted state for assistive tech. An absent attribute
-            // means "not the current section", which is the correct default.
-            if (isActive) {
-                link.setAttribute('aria-current', 'true');
-            } else {
-                link.removeAttribute('aria-current');
-            }
-        });
-    }
-
-    const backToTopButton = document.querySelector('.back-to-top');
-
-    function setBackToTopVisibility() {
-        if (!backToTopButton) return;
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-        const docHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight
-        );
-        const isNearBottom = (scrollY + viewportHeight) >= (docHeight - 8);
-        backToTopButton.classList.toggle('visible', scrollY > 260 || isNearBottom);
-    }
-
-    function updateOnScroll() {
-        // Section offsets are re-read on every throttled scroll frame. Sections using
-        // content-visibility change height as they render, and late webfonts change
-        // text height, so caching these on load and resize alone goes stale.
-        cacheSectionPositions();
-        setActiveLink();
-        setBackToTopVisibility();
-    }
-
-    let activeLinkTicking = false;
-    window.addEventListener('scroll', () => {
-        if (activeLinkTicking) return;
-        activeLinkTicking = true;
-        requestAnimationFrame(() => {
-            updateOnScroll();
-            activeLinkTicking = false;
-        });
-    }, { passive: true });
-
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-        if (resizeTimer) clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            cacheSectionPositions();
-            setBackToTopVisibility();
-        }, 150);
-    }, { passive: true });
-
-    window.addEventListener('load', updateOnScroll);
-    cacheSectionPositions();
-    setActiveLink();
-    setBackToTopVisibility();
-
-    // ── Feature: Smooth Scroll for Navigation ───────────────────
-    document.querySelectorAll('.nav-links a[href^="#"], a.cta-btn--hero[href^="#"], .back-to-top[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                const targetTop = targetElement.getBoundingClientRect().top + window.scrollY;
-                let scrollToPosition = targetTop - Math.max(getHeaderOffset() - 10, 0);
-                if (targetId === '#top') {
-                    scrollToPosition = 0;
-                }
-                window.scrollTo({
-                    top: scrollToPosition,
-                    behavior: prefersReducedMotion.matches ? 'auto' : 'smooth'
-                });
-            }
-        });
-    });
-
-    // ── Feature: Footer Current Year ────────────────────────────
-    const currentYearEl = document.getElementById('current-year');
-    if (currentYearEl) {
-        currentYearEl.textContent = new Date().getFullYear();
-    }
-
-    // ── Feature: Swiper Initializations ─────────────────────────
-    const swiperRegistry = [];
-    if (typeof Swiper !== 'undefined') {
-
-        const initSwiper = (selector, config) => {
-            try {
-                const instance = new Swiper(selector, config);
-                swiperRegistry.push(instance);
-                return instance;
-            } catch (err) {
-                console.warn(`Swiper initialization failed for ${selector}:`, err);
-                return null;
-            }
-        };
-
-        const bindSwiperVisibility = (swiper, rootSelector) => {
-            const root = document.querySelector(rootSelector);
-            if (!swiper || !root) return;
-
-            let isVisible = !('IntersectionObserver' in window);
-            let isHovered = root.matches(':hover');
-            const start = () => {
-                if (!isVisible || isHovered || root.matches(':focus-within') || prefersReducedMotion.matches) return;
-                if (swiper.autoplay && !swiper.autoplay.running) swiper.autoplay.start();
-            };
-            const stop = () => {
-                if (swiper.autoplay && swiper.autoplay.running) swiper.autoplay.stop();
-            };
-
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach((entry) => {
-                        isVisible = entry.isIntersecting && entry.intersectionRatio >= 0.45;
-                        if (isVisible) start();
-                        else stop();
-                    });
-                }, { threshold: [0, 0.25, 0.45, 0.7] });
-
-                observer.observe(root);
-            }
-
-            root.addEventListener('focusin', stop);
-            root.addEventListener('focusout', (event) => {
-                // Moving between carousel links must not restart autoplay.
-                if (!root.contains(event.relatedTarget)) start();
-            });
-            root.addEventListener('mouseenter', () => {
-                isHovered = true;
-                stop();
-            });
-            root.addEventListener('mouseleave', () => {
-                isHovered = false;
-                start();
-            });
-            prefersReducedMotion.addEventListener('change', () => {
-                if (prefersReducedMotion.matches) stop();
-                else start();
-            });
-        };
-
-        // When every slide fits on screen at once there is nothing to page
-                // through, so the dots would be focusable controls that do nothing.
-                function syncPagination(swiper) {
-                    if (!swiper || !swiper.pagination || !swiper.pagination.el) return;
-                    const allVisible = swiper.slides.length <= swiper.params.slidesPerView;
-                    swiper.pagination.el.style.display = allVisible ? 'none' : '';
-                }
-
-                const projectSwiper = initSwiper('.project-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 30,
-            grabCursor: true,
-            autoplay: {
-                delay: Math.max(1800, Math.round(4000 * motionScale)),
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-                stopOnLastSlide: false
-            },
-            pagination: {
-                el: '.project-swiper-pagination',
-                clickable: true,
-            },
-            on: {
-                init(swiper) { syncPagination(swiper); },
-                resize(swiper) { syncPagination(swiper); }
-            },
-            breakpoints: {
-                768: { slidesPerView: 2, spaceBetween: 30 },
-                1024: { slidesPerView: 3, spaceBetween: 40 }
-            }
-        });
-        bindSwiperVisibility(projectSwiper, '.projects-section');
-
-        const achievementSwiper = initSwiper('.achievement-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 30,
-            grabCursor: true,
-            autoplay: {
-                delay: Math.max(2000, Math.round(4500 * motionScale)),
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-                stopOnLastSlide: false
-            },
-            pagination: {
-                el: '.achievement-swiper-pagination',
-                clickable: true,
-            },
-            breakpoints: {
-                768: { slidesPerView: 2, spaceBetween: 30 },
-                1024: { slidesPerView: 3, spaceBetween: 40 }
-            }
-        });
-        bindSwiperVisibility(achievementSwiper, '.achievements-section');
-
-        const skillSwiper = initSwiper('.skill-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 30,
-            grabCursor: true,
-            autoplay: {
-                delay: Math.max(2000, Math.round(4500 * motionScale)),
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-                stopOnLastSlide: false
-            },
-            pagination: {
-                el: '.skill-swiper-pagination',
-                clickable: true,
-            },
-            on: {
-                init(swiper) {
-                    if (swiper.autoplay) swiper.autoplay.stop();
-                }
-            },
-            breakpoints: {
-                768: { slidesPerView: 2, spaceBetween: 30 },
-                1024: { slidesPerView: 3, spaceBetween: 30 }
-            }
-        });
-        bindSwiperVisibility(skillSwiper, '.skills-section');
-
-        if (prefersReducedMotion.matches) {
-            swiperRegistry.forEach((swiper) => {
-                if (swiper.autoplay) swiper.autoplay.stop();
-            });
-        }
-    }
-
-    // ── Feature: Mobile Menu Toggle ─────────────────────────────
-    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const mobileNavLinks = document.querySelector('.nav-links');
-    const menuIcon = mobileMenuBtn?.querySelector('.fa-bars') ?? null;
-    const closeIcon = mobileMenuBtn?.querySelector('.fa-times') ?? null;
-
-    const mobileNavItems = mobileNavLinks ? Array.from(mobileNavLinks.querySelectorAll('a')) : [];
-
-    // restoreFocus is false when a menu item was activated, because focus should
-    // follow the navigation rather than jump back to the toggle.
-    function closeMobileMenu(restoreFocus = false) {
-        if (!mobileNavLinks || !mobileNavLinks.classList.contains('active')) return;
-        mobileNavLinks.classList.remove('active');
-        if (mobileMenuBtn) {
-            mobileMenuBtn.setAttribute('aria-expanded', 'false');
-            mobileMenuBtn.setAttribute('aria-label', 'Open menu');
-        }
-        if (menuIcon) menuIcon.style.display = 'block';
-        if (closeIcon) closeIcon.style.display = 'none';
-        if (restoreFocus && mobileMenuBtn) mobileMenuBtn.focus();
-    }
-
-    if (mobileMenuBtn && mobileNavLinks) {
-        mobileMenuBtn.addEventListener('click', (event) => {
-            const isOpen = !mobileNavLinks.classList.contains('active');
-            mobileNavLinks.classList.toggle('active', isOpen);
-            mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
-            mobileMenuBtn.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
-            if (menuIcon) menuIcon.style.display = isOpen ? 'none' : 'block';
-            if (closeIcon) closeIcon.style.display = isOpen ? 'block' : 'none';
-            // Keyboard activation (click detail 0) moves focus into the menu so the
-            // user is not stranded on the toggle. Pointer activation is left alone
-            // so no focus ring appears after a tap.
-            if (isOpen && event.detail === 0 && mobileNavItems.length) {
-                mobileNavItems[0].focus();
-            }
-        });
-
-        mobileNavItems.forEach((link) => {
-            link.addEventListener('click', () => closeMobileMenu(false));
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key !== 'Escape') return;
-            if (!mobileNavLinks.classList.contains('active')) return;
-            closeMobileMenu(true);
-        });
-    }
-
-    // ── Feature: Scroll Reveal Animations ───────────────────────
-    if (!prefersReducedMotion.matches && typeof ScrollReveal !== 'undefined') {
-        const sr = ScrollReveal();
-        const revealSections = document.querySelectorAll('.section:not(#contact)');
-        revealSections.forEach((section) => {
-            section.classList.add('scroll-reveal-section');
-            sr.reveal(section, {
-                delay: Math.round(80 * motionScale),
-                distance: isAndroidPhone ? '10px' : '16px',
-                duration: Math.round(420 * motionScale),
-                easing: 'ease-out',
-                origin: 'bottom',
-                reset: false,
-                afterReveal: (el) => {
-                    el.classList.add('active');
-                }
-            });
-        });
-    } else if (typeof ScrollReveal !== 'undefined') {
-        // Reduced motion: make sections visible immediately
-        document.querySelectorAll('.section:not(#contact)').forEach((section) => {
-            section.classList.add('scroll-reveal-section', 'active');
-        });
-    }
-
-    // ── Feature: Lifecycle & Cleanup ────────────────────────────
-
-    // React to prefers-reduced-motion changes at runtime
-    prefersReducedMotion.addEventListener('change', () => {
-        // ScrollReveal doesn't support dynamic reconfiguration,
-        // but we can at least ensure sections are visible if motion is reduced
-        if (prefersReducedMotion.matches) {
-            document.querySelectorAll('.scroll-reveal-section').forEach((el) => {
-                el.classList.add('active');
-            });
-        }
-    });
-
+  $("#copy").addEventListener("click", () => {
+    const label = $("#copy-l");
+    const email = $("#email");
+    const done = (t) => { label.textContent = t; setTimeout(() => { label.textContent = "Copy address"; }, 2000); };
+    const select = () => {
+      const r = document.createRange();
+      r.selectNodeContents(email);
+      const s = getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+      done("Selected, press Ctrl+C");
+    };
+    try { navigator.clipboard.writeText(email.textContent).then(() => done("Copied"), select); }
+    catch (_) { select(); }
+  });
 })();
