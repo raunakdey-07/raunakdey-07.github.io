@@ -142,4 +142,21 @@
     try { navigator.clipboard.writeText(email.textContent).then(() => done("Copied"), select); }
     catch (_) { select(); }
   });
+
+  // Back to top: shown once the Contact section is in view or scrolled past.
+  const toTop = $("#totop");
+  const contact = $("#contact");
+  if (toTop && contact && "IntersectionObserver" in window) {
+    toTop.hidden = false;
+    new IntersectionObserver(([entry]) => {
+      toTop.classList.toggle("show", entry.isIntersecting || entry.boundingClientRect.top < 0);
+    }).observe(contact);
+    toTop.addEventListener("click", () => {
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+      const main = $("#content");
+      main.setAttribute("tabindex", "-1");
+      main.focus({ preventScroll: true });
+    });
+  }
 })();
