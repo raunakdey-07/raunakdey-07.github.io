@@ -10,6 +10,11 @@ on:
     paths-ignore:
       - assets/activity.json
   workflow_dispatch:
+    inputs:
+      full:
+        description: Re-read every Kaggle competition, not just recent ones
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -41,6 +46,7 @@ jobs:
           # A new-style token is used as KAGGLE_API_TOKEN; a legacy key falls back to KAGGLE_KEY.
           KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_API }}
+          KAGGLE_FULL: ${{ inputs.full && '1' || '0' }}
 
       - name: Commit if the data changed
         run: |
