@@ -67,19 +67,24 @@ def kaggle() -> dict[str, int]:
             days[day] = days.get(day, 0) + 1
             seen[kind] += 1
 
-    token = ""
-    for _ in range(MAX_PAGES):
-        response = api.competitions_list(group="entered", page=-1, page_token=token, page_size=100)
+    # The API returns at most 20 competitions per page and no next-page token for this list,
+    # so walk numbered pages until a page adds nothing new.
+    slugs: list[str] = []
+    for page in range(1, MAX_PAGES + 1):
+        response = api.competitions_list(group="entered", page=page)
+        fresh = 0
         for comp in items(response, "competitions"):
-            seen["competitions"] += 1
             slug = str(getattr(comp, "ref", "") or getattr(comp, "url", "")).rstrip("/").split("/")[-1]
-            if not slug:
-                continue
-            for sub in api.competition_submissions(slug, page_size=100) or []:
-                add(getattr(sub, "date", None), "submissions")
-        token = getattr(response, "next_page_token", "") if not isinstance(response, list) else ""
-        if not token:
+            if slug and slug not in slugs:
+                slugs.append(slug)
+                fresh += 1
+        if fresh == 0:
             break
+
+    for slug in slugs:
+        seen["competitions"] += 1
+        for sub in api.competition_submissions(slug) or []:
+            add(getattr(sub, "date", None), "submissions")
 
     for page in range(1, MAX_PAGES + 1):
         kernels = items(api.kernels_list(user=KAGGLE_USER, page=page, page_size=100), "kernels")
