@@ -1,8 +1,14 @@
 name: Refresh activity
 
 on:
+  # GitHub runs schedules on a best-effort basis: a slot can start hours late or be skipped.
+  # Four slots a day plus a run after every push to main keep the data fresh regardless.
   schedule:
-    - cron: "17 2 * * *" # daily, 07:47 IST
+    - cron: "17 */6 * * *" # 02:17, 08:17, 14:17, 20:17 UTC
+  push:
+    branches: [main]
+    paths-ignore:
+      - assets/activity.json
   workflow_dispatch:
 
 permissions:
@@ -43,4 +49,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/activity.json
           git commit -m "chore: refresh activity data"
+          git pull --rebase origin main
           git push
